@@ -1,9 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <RootNamespace>Krysalis</RootNamespace>
-        <AssemblyName>Krysalis</AssemblyName>
-        <TargetFramework>net472</TargetFramework>
-        <LangVersion>10.0</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-</Project>
