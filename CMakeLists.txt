@@ -10,6 +10,11 @@ set(CSHARP_BUILD_DIR "${BUILD_DIR}/Managed")
 set(FILAMENT_BUILD_DIR "${BUILD_DIR}/Native/filament")
 set(NATIVE_BUILD_DIR "${BUILD_DIR}/Native")
 
+set(ResonitePath "C:/Program Files (x86)/Steam/steamapps/common/Resonite/")
+if (NOT EXISTS "${ResonitePath}")
+    set(ResonitePath "$ENV{HOME}/.steam/steam/steamapps/common/Resonite/")
+endif()
+
 add_custom_target(ManagedBuild ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CSHARP_BUILD_DIR}
     COMMAND dotnet build ${CSHARP_PROJECT_DIR}/Krysalis-Managed.csproj -o ${CSHARP_BUILD_DIR}
@@ -31,6 +36,14 @@ set_target_properties(KrysalisNative PROPERTIES
 )
 
 add_dependencies(KrysalisNative ManagedBuild)
+
+add_custom_command(
+    TARGET ManagedBuild POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CSHARP_BUILD_DIR}/Krysalis.dll"
+        "${ResonitePath}rml_mods/"
+    COMMENT "Copying Krysalis.dll to Resonite mods folder"
+)
 
 if (WIN32)
     message(STATUS "Configuring for Windows")
