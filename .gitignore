@@ -399,7 +399,3 @@ FodyWeavers.xsd
 
 # Ignore build output directories
 /build/
-
-# Managed build output
-/src/Krysalis-Managed/bin/
-/src/Krysalis-Managed/obj/
