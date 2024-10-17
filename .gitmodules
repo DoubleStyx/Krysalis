@@ -1,3 +1,0 @@
-[submodule "lib/Native/filament"]
-	path = lib/Native/filament
-	url = https://github.com/google/filament.git
