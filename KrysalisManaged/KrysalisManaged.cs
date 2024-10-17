@@ -15,4 +15,11 @@ public class KrysalisManaged : ResoniteMod {
 		Harmony harmony = new Harmony("net.DoubleStyx.KrysalisManaged");
 		harmony.PatchAll();
 	}
+
+	[HarmonyPatch(typeof(Engine), "BeginNewUpdate")]
+	class Engine_BeginNewUpdate_Patch {
+		static void Postfix(Engine __instance) {
+			Msg("2 + 3 = " + Utils.Add(2, 3));
+		}
+	}
 }
