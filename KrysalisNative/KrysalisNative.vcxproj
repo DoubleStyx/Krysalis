@@ -167,4 +167,9 @@
     <Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_libs" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_libs" ContinueOnError="true" />
   </Target>
+  <PropertyGroup>
+    <OutDir>$(MSBuildThisFileDirectory)build\</OutDir>
+    <IntDir>$(MSBuildThisFileDirectory)build\Intermediate\</IntDir>
+    <TargetName>KrysalisNative</TargetName>
+  </PropertyGroup>
 </Project>

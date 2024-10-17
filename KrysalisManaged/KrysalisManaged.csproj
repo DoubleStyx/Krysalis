@@ -9,6 +9,7 @@
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<OutputPath>$(MSBuildThisFileDirectory)build\</OutputPath>
 		<!-- Change CopyToMods to true if you'd like builds to be moved into the Mods folder automatically-->
 		<CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
