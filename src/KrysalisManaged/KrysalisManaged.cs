@@ -16,11 +16,11 @@ public class Krysalis : ResoniteMod {
 		harmony.PatchAll();
 	}
 
-	//Example of how a HarmonyPatch can be formatted, Note that the following isn't a real patch and will not compile.
-	[HarmonyPatch(typeof(ClassNameHere), "MethodNameHere")]
-	class ClassNameHere_MethodNameHere_Patch {
-		static void Postfix(ClassNameHere __instance) {
-			Msg("Postfix from Krysalis");
-		}
-	}
+	// //Example of how a HarmonyPatch can be formatted, Note that the following isn't a real patch and will not compile.
+	// [HarmonyPatch(typeof(ClassNameHere), "MethodNameHere")]
+	// class ClassNameHere_MethodNameHere_Patch {
+	// 	static void Postfix(ClassNameHere __instance) {
+	// 		Msg("Postfix from Krysalis");
+	// 	}
+	// }
 }
