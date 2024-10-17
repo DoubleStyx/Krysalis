@@ -6,6 +6,7 @@ set(MANAGED_SRC_DIR "${SRC_DIR}/KrysalisManaged")
 set(NATIVE_SRC_DIR "${SRC_DIR}/KrysalisNative")
 
 set(MANAGED_BUILD_DIR "${CMAKE_BINARY_DIR}/Managed")
+set(NATIVE_BUILD_DIR "${CMAKE_BINARY_DIR}/Native")
 
 set(ResonitePath "C:/Program Files (x86)/Steam/steamapps/common/Resonite/")
 if (NOT EXISTS "${ResonitePath}")
@@ -13,7 +14,13 @@ if (NOT EXISTS "${ResonitePath}")
 endif()
 
 file(GLOB_RECURSE NATIVE_SOURCES "${NATIVE_SRC_DIR}/*.cpp" "${NATIVE_SRC_DIR}/*.h")
-add_executable(KrysalisNative ${NATIVE_SOURCES})
+add_library(KrysalisNative SHARED ${NATIVE_SOURCES})
+
+set_target_properties(KrysalisNative PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${NATIVE_BUILD_DIR}/bin
+    ARCHIVE_OUTPUT_DIRECTORY ${NATIVE_BUILD_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${NATIVE_BUILD_DIR}/lib
+)
 
 file(GLOB_RECURSE MANAGED_SOURCES "${MANAGED_SRC_DIR}/*.cs")
 
