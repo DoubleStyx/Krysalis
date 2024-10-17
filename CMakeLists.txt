@@ -1,12 +1,20 @@
-# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
-#
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
+project(Krysalis CXX)
 
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+set(MANAGED_SRC_DIR "${CMAKE_SOURCE_DIR}/KrysalisManaged")
+set(NATIVE_SRC_DIR "${CMAKE_SOURCE_DIR}/KrysalisNative")
+
+set(MANAGED_BUILD_DIR "${CMAKE_BINARY_DIR}/Managed")
+set(NATIVE_BUILD_DIR "${CMAKE_BINARY_DIR}/Native")
+
+set(FILAMENT_DIR "C:/Libraries/filament-windows")
+
+if (WIN32)
+    set(ResonitePath "C:/Program Files (x86)/Steam/steamapps/common/Resonite/")
+elseif (UNIX)
+    set(ResonitePath "$ENV{HOME}/.steam/steam/steamapps/common/Resonite/")
+else()
+    message(FATAL_ERROR "Unsupported platform")
 endif()
 
 project ("Krysalis")
