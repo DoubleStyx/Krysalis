@@ -114,13 +114,14 @@
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard> <!-- You already have this -->
       <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;C:\Libraries\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
+        glfw3.lib;
         opengl32.lib;
         backend.lib;
         basis_transcoder.lib;
@@ -161,12 +162,13 @@
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;C:\Libraries\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
+        glfw3.lib;
         opengl32.lib;
         backend.lib;
         basis_transcoder.lib;
