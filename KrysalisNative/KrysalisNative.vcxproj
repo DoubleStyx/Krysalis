@@ -164,7 +164,7 @@
       <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
         opengl32.lib;
         backend.lib;
