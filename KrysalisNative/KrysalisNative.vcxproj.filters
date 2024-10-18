@@ -4,16 +4,12 @@
     <ClInclude Include="KrysalisNative.h">
       <Filter>Include</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Include">
       <UniqueIdentifier>{75607c4b-d4bc-4d99-be56-840558a6abd6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{47c55454-6424-4685-8854-73aa04d7240f}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="KrysalisNative.cpp">
       <Filter>Source</Filter>
     </ClCompile>
