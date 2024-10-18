@@ -46,7 +46,7 @@ jobs:
           New-Item -Path "C:/VulkanSDK" -ItemType Directory -Force
           Move-Item -Path "$env:VULKAN_SDK/*" -Destination "C:/VulkanSDK/1.3.290.0/" -Force
           Remove-Item -Path "$env:VULKAN_SDK/" -Recurse -Force
-          ls C:/VulkanSDK/1.3.290.0/
+          ls C:/VulkanSDK/1.3.290.0/ -r
           
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1

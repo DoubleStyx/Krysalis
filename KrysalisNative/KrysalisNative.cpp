@@ -89,16 +89,19 @@ void createTriangle(filament::Engine* engine)
 
 void runWindow()
 {
-	_putenv("VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation");
-	_putenv("VK_LAYER_PATH=C:\\VulkanSDK\\1.3.290.0\\Bin");
+	if (_putenv("VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation"))
+		closeWindow("Failed to set VK_INSTANCE_LAYERS");
+	if (_putenv("VK_LAYER_PATH=C:\\VulkanSDK\\1.3.290.0\\Bin"))
+		closeWindow("Failed to set VK_LAYER_PATH");
 	try
 	{
 		glfwInit();
 		LogToCSharp("GLFW initialized");
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		window = glfwCreateWindow(800, 600, "Krysalis", nullptr, nullptr);
@@ -106,8 +109,8 @@ void runWindow()
 			closeWindow("Window not initialized");
 		LogToCSharp("Window created");
 
-		glfwMakeContextCurrent(window);
-		LogToCSharp("Set current window as GLFW context");
+		//glfwMakeContextCurrent(window);
+		//LogToCSharp("Set current window as GLFW context");
 
 		const GLubyte* version = glGetString(GL_VERSION);
 		if (version == NULL)
@@ -118,7 +121,7 @@ void runWindow()
 
 		std::string glVersionStr(reinterpret_cast<const char*>(version));
 		int major, minor;
-		sscanf(glVersionStr.c_str(), "%d.%d", &major, &minor);
+		sscanf_s(glVersionStr.c_str(), "%d.%d", &major, &minor);
 		if (major < 4 || (major == 4 && minor < 1))
 		{
 			closeWindow("Insufficient OpenGL version. Required: 4.1, Detected: " + glVersionStr);
@@ -137,10 +140,12 @@ void runWindow()
 			closeWindow("Native window handle is empty");
 		LogToCSharp("Obtained the native window handle.");
 
+		/*
 		HDC hdc = GetDC(hwnd);
 		if (hdc == NULL)
 			closeWindow("Device context (HDC) is empty");
 		LogToCSharp("Obtained the device context (HDC).");
+		*/
 
 		swapChain = engine->createSwapChain((void*)hwnd);
 		if (swapChain == NULL)
