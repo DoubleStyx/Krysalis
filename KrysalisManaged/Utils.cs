@@ -9,4 +9,7 @@ namespace KrysalisManaged;
 internal class Utils {
 	[DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
 	public static extern int Add(int a, int b);
+
+    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern bool StartEngine();
 }

@@ -19,13 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="KrysalisNative.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="KrysalisNative.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="KrysalisNative.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
+    <VCProjectVersion>20.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{764e4e20-0feb-4846-8841-6ddf2c70dac8}</ProjectGuid>
     <RootNamespace>KrysalisNative</RootNamespace>
@@ -37,6 +37,8 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <!-- Explicitly set C++ version -->
+    <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -44,12 +46,17 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <!-- Explicitly set C++ version -->
+    <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    <!-- Explicitly set C++ version -->
+    <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -57,25 +64,15 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    <!-- Explicitly set C++ version -->
+    <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -112,41 +109,93 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;KRYSALISNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+          opengl32.lib;
+          backend.lib;
+          basis_transcoder.lib;
+          bluegl.lib;
+          bluevk.lib;
+          camutils.lib;
+          civetweb.lib;
+          dracodec.lib;
+          filabridge.lib;
+          filaflat.lib;
+          filamat.lib;
+          filament-iblprefilter.lib;
+          filament.lib;
+          filameshio.lib;
+          geometry.lib;
+          gltfio.lib;
+          gltfio_core.lib;
+          ibl-lite.lib;
+          ibl.lib;
+          image.lib;
+          ktxreader.lib;
+          matdbg.lib;
+          meshoptimizer.lib;
+          mikktspace.lib;
+          shaders.lib;
+          smol-v.lib;
+          stb.lib;
+          uberarchive.lib;
+          uberzlib.lib;
+          utils.lib;
+          viewer.lib;
+          vkshaders.lib;
+          zstd.lib;
+          %(AdditionalDependencies)
+      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;KRYSALISNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+          opengl32.lib;
+          backend.lib;
+          basis_transcoder.lib;
+          bluegl.lib;
+          bluevk.lib;
+          camutils.lib;
+          civetweb.lib;
+          dracodec.lib;
+          filabridge.lib;
+          filaflat.lib;
+          filamat.lib;
+          filament-iblprefilter.lib;
+          filament.lib;
+          filameshio.lib;
+          geometry.lib;
+          gltfio.lib;
+          gltfio_core.lib;
+          ibl-lite.lib;
+          ibl.lib;
+          image.lib;
+          ktxreader.lib;
+          matdbg.lib;
+          meshoptimizer.lib;
+          mikktspace.lib;
+          shaders.lib;
+          smol-v.lib;
+          stb.lib;
+          uberarchive.lib;
+          uberzlib.lib;
+          utils.lib;
+          viewer.lib;
+          vkshaders.lib;
+          zstd.lib;
+          %(AdditionalDependencies)
+      </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
   <PropertyGroup>
     <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
   </PropertyGroup>
@@ -160,4 +209,7 @@
     <Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods" ContinueOnError="true" />
   </Target>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

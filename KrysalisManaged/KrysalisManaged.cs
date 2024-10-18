@@ -20,6 +20,7 @@ public class KrysalisManaged : ResoniteMod {
 	class Engine_BeginNewUpdate_Patch {
 		static void Postfix(Engine __instance) {
 			Msg("2 + 3 = " + Utils.Add(2, 3));
+			Msg("Engine able to be initialized: " + Utils.StartEngine());
 		}
 	}
 }
