@@ -34,10 +34,9 @@ jobs:
       - name: Install dependencies
         run: nuget restore Krysalis.sln
 
-      # Build the solution
       - name: Build the solution
-        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:LanguageStandard=stdcpp20
-
+        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"
+      
       # Upload DLLs as build artifacts
       - name: Upload DLLs as build artifacts
         uses: actions/upload-artifact@v3
