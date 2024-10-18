@@ -85,7 +85,6 @@
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -107,55 +106,46 @@
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard> 
+      <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.290.0\Include;C:\Libraries\filament-windows\include;C:\Libraries\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;C:\Libraries\glfw-3.4\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-        glfw3.lib;
-        opengl32.lib;
-        backend.lib;
-        basis_transcoder.lib;
-        bluegl.lib;
-        bluevk.lib;
-        camutils.lib;
-        civetweb.lib;
-        dracodec.lib;
-        filabridge.lib;
-        filaflat.lib;
-        filamat.lib;
-        filament-iblprefilter.lib;
-        filament.lib;
-        filameshio.lib;
-        geometry.lib;
-        gltfio.lib;
-        gltfio_core.lib;
-        ibl-lite.lib;
-        ibl.lib;
-        image.lib;
-        ktxreader.lib;
-        matdbg.lib;
-        meshoptimizer.lib;
-        mikktspace.lib;
-        shaders.lib;
-        smol-v.lib;
-        stb.lib;
-        uberarchive.lib;
-        uberzlib.lib;
-        utils.lib;
-        viewer.lib;
-        vkshaders.lib;
-        zstd.lib;
-        %(AdditionalDependencies)
-      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\VulkanSDK\1.3.290.0\Lib;C:\Libraries\filament-windows\lib\x86_64\mdd;C:\Libraries\glfw-3.4\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>dxcompiler.lib;
+GenericCodeGen.lib;
+glslang-default-resource-limits.lib;
+glslang.lib;
+MachineIndependent.lib;
+OSDependent.lib;
+shaderc.lib;
+shaderc_combined.lib;
+shaderc_shared.lib;
+shaderc_util.lib;
+spirv-cross-c-shared.lib;
+spirv-cross-c.lib;
+spirv-cross-core.lib;
+spirv-cross-cpp.lib;
+spirv-cross-glsl.lib;
+spirv-cross-hlsl.lib;
+spirv-cross-msl.lib;
+spirv-cross-reflect.lib;
+spirv-cross-util.lib;
+SPIRV-Tools-diff.lib;
+SPIRV-Tools-link.lib;
+SPIRV-Tools-lint.lib;
+SPIRV-Tools-opt.lib;
+SPIRV-Tools-reduce.lib;
+SPIRV-Tools-shared.lib;
+SPIRV-Tools.lib;
+SPIRV.lib;
+SPVRemapper.lib;
+vulkan-1.lib;
+glfw3.lib;opengl32.lib;backend.lib;basis_transcoder.lib;bluegl.lib;bluevk.lib;camutils.lib;civetweb.lib;dracodec.lib;filabridge.lib;filaflat.lib;filamat.lib;filament-iblprefilter.lib;filament.lib;filameshio.lib;geometry.lib;gltfio.lib;gltfio_core.lib;ibl-lite.lib;ibl.lib;image.lib;ktxreader.lib;matdbg.lib;meshoptimizer.lib;mikktspace.lib;shaders.lib;smol-v.lib;stb.lib;uberarchive.lib;uberzlib.lib;utils.lib;viewer.lib;vkshaders.lib;zstd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -164,6 +154,35 @@
     <Link>
       <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;C:\Libraries\glfw-3.4\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
+      dxcompiler.lib;
+      GenericCodeGen.lib;
+      glslang-default-resource-limits.lib;
+      glslang.lib;
+      MachineIndependent.lib;
+      OSDependent.lib;
+      shaderc.lib;
+      shaderc_combined.lib;
+      shaderc_shared.lib;
+      shaderc_util.lib;
+      spirv-cross-c-shared.lib;
+      spirv-cross-c.lib;
+      spirv-cross-core.lib;
+      spirv-cross-cpp.lib;
+      spirv-cross-glsl.lib;
+      spirv-cross-hlsl.lib;
+      spirv-cross-msl.lib;
+      spirv-cross-reflect.lib;
+      spirv-cross-util.lib;
+      SPIRV-Tools-diff.lib;
+      SPIRV-Tools-link.lib;
+      SPIRV-Tools-lint.lib;
+      SPIRV-Tools-opt.lib;
+      SPIRV-Tools-reduce.lib;
+      SPIRV-Tools-shared.lib;
+      SPIRV-Tools.lib;
+      SPIRV.lib;
+      SPVRemapper.lib;
+      vulkan-1.lib;
         glfw3.lib;
         opengl32.lib;
         backend.lib;
@@ -203,7 +222,6 @@
       <AdditionalOptions>/ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-
   <PropertyGroup>
     <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
   </PropertyGroup>

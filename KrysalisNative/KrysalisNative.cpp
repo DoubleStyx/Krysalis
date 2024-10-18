@@ -88,6 +88,7 @@ void createTriangle(filament::Engine* engine) {
 }
 
 void runWindow() {
+    _putenv("VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation");
     try {
         glfwInit();
         LogToCSharp("GLFW initialized");
@@ -127,7 +128,7 @@ void runWindow() {
         glfwSwapInterval(1);
         LogToCSharp("Set glfw swap interval");
 
-        engine = filament::Engine::create(filament::Engine::Backend::OPENGL);
+        engine = filament::Engine::create(filament::Engine::Backend::VULKAN);
         if (engine == NULL)
             closeWindow("Engine not initialized");
         LogToCSharp("Created Filament engine instance");
