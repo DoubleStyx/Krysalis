@@ -100,7 +100,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,7 +161,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
