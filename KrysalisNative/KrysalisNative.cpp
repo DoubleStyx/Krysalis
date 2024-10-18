@@ -5,6 +5,7 @@
 #include <mutex>
 #include <GLFW/glfw3.h>
 #include <filament/Engine.h>
+#include "KrysalisNative.h"
 
 // Globals for the Filament engine
 filament::Engine* engine = nullptr;
@@ -14,14 +15,14 @@ std::mutex logMutex;  // Mutex for thread-safe logging
 // Function to initialize the window and run the rendering loop in a separate thread
 void runWindow() {
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW." << std::endl;
+        LogToCSharp("Failed to initialize GLFW.");
         return;
     }
 
     // Create a windowed mode window and its OpenGL context
     window = glfwCreateWindow(800, 600, "My Filament Window", nullptr, nullptr);
     if (!window) {
-        std::cerr << "Failed to create window." << std::endl;
+        LogToCSharp("Failed to create window.");
         glfwTerminate();
         return;
     }
@@ -35,7 +36,7 @@ void runWindow() {
     // Initialize Filament engine
     engine = filament::Engine::create();
     if (!engine) {
-        std::cerr << "Failed to create Filament engine." << std::endl;
+        LogToCSharp("Failed to create Filament engine.");
         glfwDestroyWindow(window);
         glfwTerminate();
         return;

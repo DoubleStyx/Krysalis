@@ -18,14 +18,21 @@ public class KrysalisManaged : ResoniteMod
         Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
         harmony.PatchAll();
         Utils.InitializeLogging();  // Initialize logging callback
+        Utils.TestLogger("Initializing window...");
+        Utils.startRenderingThread();
+        Utils.TestLogger("Window initialized");
     }
 
-    [HarmonyPatch(typeof(Engine), "BeginNewUpdate")]
-    class Engine_BeginNewUpdate_Patch
+    /*
+    [HarmonyPatch(typeof(Engine), "FinishInitialization")]
+    class Engine_FinishInitialization_Patch
     {
         static void Postfix(Engine __instance)
         {
-            Utils.TestLogger("Hello world!");  // Test the logger
+            Utils.TestLogger("Initializing window...");
+            Utils.startRenderingThread();
+            Utils.TestLogger("Window initialized");
         }
     }
+    */
 }

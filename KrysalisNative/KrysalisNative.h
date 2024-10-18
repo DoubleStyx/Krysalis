@@ -5,8 +5,13 @@
 #include <GLFW/glfw3.h>
 #include <filament/Engine.h>
 
+// Type definitions
 typedef void (*LogCallback)(const char* message);
 
+// Interop declarations
 extern "C" __declspec(dllexport) void startRenderingThread();
 extern "C" __declspec(dllexport) void RegisterLogCallback(LogCallback callback);
 extern "C" __declspec(dllexport) void TestLogger(const char* msg);
+
+// Native declarations
+void LogToCSharp(const std::string& message);

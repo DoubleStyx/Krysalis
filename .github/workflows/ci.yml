@@ -24,6 +24,12 @@ jobs:
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament.tgz"
           tar -xzf filament.tgz -C C:/Libraries/filament-windows/
+
+      - name: Download glfw
+        run: |
+          New-Item -ItemType Directory -Path "C:/Libraries/glfw/" -Force
+          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip" -OutFile "glfw.zip"
+          Expand-Archive -Path "glfw.zip" -DestinationPath "C:/Libraries/glfw/"
         
       # Setup Visual Studio Build Tools
       - name: Set up MSBuild
