@@ -17,9 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Download Filament library
+        # Download Filament library
       - name: Download Filament Library
         run: |
+          New-Item -ItemType Directory -Path "C:/Libraries/" -Force
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament.tgz"
           tar -xzf filament.tgz -C C:/Libraries/
       
