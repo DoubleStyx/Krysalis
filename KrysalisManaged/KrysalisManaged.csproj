@@ -3,7 +3,6 @@
 		<RootNamespace>KrysalisManaged</RootNamespace>
 		<AssemblyName>KrysalisManaged</AssemblyName>
 		<TargetFramework>net472</TargetFramework>
-		<FileAlignment>512</FileAlignment>
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>

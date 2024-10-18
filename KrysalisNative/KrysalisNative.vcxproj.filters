@@ -2,16 +2,18 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="KrysalisNative.h">
-      <Filter>Include</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <Filter Include="Include">
+    <ClCompile Include="KrysalisNative.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
       <UniqueIdentifier>{75607c4b-d4bc-4d99-be56-840558a6abd6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source">
+    <Filter Include="Source Files">
       <UniqueIdentifier>{47c55454-6424-4685-8854-73aa04d7240f}</UniqueIdentifier>
     </Filter>
-    <ClCompile Include="KrysalisNative.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
