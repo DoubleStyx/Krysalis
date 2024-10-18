@@ -20,16 +20,18 @@ jobs:
       - name: Download Filament Library
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
-          Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament.tgz"
-          tar -xzf filament.tgz -C C:/Libraries/filament-windows/
+          Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament-windows.tgz"
+          tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
           ls C:/Libraries/filament-windows/
 
       - name: Download GLFW
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
-          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.zip"
-          Expand-Archive -Path "glfw-3.4.zip" -DestinationPath "C:/Libraries/glfw-3.4/"
-          ls C:/Libraries/glfw-3.4/
+          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.bin.WIN64.zip"
+          Expand-Archive -Path "glfw-3.4.bin.WIN64.zip" -DestinationPath "C:/Libraries/glfw-3.4.bin.WIN64/"
+          Move-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/*" -Destination "C:/Libraries/glfw-3.4.bin.WIN64/" -Force
+          Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
+          ls C:/Libraries/glfw-3.4.bin.WIN64/
 
       - name: Install Vulkan SDK
         uses: humbletim/setup-vulkan-sdk@v1.2.0
@@ -41,10 +43,10 @@ jobs:
       - name: Move Vulkan SDK install location
         shell: powershell
         run: |
-          New-Item -Path "C:/Libraries" -ItemType Directory -Force
-          Move-Item -Path "$env:VULKAN_SDK" -Destination "C:/Libraries/VulkanSDK" -Force
-          $env:VULKAN_SDK="C:/Libraries/VulkanSDK"
-          echo "Vulkan SDK moved to C:/Libraries/VulkanSDK"
+          New-Item -Path "C:/VulkanSDK" -ItemType Directory -Force
+          Move-Item -Path "$env:VULKAN_SDK" -Destination "C:/VulkanSDK" -Force
+          $env:VULKAN_SDK="C:/VulkanSDK"
+          ls C:/VulkanSDK
           
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
