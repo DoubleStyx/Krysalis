@@ -1,9 +1,4 @@
 // KrysalisNative.h
-#include <iostream>
-#include <string>
-#include <thread>
-#include <GLFW/glfw3.h>
-#include <filament/Engine.h>
 
 // Type definitions
 typedef void (*LogCallback)(const char* message);
