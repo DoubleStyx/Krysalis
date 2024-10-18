@@ -143,6 +143,22 @@ void runWindow()
 			closeWindow("Camera not initialized");
 		LogToCSharp("Camera created");
 
+		camera->lookAt(
+			filament::math::float3(0.0f, 0.0f, 3.0f),  // Camera position
+			filament::math::float3(0.0f, 0.0f, 0.0f),  // Look at target
+			filament::math::float3(0.0f, 1.0f, 0.0f)   // Up vector
+		);
+		LogToCSharp("Camera positioned");
+
+		camera->setProjection(
+			45.0f,          // Field of View (in radians)
+			800.0f / 600.0f,                        // Aspect ratio
+			0.1f,                                    // Near clipping plane
+			100.0f,                                  // Far clipping plane
+			filament::Camera::Fov::VERTICAL          // Field of View type
+		);
+		LogToCSharp("Camera projection set");
+
 		view->setCamera(camera);
 		LogToCSharp("Camera assigned to view");
 
