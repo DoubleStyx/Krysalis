@@ -28,6 +28,8 @@ jobs:
           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
           Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip" -OutFile "glfw-3.4.zip"
           Expand-Archive -Path "glfw-3.4.zip" -DestinationPath "C:/Libraries/glfw-3.4/"
+          Move-Item -Path "C:/Libraries/glfw-3.4/glfw-3.4/*" -Destination "C:/Libraries/glfw-3.4/" -Recurse -Force
+          Remove-Item -Path "C:/Libraries/glfw-3.4/glfw-3.4" -Recurse -Force
         
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
