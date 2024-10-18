@@ -81,6 +81,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -88,6 +89,7 @@
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -98,6 +100,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,95 +110,100 @@
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard> <!-- You already have this -->
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
-          opengl32.lib;
-          backend.lib;
-          basis_transcoder.lib;
-          bluegl.lib;
-          bluevk.lib;
-          camutils.lib;
-          civetweb.lib;
-          dracodec.lib;
-          filabridge.lib;
-          filaflat.lib;
-          filamat.lib;
-          filament-iblprefilter.lib;
-          filament.lib;
-          filameshio.lib;
-          geometry.lib;
-          gltfio.lib;
-          gltfio_core.lib;
-          ibl-lite.lib;
-          ibl.lib;
-          image.lib;
-          ktxreader.lib;
-          matdbg.lib;
-          meshoptimizer.lib;
-          mikktspace.lib;
-          shaders.lib;
-          smol-v.lib;
-          stb.lib;
-          uberarchive.lib;
-          uberzlib.lib;
-          utils.lib;
-          viewer.lib;
-          vkshaders.lib;
-          zstd.lib;
-          %(AdditionalDependencies)
+        opengl32.lib;
+        backend.lib;
+        basis_transcoder.lib;
+        bluegl.lib;
+        bluevk.lib;
+        camutils.lib;
+        civetweb.lib;
+        dracodec.lib;
+        filabridge.lib;
+        filaflat.lib;
+        filamat.lib;
+        filament-iblprefilter.lib;
+        filament.lib;
+        filameshio.lib;
+        geometry.lib;
+        gltfio.lib;
+        gltfio_core.lib;
+        ibl-lite.lib;
+        ibl.lib;
+        image.lib;
+        ktxreader.lib;
+        matdbg.lib;
+        meshoptimizer.lib;
+        mikktspace.lib;
+        shaders.lib;
+        smol-v.lib;
+        stb.lib;
+        uberarchive.lib;
+        uberzlib.lib;
+        utils.lib;
+        viewer.lib;
+        vkshaders.lib;
+        zstd.lib;
+        %(AdditionalDependencies)
       </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
-          opengl32.lib;
-          backend.lib;
-          basis_transcoder.lib;
-          bluegl.lib;
-          bluevk.lib;
-          camutils.lib;
-          civetweb.lib;
-          dracodec.lib;
-          filabridge.lib;
-          filaflat.lib;
-          filamat.lib;
-          filament-iblprefilter.lib;
-          filament.lib;
-          filameshio.lib;
-          geometry.lib;
-          gltfio.lib;
-          gltfio_core.lib;
-          ibl-lite.lib;
-          ibl.lib;
-          image.lib;
-          ktxreader.lib;
-          matdbg.lib;
-          meshoptimizer.lib;
-          mikktspace.lib;
-          shaders.lib;
-          smol-v.lib;
-          stb.lib;
-          uberarchive.lib;
-          uberzlib.lib;
-          utils.lib;
-          viewer.lib;
-          vkshaders.lib;
-          zstd.lib;
-          %(AdditionalDependencies)
+        opengl32.lib;
+        backend.lib;
+        basis_transcoder.lib;
+        bluegl.lib;
+        bluevk.lib;
+        camutils.lib;
+        civetweb.lib;
+        dracodec.lib;
+        filabridge.lib;
+        filaflat.lib;
+        filamat.lib;
+        filament-iblprefilter.lib;
+        filament.lib;
+        filameshio.lib;
+        geometry.lib;
+        gltfio.lib;
+        gltfio_core.lib;
+        ibl-lite.lib;
+        ibl.lib;
+        image.lib;
+        ktxreader.lib;
+        matdbg.lib;
+        meshoptimizer.lib;
+        mikktspace.lib;
+        shaders.lib;
+        smol-v.lib;
+        stb.lib;
+        uberarchive.lib;
+        uberzlib.lib;
+        utils.lib;
+        viewer.lib;
+        vkshaders.lib;
+        zstd.lib;
+        %(AdditionalDependencies)
       </AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+
   <PropertyGroup>
     <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
   </PropertyGroup>
