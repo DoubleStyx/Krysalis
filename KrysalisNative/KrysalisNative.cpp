@@ -22,7 +22,6 @@
 #include <utils/EntityManager.h>
 #include <filament/Viewport.h>
 #include <Windows.h>
-#include <GL/gl.h>
 #include "KrysalisNative.h"
 
 filament::Engine* engine = nullptr;
@@ -98,9 +97,6 @@ void runWindow()
 		glfwInit();
 		LogToCSharp("GLFW initialized");
 
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
@@ -108,24 +104,6 @@ void runWindow()
 		if (window == nullptr)
 			closeWindow("Window not initialized");
 		LogToCSharp("Window created");
-
-		//glfwMakeContextCurrent(window);
-		//LogToCSharp("Set current window as GLFW context");
-
-		const GLubyte* version = glGetString(GL_VERSION);
-		if (version == NULL)
-		{
-			closeWindow("Failed to retrieve OpenGL version");
-		}
-		LogToCSharp("OpenGL Version: " + std::string(reinterpret_cast<const char*>(version)));
-
-		std::string glVersionStr(reinterpret_cast<const char*>(version));
-		int major, minor;
-		sscanf_s(glVersionStr.c_str(), "%d.%d", &major, &minor);
-		if (major < 4 || (major == 4 && minor < 1))
-		{
-			closeWindow("Insufficient OpenGL version. Required: 4.1, Detected: " + glVersionStr);
-		}
 
 		glfwSwapInterval(1);
 		LogToCSharp("Set glfw swap interval");
@@ -139,13 +117,6 @@ void runWindow()
 		if (hwnd == NULL)
 			closeWindow("Native window handle is empty");
 		LogToCSharp("Obtained the native window handle.");
-
-		/*
-		HDC hdc = GetDC(hwnd);
-		if (hdc == NULL)
-			closeWindow("Device context (HDC) is empty");
-		LogToCSharp("Obtained the device context (HDC).");
-		*/
 
 		swapChain = engine->createSwapChain((void*)hwnd);
 		if (swapChain == NULL)
@@ -161,6 +132,7 @@ void runWindow()
 		if (scene == NULL)
 			closeWindow("Scene not initialized");
 		LogToCSharp("Scene created");
+
 		view = engine->createView();
 		if (view == NULL)
 			closeWindow("View not initialized");
@@ -170,8 +142,10 @@ void runWindow()
 		if (camera == NULL)
 			closeWindow("Camera not initialized");
 		LogToCSharp("Camera created");
+
 		view->setCamera(camera);
 		LogToCSharp("Camera assigned to view");
+
 		view->setScene(scene);
 		LogToCSharp("Scene assigned to view");
 
@@ -183,20 +157,16 @@ void runWindow()
 		LogToCSharp("Triangle created");
 
 		LogToCSharp("Beginning main rendering loop");
-		CheckOpenGLErrors("Start of main rendering loop");
 		while (!glfwWindowShouldClose(window))
 		{
 			LogToCSharp("Checking if next frame is ready");
 			bool frameStarted = renderer->beginFrame(swapChain);
 			if (frameStarted)
 			{
-				CheckOpenGLErrors("Start of new frame");
 				LogToCSharp("Beginning new frame");
 				renderer->render(view);
-				CheckOpenGLErrors("After rendering the view");
 				LogToCSharp("Rendered view");
 				renderer->endFrame();
-				CheckOpenGLErrors("End of frame");
 				LogToCSharp("Frame ended");
 			}
 			else
@@ -204,7 +174,6 @@ void runWindow()
 				LogToCSharp("Not able to begin next frame");
 			}
 			glfwPollEvents();
-			CheckOpenGLErrors("After event poll");
 			LogToCSharp("GLFW events polled");
 		}
 	}
@@ -215,15 +184,6 @@ void runWindow()
 	catch (...)
 	{
 		closeWindow("Error in rendering thread: Caught unknown exception");
-	}
-}
-
-void CheckOpenGLErrors(const std::string context)
-{
-	GLenum err;
-	while ((err = glGetError()) != GL_NO_ERROR)
-	{
-		closeWindow("OpenGL error in " + context + ": " + std::to_string(err));
 	}
 }
 
