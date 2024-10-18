@@ -22,6 +22,7 @@
 #include <utils/EntityManager.h>
 #include <filament/Viewport.h>
 #include <Windows.h>
+#include <GL/gl.h>
 #include "KrysalisNative.h"
 
 filament::Engine* engine = nullptr;
@@ -53,8 +54,6 @@ void createTriangle(filament::Engine* engine) {
     LogToCSharp("Vertex buffer assigned");
 
     static const uint16_t indices[3] = { 0, 1, 2 };
-    if (indices == NULL)
-        closeWindow("Indices not defined properly");
 
     filament::IndexBuffer* ib = filament::IndexBuffer::Builder()
         .indexCount(3)
@@ -93,17 +92,42 @@ void runWindow() {
         glfwInit();
         LogToCSharp("GLFW initialized");
 
+        // Set the desired OpenGL version and profile
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        // Optional: Make the window not resizable
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
         window = glfwCreateWindow(800, 600, "Krysalis", nullptr, nullptr);
         if (window == nullptr)
             closeWindow("Window not initialized");
         LogToCSharp("Window created");
 
+        // Make the context current
         glfwMakeContextCurrent(window);
-        LogToCSharp("Set current window as glfw context");
+        LogToCSharp("Set current window as GLFW context");
+
+        // Retrieve and log the OpenGL version
+        const GLubyte* version = glGetString(GL_VERSION);
+        if (version == NULL) {
+            closeWindow("Failed to retrieve OpenGL version");
+        }
+        LogToCSharp("OpenGL Version: " + std::string(reinterpret_cast<const char*>(version)));
+
+
+        // After logging the OpenGL version, verify it
+        std::string glVersionStr(reinterpret_cast<const char*>(version));
+        int major, minor;
+        sscanf(glVersionStr.c_str(), "%d.%d", &major, &minor);
+        if (major < 4 || (major == 4 && minor < 1)) {
+            closeWindow("Insufficient OpenGL version. Required: 4.1, Detected: " + glVersionStr);
+        }
+
         glfwSwapInterval(1);
         LogToCSharp("Set glfw swap interval");
 
-        engine = filament::Engine::create();
+        engine = filament::Engine::create(filament::Engine::Backend::OPENGL);
         if (engine == NULL)
             closeWindow("Engine not initialized");
         LogToCSharp("Created Filament engine instance");
@@ -113,6 +137,11 @@ void runWindow() {
         if (hwnd == NULL)
             closeWindow("Native window handle is empty");
         LogToCSharp("Obtained the native window handle.");
+
+        HDC hdc = GetDC(hwnd);
+        if (hdc == NULL)
+            closeWindow("Device context (HDC) is empty");
+        LogToCSharp("Obtained the device context (HDC).");
 
         swapChain = engine->createSwapChain((void*)hwnd);
         if (swapChain == NULL)
@@ -150,14 +179,26 @@ void runWindow() {
         LogToCSharp("Triangle created");
 
         LogToCSharp("Beginning main rendering loop");
+        CheckOpenGLErrors("Start of main rendering loop");
         while (!glfwWindowShouldClose(window)) {
-            if (renderer->beginFrame(swapChain)) {
+            LogToCSharp("Checking if next frame is ready");
+            bool frameStarted = renderer->beginFrame(swapChain);
+            if (frameStarted) {
+                CheckOpenGLErrors("Start of new frame");
                 LogToCSharp("Beginning new frame");
                 renderer->render(view);
+                CheckOpenGLErrors("After rendering the view");
                 LogToCSharp("Rendered view");
                 renderer->endFrame();
+                CheckOpenGLErrors("End of frame");
                 LogToCSharp("Frame ended");
             }
+            else {
+                LogToCSharp("Not able to begin next frame");
+            }
+            glfwPollEvents();
+            CheckOpenGLErrors("After event poll");
+            LogToCSharp("GLFW events polled");
         }
     }
     catch (const std::exception& e)
@@ -169,16 +210,33 @@ void runWindow() {
     }
 }
 
+void CheckOpenGLErrors(const std::string context) {
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR) {
+        closeWindow("OpenGL error in " + context + ": " + std::to_string(err));
+    }
+}
+
 void closeWindow(std::string reason) {
     LogToCSharp(reason);
     LogToCSharp("Closing renderer and freeing memory");
     filament::Engine::destroy(engine);
     LogToCSharp("Closed the engine");
     glfwDestroyWindow(window);
-    LogToCSharp("Destroyed the glfw window");
+    LogToCSharp("Destroyed the GLFW window");
+    // Release the Device Context (HDC)
+    HWND hwnd = glfwGetWin32Window(window);
+    if (hwnd) {
+        HDC hdc = GetDC(hwnd);
+        if (hdc) {
+            ReleaseDC(hwnd, hdc);
+            LogToCSharp("Released device context (HDC)");
+        }
+    }
     glfwTerminate();
-    LogToCSharp("Glfw terminated");
+    LogToCSharp("GLFW terminated");
 }
+
 
 
 extern "C" __declspec(dllexport) void startRenderingThread() {

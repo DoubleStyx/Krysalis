@@ -15,3 +15,5 @@ extern "C" __declspec(dllexport) void TestLogger(const char* msg);
 
 // Native declarations
 void LogToCSharp(const std::string& message);
+void closeWindow(std::string reason);
+void CheckOpenGLErrors(std::string context);
