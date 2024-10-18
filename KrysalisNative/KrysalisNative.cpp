@@ -9,5 +9,6 @@ int Add(int a, int b) {
 
 bool StartEngine() {
     filament::Engine* engine = filament::Engine::create();
+    engine->destroy(&engine);
     return true;
 }
