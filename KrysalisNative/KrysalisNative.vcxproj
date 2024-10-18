@@ -37,7 +37,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <!-- Explicitly set C++ version -->
     <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -46,7 +45,6 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <!-- Explicitly set C++ version -->
     <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -55,7 +53,6 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    <!-- Explicitly set C++ version -->
     <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -65,7 +62,6 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    <!-- Explicitly set C++ version -->
     <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -81,7 +77,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,7 +96,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,12 +110,12 @@
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard> <!-- You already have this -->
-      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard> 
+      <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;C:\Libraries\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\mdd;C:\Libraries\glfw-3.4\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
         glfw3.lib;
         opengl32.lib;
@@ -162,11 +158,11 @@
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions> <!-- Set C++ version -->
+      <AdditionalIncludeDirectories>C:\Libraries\filament-windows\include;C:\Libraries\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/std:c++20 /ignore:4099 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;C:\Libraries\GLFW\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Libraries\filament-windows\lib\x86_64\md;C:\Libraries\glfw-3.4\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>
         glfw3.lib;
         opengl32.lib;
@@ -212,7 +208,6 @@
     <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
   </PropertyGroup>
   <PropertyGroup Condition="'$(ResonitePath)'==''">
-    <!-- If you don't want to provide a ResonitePath in dotnet build, you can specify one here -->
     <ResonitePath>$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
     <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
     <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>

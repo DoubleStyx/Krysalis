@@ -17,12 +17,13 @@ public class KrysalisManaged : ResoniteMod
     {
         Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
         harmony.PatchAll();
-        Utils.InitializeLogging();  // Initialize logging callback
+        Utils.InitializeLogging();
         Utils.TestLogger("Initializing window...");
         Utils.startRenderingThread();
         Utils.TestLogger("Window initialized");
     }
 
+    // We don't need to patch to initialize the window, just to get data from the Unity runner
     /*
     [HarmonyPatch(typeof(Engine), "FinishInitialization")]
     class Engine_FinishInitialization_Patch

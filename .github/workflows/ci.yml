@@ -1,13 +1,12 @@
 name: Build DLLs
 
-# Trigger the workflow on push to main branch and on pull requests
 on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - main  # Trigger on pull requests targeting the main branch
+      - main
 
 jobs:
   build:
@@ -18,7 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Download Filament library
       - name: Download Filament Library
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
@@ -27,11 +25,10 @@ jobs:
 
       - name: Download glfw
         run: |
-          New-Item -ItemType Directory -Path "C:/Libraries/glfw/" -Force
-          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip" -OutFile "glfw.zip"
-          Expand-Archive -Path "glfw.zip" -DestinationPath "C:/Libraries/glfw/"
+          New-Item -ItemType Directory -Path "C:/Libraries/" -Force
+          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip" -OutFile "glfw-3.4.zip"
+          Expand-Archive -Path "glfw-3.4.zip" -DestinationPath "C:/Libraries/"
         
-      # Setup Visual Studio Build Tools
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
@@ -41,11 +38,9 @@ jobs:
       - name: Install dependencies
         run: nuget restore Krysalis.sln
 
-      # Build the solution
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"
       
-      # Upload DLLs as build artifacts
       - name: Upload DLLs as build artifacts
         uses: actions/upload-artifact@v3
         with:
