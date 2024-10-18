@@ -44,7 +44,8 @@ jobs:
         shell: powershell
         run: |
           New-Item -Path "C:/VulkanSDK" -ItemType Directory -Force
-          Move-Item -Path "$env:VULKAN_SDK" -Destination "C:/VulkanSDK" -Force
+          Move-Item -Path "$env:VULKAN_SDK/*" -Destination "C:/VulkanSDK/" -Force
+          Remove-Item -Path "$env:VULKAN_SDK/" -Recurse -Force
           $env:VULKAN_SDK="C:/VulkanSDK"
           ls C:/VulkanSDK
           
