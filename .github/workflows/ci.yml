@@ -23,14 +23,20 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament.tgz"
           tar -xzf filament.tgz -C C:/Libraries/filament-windows/
 
-      - name: Download glfw
+      - name: Download GLFW
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
           Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip" -OutFile "glfw-3.4.zip"
           Expand-Archive -Path "glfw-3.4.zip" -DestinationPath "C:/Libraries/glfw-3.4/"
+          # Move contents from the subfolder up one level
           Move-Item -Path "C:/Libraries/glfw-3.4/glfw-3.4/*" -Destination "C:/Libraries/glfw-3.4/" -Force
           Remove-Item -Path "C:/Libraries/glfw-3.4/glfw-3.4" -Recurse -Force
-        
+
+      - name: Install Vulkan SDK
+        run: |
+          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/1.3.250.0/windows/VulkanSDK-1.3.290.0-Installer.exe" -OutFile "VulkanSDKInstaller.exe"
+          Start-Process -FilePath "VulkanSDKInstaller.exe" -ArgumentList "/S /D=C:\VulkanSDK" -NoNewWindow -Wait
+
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
