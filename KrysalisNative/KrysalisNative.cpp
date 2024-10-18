@@ -1,4 +1,5 @@
 // KrysalisNative.cpp
+#define GLFW_EXPOSE_NATIVE_WIN32
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -7,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <GLFW/glfw3.h>
+#include <GLFW/glfw3native.h>
 #include <filament/Engine.h>
 #include <filament/Scene.h>
 #include <filament/Renderer.h>
@@ -43,94 +45,57 @@ void createTriangle(filament::Engine* engine) {
         .bufferCount(1)
         .attribute(filament::VertexAttribute::POSITION, 0, filament::VertexBuffer::AttributeType::FLOAT3)
         .build(*engine);
+    if (vb == nullptr)
+        closeWindow("Vertex buffer failed to initialize");
     LogToCSharp("Vertex buffer created");
 
     vb->setBufferAt(*engine, 0, filament::VertexBuffer::BufferDescriptor(vertices, sizeof(vertices)));
     LogToCSharp("Vertex buffer assigned");
 
     static const uint16_t indices[3] = { 0, 1, 2 };
+    if (indices == NULL)
+        closeWindow("Indices not defined properly");
 
     filament::IndexBuffer* ib = filament::IndexBuffer::Builder()
         .indexCount(3)
         .bufferType(filament::IndexBuffer::IndexType::USHORT)
         .build(*engine);
+    if (ib == nullptr)
+        closeWindow("Index buffer failed to initialize");
     LogToCSharp("Index buffer created");
 
     ib->setBuffer(*engine, filament::IndexBuffer::BufferDescriptor(indices, sizeof(indices)));
     LogToCSharp("Index buffer assigned");
 
-    char path[MAX_PATH];
+    filament::MaterialInstance* materialInstance = engine->getDefaultMaterial()->createInstance();
+    if (materialInstance == nullptr)
+        closeWindow("Material instance not initialized");
+    LogToCSharp("Material instantiated");
 
-    HMODULE hModule = nullptr;
-    GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-        (LPCSTR)&LogToCSharp, &hModule);
-    LogToCSharp("Module handle acquired");
+    utils::Entity triangleEntity = utils::EntityManager::get().create();
+    if (triangleEntity.isNull())
+        closeWindow("Triangle entity not initialized");
+    LogToCSharp("Triangle entity created");
 
-    GetModuleFileNameA(hModule, path, MAX_PATH);
+    filament::RenderableManager::Builder(1)
+        .boundingBox({ {0, 0, 0}, {1, 1, 1} })
+        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
+        .material(0, materialInstance)
+        .build(*engine, triangleEntity);
+    LogToCSharp("Added renderable to triangle entity");
 
-    LogToCSharp("Module file name acquired");
-
-    std::string dllDir = std::string(path);
-    LogToCSharp("Path found: " + dllDir);
-
-    std::string execDir = dllDir.substr(0, dllDir.find_last_of("\\/"));
-    std::string materialPath = execDir + "\\assets\\materials\\sandboxUnlit.filamat";
-    LogToCSharp("Material path: " + materialPath);
-
-    std::ifstream matFile(materialPath, std::ios::binary | std::ios::ate);
-    LogToCSharp("Started input stream for mat file");
-    std::streamsize size = matFile.tellg();
-    matFile.seekg(0, std::ios::beg);
-
-    std::vector<char> buffer(size);
-    if (matFile.read(buffer.data(), size)) {
-        LogToCSharp("Read material file");
-        filament::Material* material = filament::Material::Builder()
-            .package(buffer.data(), buffer.size())
-            .build(*engine);
-
-        LogToCSharp("Material created");
-
-        filament::MaterialInstance* materialInstance = material->createInstance();
-        LogToCSharp("Material instantiated");
-
-        // Set the base color and emissive properties on the material instance
-        filament::math::float3 baseColor = { 1.0f, 0.0f, 0.0f }; // Red color
-        filament::math::float4 emissive = { 0.0f, 0.0f, 0.0f, 1.0f }; // No emissive
-
-        materialInstance->setParameter("baseColor", baseColor);
-        materialInstance->setParameter("emissive", emissive);
-        LogToCSharp("Material parameters set");
-
-        utils::Entity triangleEntity = utils::EntityManager::get().create();
-        LogToCSharp("Triangle entity created");
-
-        filament::RenderableManager::Builder(1)
-            .boundingBox({ {0, 0, 0}, {1, 1, 1} })
-            .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
-            .material(0, materialInstance)
-            .build(*engine, triangleEntity);
-
-        scene->addEntity(triangleEntity);
-        LogToCSharp("Triangle entity added to scene");
-    }
+    scene->addEntity(triangleEntity);
+    LogToCSharp("Triangle entity added to scene");
 }
 
 void runWindow() {
-    try
-    {
-        if (!glfwInit()) {
-            LogToCSharp("Failed to initialize GLFW.");
-            return;
-        }
+    try {
+        glfwInit();
         LogToCSharp("GLFW initialized");
 
-        window = glfwCreateWindow(800, 600, "My Filament Window", nullptr, nullptr);
-        if (!window) {
-            LogToCSharp("Failed to create window.");
-            glfwTerminate();
-            return;
-        }
+        window = glfwCreateWindow(800, 600, "Krysalis", nullptr, nullptr);
+        if (window == nullptr)
+            closeWindow("Window not initialized");
         LogToCSharp("Window created");
 
         glfwMakeContextCurrent(window);
@@ -139,28 +104,43 @@ void runWindow() {
         LogToCSharp("Set glfw swap interval");
 
         engine = filament::Engine::create();
-        if (!engine) {
-            LogToCSharp("Failed to create Filament engine.");
-            glfwDestroyWindow(window);
-            glfwTerminate();
-            return;
-        }
-        LogToCSharp("Created filament engine instance");
+        if (engine == NULL)
+            closeWindow("Engine not initialized");
+        LogToCSharp("Created Filament engine instance");
 
-        swapChain = engine->createSwapChain(nullptr);
-        LogToCSharp("Swap chain created");
+        // Create swap chain with native window handle
+        HWND hwnd = glfwGetWin32Window(window);
+        if (hwnd == NULL)
+            closeWindow("Native window handle is empty");
+        LogToCSharp("Obtained the native window handle.");
+
+        swapChain = engine->createSwapChain((void*)hwnd);
+        if (swapChain == NULL)
+            closeWindow("Swap chain not initialized");
+        LogToCSharp("Swap chain created with native window handle");
 
         renderer = engine->createRenderer();
+        if (renderer == NULL)
+            closeWindow("Renderer not initialized");
         LogToCSharp("Renderer created");
 
         scene = engine->createScene();
+        if (scene == NULL)
+            closeWindow("Scene not initialized");
+        LogToCSharp("Scene created");
         view = engine->createView();
-        LogToCSharp("Scene and view created");
+        if (view == NULL)
+            closeWindow("View not initialized");
+        LogToCSharp("View created");
 
         camera = engine->createCamera(utils::EntityManager::get().create());
+        if (camera == NULL)
+            closeWindow("Camera not initialized");
+        LogToCSharp("Camera created");
         view->setCamera(camera);
+        LogToCSharp("Camera assigned to view");
         view->setScene(scene);
-        LogToCSharp("Camera initialized");
+        LogToCSharp("Scene assigned to view");
 
         filament::Viewport viewport(0, 0, 800, 600);
         view->setViewport(viewport);
@@ -169,31 +149,35 @@ void runWindow() {
         createTriangle(engine);
         LogToCSharp("Triangle created");
 
+        LogToCSharp("Beginning main rendering loop");
         while (!glfwWindowShouldClose(window)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
             if (renderer->beginFrame(swapChain)) {
+                LogToCSharp("Beginning new frame");
                 renderer->render(view);
+                LogToCSharp("Rendered view");
                 renderer->endFrame();
+                LogToCSharp("Frame ended");
             }
-
-            glfwSwapBuffers(window);
-            glfwPollEvents();
         }
-
-        LogToCSharp("Closing renderer and freeing memory");
-        filament::Engine::destroy(engine);
-        glfwDestroyWindow(window);
-        glfwTerminate();
-        LogToCSharp("Renderer closed");
     }
     catch (const std::exception& e)
     {
-        LogToCSharp("Error in rendering thread: " + std::string(e.what()));
+        closeWindow("Error in rendering thread: " + std::string(e.what()));
     }
     catch (...) {
-        LogToCSharp("Error in rendering thread: Caught unknown exception");
+        closeWindow("Error in rendering thread: Caught unknown exception");
     }
+}
+
+void closeWindow(std::string reason) {
+    LogToCSharp(reason);
+    LogToCSharp("Closing renderer and freeing memory");
+    filament::Engine::destroy(engine);
+    LogToCSharp("Closed the engine");
+    glfwDestroyWindow(window);
+    LogToCSharp("Destroyed the glfw window");
+    glfwTerminate();
+    LogToCSharp("Glfw terminated");
 }
 
 
