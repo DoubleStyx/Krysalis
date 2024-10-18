@@ -22,7 +22,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament.tgz"
-          tar -xzf filament.tgz -C C:/Libraries/
+          tar -xzf filament.tgz -C C:/Libraries/filament-windows/
         
       # Setup Visual Studio Build Tools
       - name: Set up MSBuild
