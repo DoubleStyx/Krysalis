@@ -9,26 +9,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KrysalisNative", "KrysalisN
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Debug|x64.Build.0 = Debug|Any CPU
-		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Release|x64.ActiveCfg = Release|Any CPU
 		{659110F4-88CB-4FF4-A510-08BB64DB6ACD}.Release|x64.Build.0 = Release|Any CPU
-		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Debug|Any CPU.Build.0 = Debug|x64
 		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Debug|x64.ActiveCfg = Debug|x64
 		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Debug|x64.Build.0 = Debug|x64
-		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Release|Any CPU.ActiveCfg = Release|x64
-		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Release|Any CPU.Build.0 = Release|x64
 		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Release|x64.ActiveCfg = Release|x64
 		{764E4E20-0FEB-4846-8841-6DDF2C70DAC8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
