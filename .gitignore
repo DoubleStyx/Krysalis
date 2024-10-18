@@ -436,5 +436,6 @@ FodyWeavers.xsd
 # Build directory
 build/
 
-# External libs
-!external/*.dll
+# External libs and assets
+!external/**
+!assets/**

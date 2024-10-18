@@ -18,9 +18,9 @@ public class KrysalisManaged : ResoniteMod
         Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
         harmony.PatchAll();
         Utils.InitializeLogging();
-        Utils.TestLogger("Initializing window...");
+        Msg("Managed: Initializing render thread...");
         Utils.startRenderingThread();
-        Utils.TestLogger("Window initialized");
+        Msg("Managed: Render thread initialized");
     }
 
     // We don't need to patch to initialize the window, just to get data from the Unity runner
