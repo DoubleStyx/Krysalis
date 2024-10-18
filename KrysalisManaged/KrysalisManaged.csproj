@@ -21,21 +21,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <NativeReference Include="KrysalisNative.dll">
-      <HintPath>$(ResonitePath)rml_libs\KrysalisNative.dll</HintPath>
-      <Private>False</Private>
-    </NativeReference>
     <Reference Include="ResoniteModLoader">
-      <HintPath>$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
+      <HintPath>$(SolutionDir)external\ResoniteModLoader.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HarmonyLib">
-      <HintPath>$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
+      <HintPath>$(SolutionDir)external\0Harmony.dll</HintPath>
       <HintPath Condition="Exists('$(ResonitePath)0Harmony.dll')">$(ResonitePath)0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="FrooxEngine">
-      <HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+      <HintPath>$(SolutionDir)external\FrooxEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
