@@ -1,13 +1,13 @@
-name: Build and Release DLLs
+name: Build DLLs
 
-# Trigger the workflow on push to main branch
+# Trigger the workflow on push to main branch and on pull requests
 on:
   push:
     branches:
       - main
-
-permissions:
-  contents: write  # Ensure the action has the ability to write to the repository
+  pull_request:
+    branches:
+      - main  # Trigger on pull requests targeting the main branch
 
 jobs:
   build:
@@ -47,45 +47,3 @@ jobs:
           path: |
             **/x64/Release/KrysalisNative.dll
             **/x64/Release/KrysalisManaged.dll
-
-  release:
-    name: Create GitHub Release and Upload DLLs
-    needs: build  # Ensure that the build step is successful before proceeding
-    if: github.ref == 'refs/heads/main'  # Run this only if it's on the main branch
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: built-dlls
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v1.0.0  # You can customize the versioning/tagging logic here
-          name: "Release v1.0.0"
-          body: "Automated release of built DLLs"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Upload KrysalisNative.dll
-      - name: Upload KrysalisNative.dll to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./x64/Release/KrysalisNative.dll
-          asset_name: KrysalisNative.dll
-          asset_content_type: application/octet-stream
-
-      # Upload KrysalisManaged.dll
-      - name: Upload KrysalisManaged.dll to Release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./KrysalisManaged/bin/Release/net472/KrysalisManaged.dll
-          asset_name: KrysalisManaged.dll
-          asset_content_type: application/octet-stream
