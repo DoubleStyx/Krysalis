@@ -1,5 +1,4 @@
 // KrysalisManaged.cs
-using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
 

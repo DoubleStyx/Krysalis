@@ -90,16 +90,15 @@ void createTriangle(filament::Engine* engine)
 void runWindow()
 {
 	_putenv("VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation");
+	_putenv("VK_LAYER_PATH=C:\\VulkanSDK\\1.3.290.0\\Bin");
 	try
 	{
 		glfwInit();
 		LogToCSharp("GLFW initialized");
 
-		// Set the desired OpenGL version and profile
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		// Optional: Make the window not resizable
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		window = glfwCreateWindow(800, 600, "Krysalis", nullptr, nullptr);
@@ -107,11 +106,9 @@ void runWindow()
 			closeWindow("Window not initialized");
 		LogToCSharp("Window created");
 
-		// Make the context current
 		glfwMakeContextCurrent(window);
 		LogToCSharp("Set current window as GLFW context");
 
-		// Retrieve and log the OpenGL version
 		const GLubyte* version = glGetString(GL_VERSION);
 		if (version == NULL)
 		{
@@ -119,7 +116,6 @@ void runWindow()
 		}
 		LogToCSharp("OpenGL Version: " + std::string(reinterpret_cast<const char*>(version)));
 
-		// After logging the OpenGL version, verify it
 		std::string glVersionStr(reinterpret_cast<const char*>(version));
 		int major, minor;
 		sscanf(glVersionStr.c_str(), "%d.%d", &major, &minor);
@@ -136,7 +132,6 @@ void runWindow()
 			closeWindow("Engine not initialized");
 		LogToCSharp("Created Filament engine instance");
 
-		// Create swap chain with native window handle
 		HWND hwnd = glfwGetWin32Window(window);
 		if (hwnd == NULL)
 			closeWindow("Native window handle is empty");
@@ -235,7 +230,6 @@ void closeWindow(std::string reason)
 	LogToCSharp("Closed the engine");
 	glfwDestroyWindow(window);
 	LogToCSharp("Destroyed the GLFW window");
-	// Release the Device Context (HDC)
 	HWND hwnd = glfwGetWin32Window(window);
 	if (hwnd)
 	{
