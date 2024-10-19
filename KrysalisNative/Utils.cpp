@@ -9,6 +9,8 @@
 #include <stb_image.h>
 #include <iostream>
 #include <string>
+#include <mutex>
+#include "KrysalisNative.h"
 
 std::vector<uint8_t> loadFile(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary);
@@ -46,4 +48,35 @@ filament::Texture* loadTexture(filament::Engine* engine, const std::string& file
     texture->setImage(*engine, 0, std::move(buffer));
 
     return texture;
+}
+
+
+extern "C" __declspec(dllexport) void startRenderingThread()
+{
+    std::thread renderThread(runWindow);
+    renderThread.detach();
+}
+
+typedef void (*LogCallback)(const char* message);
+
+LogCallback logCallback = nullptr;
+
+extern "C" __declspec(dllexport) void RegisterLogCallback(LogCallback callback)
+{
+    std::lock_guard<std::mutex> lock(logMutex);
+    logCallback = callback;
+}
+
+void LogToCSharp(const std::string& message)
+{
+    std::lock_guard<std::mutex> lock(logMutex);
+    if (logCallback)
+    {
+        logCallback(message.c_str());
+    }
+}
+
+extern "C" __declspec(dllexport) void TestLogger(const char* msg)
+{
+    LogToCSharp(msg);
 }

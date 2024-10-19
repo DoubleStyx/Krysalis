@@ -27,3 +27,5 @@ internal class Utils
         RegisterLogCallback(LogMessage);
     }
 }
+
+

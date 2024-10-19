@@ -36,7 +36,6 @@
 #include <filamat/Package.h>
 #include <utils/EntityManager.h>
 #include <utils/Path.h>
-
 #include <Windows.h>
 #include <chrono>
 #include <thread>
@@ -367,37 +366,6 @@ void runWindow() {
     }
 }
 
-
-extern "C" __declspec(dllexport) void startRenderingThread()
-{
-    std::thread renderThread(runWindow);
-    renderThread.detach();
-}
-
-typedef void (*LogCallback)(const char* message);
-
-LogCallback logCallback = nullptr;
-
-extern "C" __declspec(dllexport) void RegisterLogCallback(LogCallback callback)
-{
-    std::lock_guard<std::mutex> lock(logMutex);
-    logCallback = callback;
-}
-
-void LogToCSharp(const std::string& message)
-{
-    std::lock_guard<std::mutex> lock(logMutex);
-    if (logCallback)
-    {
-        logCallback(message.c_str());
-    }
-}
-
-extern "C" __declspec(dllexport) void TestLogger(const char* msg)
-{
-    LogToCSharp(msg);
-}
-
 void closeWindow(GLFWwindow* window, std::string reason)
 {
     LogToCSharp(reason);
@@ -432,4 +400,3 @@ void closeWindow(GLFWwindow* window, std::string reason)
     glfwTerminate();
     LogToCSharp("GLFW terminated");
 }
-

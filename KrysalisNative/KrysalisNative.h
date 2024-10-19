@@ -1,13 +1,15 @@
 // KrysalisNative.h
 #pragma once
-// Type definitions
-typedef void (*LogCallback)(const char* message);
+#include <GLFW/glfw3.h>
 
-// Interop declarations
-extern "C" __declspec(dllexport) void startRenderingThread();
-extern "C" __declspec(dllexport) void RegisterLogCallback(LogCallback callback);
-extern "C" __declspec(dllexport) void TestLogger(const char* msg);
+std::mutex logMutex;
 
-// Native declarations
-void LogToCSharp(const std::string& message);
 void closeWindow(GLFWwindow* window, std::string reason);
+void runWindow();
+void display();
+void init(GLFWwindow* window);
+void addLight(filament::Engine* engine, filament::Scene* scene);
+void key_press(GLFWwindow* window, int key, int scancode, int action, int mods);
+void reshape_framebuffer(GLFWwindow* window, int w, int h);
+void reshape_window(GLFWwindow* window, int w, int h);
+void* getNativeWindow(GLFWwindow* window);
