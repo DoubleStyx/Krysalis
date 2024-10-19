@@ -23,3 +23,4 @@ void LogToCSharp(const std::string& message);
 std::wstring getDllDirectory();
 std::wstring getFullPath(const std::wstring& relativePath);
 std::string wstringToString(const std::wstring& wstr);
+filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring& envMapPath);

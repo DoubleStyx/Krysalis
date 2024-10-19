@@ -12,6 +12,8 @@
 #include <mutex>
 #include <Windows.h>
 #include <Shlwapi.h>
+#include <ktxreader/Ktx2Reader.h>
+#include <filament/IndirectLight.h>
 #include "KrysalisNative.h"
 #include "Utils.h"
 
@@ -106,4 +108,49 @@ std::wstring getDllDirectory() {
     }
 
     return std::wstring();
+}
+
+filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring& envMapPath) {
+    // Convert the wide string path to narrow string (since filament works with narrow strings)
+    std::string envMapFilePath = wstringToString(getFullPath(envMapPath));
+
+    // Use the Ktx2Reader to load the environment map
+    filament::Texture* environmentMap = nullptr;
+    filament::IndirectLight* ibl = nullptr;
+
+    try {
+        // Load the environment map file using KTX reader
+        ktxreader::Ktx2Reader reader(*engine);
+
+        // Request the desired format; use this if your environment map is in sRGB or any other format
+        reader.requestFormat(filament::Texture::InternalFormat::R11F_G11F_B10F);
+
+        // Load the file into memory and get its size
+        std::vector<uint8_t> fileData = loadFile(envMapPath);
+        size_t fileSize = fileData.size();
+
+        if (fileSize == 0) {
+            throw std::runtime_error("Environment map file is empty: " + envMapFilePath);
+        }
+
+        // Load the environment map from memory using the file data and its size
+        environmentMap = reader.load(reinterpret_cast<const uint8_t*>(fileData.data()), fileSize, ktxreader::Ktx2Reader::TransferFunction::LINEAR);
+
+        if (environmentMap == nullptr) {
+            throw std::runtime_error("Failed to load environment map: " + envMapFilePath);
+        }
+
+        // Build the IndirectLight object using the environment map
+        ibl = filament::IndirectLight::Builder()
+            .reflections(environmentMap) // Use the environment map for reflections
+            .intensity(30000.0f)         // Adjust as needed
+            .build(*engine);
+
+    }
+    catch (const std::exception& e) {
+        LogToCSharp(std::string("Failed to create IBL: ") + e.what());
+        return nullptr;
+    }
+
+    return ibl;
 }

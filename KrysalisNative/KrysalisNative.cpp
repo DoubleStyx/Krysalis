@@ -27,6 +27,7 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/Viewport.h>
+#include <filament/IndirectLight.h>
 #include <filameshio/MeshReader.h>
 #include <fstream>
 #include <vector>
@@ -130,12 +131,11 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
     }
     LogToCSharp("Light entity created");
 
-    LightManager::Builder(LightManager::Type::DIRECTIONAL)
+    LightManager::Builder(LightManager::Type::POINT)
         .color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
-        .intensity(100)
-        .direction({ 0.7, -1, -0.8 })
-        .sunAngularRadius(1.9f)
-        .castShadows(false)
+        .intensity(100.0f)
+        .position({ 0.0f, 0.0f, 3.0f })
+        .falloff(100.0f)
         .build(*engine, lightEntity);
     LogToCSharp("Built light entity");
 
@@ -221,14 +221,15 @@ void init(GLFWwindow* window) {
         });
     LogToCSharp("Set clear options");
 
-    view->setPostProcessingEnabled(false);
-    LogToCSharp("Set post processing enabled");
+    view->setPostProcessingEnabled(true);
+    LogToCSharp("Set post processing flag");
 
     std::vector<uint8_t> materialData = loadFile(L"assets\\materials\\texturedLit.filamat");
 	if (materialData.empty())
 		closeWindow(nullptr, "Material data not loaded");
     LogToCSharp("Loader material data of size " + std::to_string(materialData.size()));
 
+    
     filament::Material* material = filament::Material::Builder()
         .package(materialData.data(), materialData.size())
         .build(*engine);
@@ -286,12 +287,10 @@ void init(GLFWwindow* window) {
 	LogToCSharp("Set AO texture");
 
     filamesh::MeshReader::MaterialRegistry registry;
-	registry.registerMaterialInstance("defaultMaterial", materialInstance);
+	registry.registerMaterialInstance("texturedLit", materialInstance);
 	LogToCSharp("Registered material instance");
 
-  
-
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"assets/meshes/monkey.filamesh"))), registry);
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"assets\\meshes\\monkey.filamesh"))), registry);
 	if (mesh.renderable.isNull())
 		closeWindow(nullptr, "Mesh not loaded");
 	LogToCSharp("Loaded mesh");
@@ -307,6 +306,22 @@ void init(GLFWwindow* window) {
 
     view->setScene(scene);
     LogToCSharp("Set scene to view");
+
+    filament::IndirectLight* ibl = createIBL(engine, L"assets\\skyboxes\\lightroom_14b_ibl.ktx");
+    if (ibl == nullptr)
+        closeWindow(nullptr, "Failed to set up IBL");
+    LogToCSharp("Successfully set up IBL");
+
+    /*
+    ibl->setIntensity(30000.0f);
+	LogToCSharp("Set IBL intensity");
+
+    ibl->setRotation(filament::math::mat3f::rotation(0.5f, filament::math::float3{ 0, 1, 0 }));
+	LogToCSharp("Set IBL rotation");
+
+    scene->setIndirectLight(ibl);
+	LogToCSharp("Set indirect light to scene");
+    */
 
     _engine = engine;
     _swapchain = swapChain;
@@ -373,8 +388,9 @@ void runWindow() {
         LogToCSharp("Initialized the renderer");
 
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
-		LogToCSharp("Getting last frame time");
+		LogToCSharp("Saved last frame time");
 
+		LogToCSharp("Renderer and window initialized successfully! Beginning main rendering and interaction loop.");
         while (!glfwWindowShouldClose(window)) {
             auto currentTime = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> elapsed = currentTime - lastFrameTime;
