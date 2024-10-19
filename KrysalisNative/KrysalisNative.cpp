@@ -24,6 +24,12 @@
 #include <filameshio/MeshReader.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
+#include <fstream>
+#include <vector>
+#include <filamat/Enums.h>
+#include <filamat/IncludeCallback.h>
+#include <filamat/MaterialBuilder.h>
+#include <filamat/Package.h>
 #include <utils/EntityManager.h>
 #include <utils/Path.h>
 #include <filament/Viewport.h>
@@ -31,6 +37,7 @@
 #include <chrono>
 #include <thread>
 #include "KrysalisNative.h"
+#include "Utils.h"
 
 constexpr double TARGET_FPS = 60.0;
 constexpr double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
@@ -64,41 +71,6 @@ int g_frame_size_x = g_window_size_x;
 int g_frame_size_y = g_window_size_y;
 
 float rotationAngle = 0.0f;
-
-std::vector<char> readFileContents(const std::string& filePath) {
-    std::ifstream fileStream(filePath, std::ios::binary);
-    if (!fileStream) {
-        throw std::runtime_error("Failed to open file: " + filePath);
-    }
-
-    std::vector<char> buffer((std::istreambuf_iterator<char>(fileStream)),
-        std::istreambuf_iterator<char>());
-    return buffer;
-}
-
-void loadMeshFromFile(filament::Engine* engine, const std::string& filePath, const filament::MaterialInstance* materialInstance) {
-    std::vector<char> buffer = readFileContents(filePath);
-
-    if (buffer.empty()) {
-        LogToCSharp("Mesh file is empty or failed to read.");
-        return;
-    }
-	
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, filePath.c_str(), materialInstance);
-
-    if (!mesh.renderable) {
-        LogToCSharp("Failed to load mesh from file: " + filePath);
-        return;
-    }
-
-    LogToCSharp("Mesh loaded successfully from file: " + filePath);
-
-    // Add the renderable to the scene
-    _scene->addEntity(mesh.renderable);
-
-    // Store the renderable entity for later use (e.g., transformations)
-    _entity = mesh.renderable;
-}
 
 void* getNativeWindow(GLFWwindow* window) {
     LogToCSharp("Getting native window");
@@ -239,8 +211,13 @@ void init(GLFWwindow* window) {
     view->setPostProcessingEnabled(false);
     LogToCSharp("Set post processing enabled");
 
+    std::vector<uint8_t> materialData = loadFile("assets/materials/TexturedLit.filamat");
+	if (materialData.empty())
+		closeWindow(nullptr, "Material data not loaded");
+	LogToCSharp("Loaded material data");
+
     filament::Material* material = filament::Material::Builder()
-        .package(MATERIAL_PACKAGE_DATA, MATERIAL_PACKAGE_SIZE)
+        .package(materialData.data(), materialData.size())
         .build(*engine);
     if (material == nullptr)
         closeWindow(nullptr, "Material not created");
@@ -258,6 +235,7 @@ void init(GLFWwindow* window) {
     materialInstance->setParameter("albedo", albedoTexture, textureSampler);
     LogToCSharp("Set albedo texture");
 
+    filamat::
 	filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", materialInstance);
 
     scene->addEntity(mesh.renderable);
@@ -278,13 +256,13 @@ void init(GLFWwindow* window) {
     _renderer = renderer;
     _camera = camera;
     _view = view;
-    _entity = renderable;
+    _entity = mesh.renderable;
     _scene = scene;
 
     TransformManager& tcm = _engine->getTransformManager();
     LogToCSharp("Got transform manager");
 
-    tcm.setTransform(tcm.getInstance(renderable),
+    tcm.setTransform(tcm.getInstance(_entity),
         math::mat4f::rotation(M_PI_4, math::float3{ 0, 0, 1 }));
     LogToCSharp("Set transform");
 }

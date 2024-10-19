@@ -1,5 +1,5 @@
 // KrysalisNative.h
-
+#pragma once
 // Type definitions
 typedef void (*LogCallback)(const char* message);
 
