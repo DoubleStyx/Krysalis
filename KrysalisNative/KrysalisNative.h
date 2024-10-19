@@ -1,11 +1,40 @@
 // KrysalisNative.h
 #pragma once
+#include <math/vec2.h>
+#include <math/compiler.h>
+#include <GLFW/glfw3.h>
 #include "KrysalisNative.h"
 #include "Utils.h"
-#include <GLFW/glfw3.h>
 
-extern std::mutex logMutex;
-extern std::wstring _dllDirectory;
+using namespace filament;
+using namespace math;
+
+extern double TARGET_FPS;
+extern double TARGET_FRAME_DURATION;
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef M_PI_4
+#define M_PI_4 0.78539816339744830962
+#endif
+
+extern struct Vertex;
+
+extern filament::Engine* _engine;
+extern filament::SwapChain* _swapchain;
+extern filament::Renderer* _renderer;
+extern filament::Camera* _camera;
+extern filament::View* _view;
+extern filament::Scene* _scene;
+extern utils::Entity _entity;
+
+extern int g_window_size_x;
+extern int g_window_size_y;
+extern int g_frame_size_x;
+extern int g_frame_size_y;
+
+extern float rotationAngle;
 
 void closeWindow(GLFWwindow* window, std::string reason);
 void runWindow();

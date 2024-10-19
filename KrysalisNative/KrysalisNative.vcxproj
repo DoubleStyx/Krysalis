@@ -90,8 +90,8 @@
 		<ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
 	</PropertyGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
-		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods" ContinueOnError="true" />
+		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods\Krysalis" Importance="high" />
+		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis" ContinueOnError="true" />
 	</Target>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

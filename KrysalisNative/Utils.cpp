@@ -8,14 +8,26 @@
 #include <vector>
 #include <stb_image.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <mutex>
 #include <Windows.h>
 #include <Shlwapi.h>
 #include <ktxreader/Ktx2Reader.h>
 #include <filament/IndirectLight.h>
+#include <locale>
+#include <iomanip>
+#include <codecvt>
 #include "KrysalisNative.h"
 #include "Utils.h"
+
+using namespace filament;
+using namespace math;
+
+std::mutex logMutex;
+std::ofstream logFile;
+std::wstring _dllDirectory;
+LogCallback logCallback = nullptr;
 
 std::wstring getFullPath(const std::wstring& relativePath) {
 	if (_dllDirectory.empty()) {
@@ -26,6 +38,10 @@ std::wstring getFullPath(const std::wstring& relativePath) {
 
 std::string wstringToString(const std::wstring& wstr) {
     return std::string(wstr.begin(), wstr.end());
+}
+
+std::wstring stringToWstring(const std::string& str) {
+    return std::wstring(str.begin(), str.end());
 }
 
 std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
@@ -60,8 +76,7 @@ filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& rel
     texture->setImage(*engine, 0, std::move(buffer));
 
     return texture;
-}
-
+} 
 
 extern "C" __declspec(dllexport) void startRenderingThread()
 {
@@ -69,28 +84,43 @@ extern "C" __declspec(dllexport) void startRenderingThread()
     renderThread.detach();
 }
 
-typedef void (*LogCallback)(const char* message);
-
-LogCallback logCallback = nullptr;
-
-extern "C" __declspec(dllexport) void RegisterLogCallback(LogCallback callback)
+extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback)
 {
-    std::lock_guard<std::mutex> lock(logMutex);
     logCallback = callback;
 }
 
-void LogToCSharp(const std::string& message)
+void ManagedLog(const std::string& message)
 {
-    std::lock_guard<std::mutex> lock(logMutex);
     if (logCallback)
     {
         logCallback(message.c_str());
     }
 }
 
+void NativeLog(const std::string& message) {
+    std::lock_guard<std::mutex> guard(logMutex);
+
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::string timestamp = std::ctime(&now_time);
+    timestamp.pop_back();
+
+    if (logFile.is_open()) {
+        logFile << "[" << timestamp << "] " << message << std::endl;
+    }
+    else {
+        std::cerr << "Log file is not open, cannot write log" << std::endl;
+    }
+}
+
+void GlobalLog(const std::string& message) {
+	NativeLog(message);
+	ManagedLog(message);
+}
+
 extern "C" __declspec(dllexport) void TestLogger(const char* msg)
 {
-    LogToCSharp(msg);
+    ManagedLog(msg);
 }
 
 std::wstring getDllDirectory() {
@@ -111,21 +141,16 @@ std::wstring getDllDirectory() {
 }
 
 filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring& envMapPath) {
-    // Convert the wide string path to narrow string (since filament works with narrow strings)
     std::string envMapFilePath = wstringToString(getFullPath(envMapPath));
 
-    // Use the Ktx2Reader to load the environment map
     filament::Texture* environmentMap = nullptr;
     filament::IndirectLight* ibl = nullptr;
 
     try {
-        // Load the environment map file using KTX reader
         ktxreader::Ktx2Reader reader(*engine);
 
-        // Request the desired format; use this if your environment map is in sRGB or any other format
-        reader.requestFormat(filament::Texture::InternalFormat::R11F_G11F_B10F);
+        reader.requestFormat(filament::Texture::InternalFormat::RGBA8);
 
-        // Load the file into memory and get its size
         std::vector<uint8_t> fileData = loadFile(envMapPath);
         size_t fileSize = fileData.size();
 
@@ -133,24 +158,48 @@ filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring&
             throw std::runtime_error("Environment map file is empty: " + envMapFilePath);
         }
 
-        // Load the environment map from memory using the file data and its size
         environmentMap = reader.load(reinterpret_cast<const uint8_t*>(fileData.data()), fileSize, ktxreader::Ktx2Reader::TransferFunction::LINEAR);
 
         if (environmentMap == nullptr) {
             throw std::runtime_error("Failed to load environment map: " + envMapFilePath);
         }
 
-        // Build the IndirectLight object using the environment map
         ibl = filament::IndirectLight::Builder()
-            .reflections(environmentMap) // Use the environment map for reflections
-            .intensity(30000.0f)         // Adjust as needed
+            .reflections(environmentMap)
+            .intensity(30000.0f)
             .build(*engine);
 
     }
     catch (const std::exception& e) {
-        LogToCSharp(std::string("Failed to create IBL: ") + e.what());
+        GlobalLog(std::string("Failed to create IBL: ") + e.what());
         return nullptr;
     }
 
     return ibl;
+}
+
+void openLogFile() {
+    auto currentTime = std::chrono::system_clock::now();
+
+    std::time_t now_time = std::chrono::system_clock::to_time_t(currentTime);
+    std::string timestamp = getFormattedTimestamp(now_time);
+
+    std::wstring relativePath = stringToWstring("logs\\" + timestamp + ".log");
+    logFile.open(getFullPath(relativePath), std::ios::out | std::ios::app);
+}
+
+void closeLogFile() {
+    if (logFile.is_open()) {
+        logFile.close();
+    }
+}
+
+std::string getFormattedTimestamp(std::time_t time) {
+    std::tm localTime;
+    localtime_s(&localTime, &time);
+
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%Y-%m-%d_%H-%M-%S");
+
+    return oss.str();
 }

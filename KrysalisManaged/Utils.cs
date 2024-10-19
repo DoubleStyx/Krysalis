@@ -5,17 +5,17 @@ using ResoniteModLoader;
 namespace KrysalisManaged;
 internal class Utils
 {
-    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void startRenderingThread();
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(string message);
 
-    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void RegisterLogCallback(LogCallback callback);
+    [DllImport("Krysalis/KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void startRenderingThread();
 
-    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
-    public static extern void TestLogger([MarshalAs(UnmanagedType.LPStr)] string msg);
+    [DllImport("Krysalis/KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void registerLogCallback(LogCallback callback);
+
+    [DllImport("Krysalis/KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void openLogFile();
 
     public static void LogMessage(string message)
     {
@@ -24,7 +24,8 @@ internal class Utils
 
     public static void InitializeLogging()
     {
-        RegisterLogCallback(LogMessage);
+        registerLogCallback(LogMessage);
+        openLogFile();
     }
 }
 

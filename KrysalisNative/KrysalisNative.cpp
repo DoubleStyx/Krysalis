@@ -43,17 +43,11 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 
-constexpr double TARGET_FPS = 60.0;
-constexpr double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
-
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#ifndef M_PI_4
-#define M_PI_4 0.78539816339744830962
-#endif
-
 using namespace filament;
+using namespace math;
+
+double TARGET_FPS = 60.0;
+double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
 
 struct Vertex {
     math::float2 position;
@@ -66,9 +60,7 @@ filament::Renderer* _renderer = nullptr;
 filament::Camera* _camera = nullptr;
 filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
-std::wstring _dllDirectory;
 utils::Entity _entity;
-std::mutex logMutex;
 
 int g_window_size_x = 512;
 int g_window_size_y = 512;
@@ -78,69 +70,78 @@ int g_frame_size_y = g_window_size_y;
 float rotationAngle = 0.0f;
 
 void* getNativeWindow(GLFWwindow* window) {
-    LogToCSharp("Getting native window");
+    GlobalLog("Getting native window");
 
     HWND hwnd = glfwGetWin32Window(window);
     if (hwnd == nullptr) {
         closeWindow(nullptr, "Native window not found");
     }
-    LogToCSharp("Got native window");
+    GlobalLog("Got native window");
 
     return hwnd;
 }
 
 void reshape_window(GLFWwindow* window, int w, int h) {
-    LogToCSharp("Reshaping window");
+    GlobalLog("Reshaping window");
 
     (void)window; (void)w; (void)h;
-    LogToCSharp("Reshaped window");
+    GlobalLog("Reshaped window");
 }
 
 void reshape_framebuffer(GLFWwindow* window, int w, int h) {
     (void)window; (void)w; (void)h;
-	LogToCSharp("Reshaped framebuffer");
+	GlobalLog("Reshaped framebuffer");
 }
 
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    LogToCSharp("Key pressed");
+    GlobalLog("Key pressed");
 
     (void)window; (void)mods; (void)scancode;
-    LogToCSharp("Key: " + std::to_string(key) + " Action: " + std::to_string(action));
+    GlobalLog("Key: " + std::to_string(key) + " Action: " + std::to_string(action));
 
     if (action != GLFW_PRESS) {
-        LogToCSharp("Action not pressed");
+        GlobalLog("Action not pressed");
 
         return;
     }
 
     if (key == GLFW_KEY_Q) {
-        LogToCSharp("Key Q pressed");
+        GlobalLog("Key Q pressed");
 
         exit(0);
     }
-    LogToCSharp("Key not Q");
+    GlobalLog("Key not Q");
 }
 
 void addLight(filament::Engine* engine, filament::Scene* scene) {
-    filament::LightManager& lm = engine->getLightManager();
-    LogToCSharp("Found light manager");
-
     utils::Entity lightEntity = utils::EntityManager::get().create();
     if (lightEntity.isNull()) {
         closeWindow(nullptr, "Light entity not created");
     }
-    LogToCSharp("Light entity created");
+    GlobalLog("Light entity created");
 
     LightManager::Builder(LightManager::Type::POINT)
-        .color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
-        .intensity(1000000.0f)
-        .position({ 0.0f, 0.0f, 10.0f })
+        .color({ 0.95f, 0.9f, 0.85f })
+        .intensity(100000.0f)
         .falloff(100.0f)
         .build(*engine, lightEntity);
-    LogToCSharp("Built light entity");
+    GlobalLog("Built light entity");
+
+    TransformManager& tcm = engine->getTransformManager();
+    tcm.create(lightEntity);
+    GlobalLog("Created Transform component for light entity");
+
+    TransformManager::Instance lightInstance = tcm.getInstance(lightEntity);
+    if (lightInstance.isValid()) {
+        tcm.setTransform(lightInstance, math::mat4f::translation(math::float3{ 0.0f, 0.0f, 10.0f }));
+        GlobalLog("Set light position to (0, 0, 10)");
+    }
+    else {
+        GlobalLog("Failed to get TransformManager instance for light entity");
+    }
 
     scene->addEntity(lightEntity);
-    LogToCSharp("Directional light added to scene");
+    GlobalLog("Added light entity to scene");
 }
 
 
@@ -149,46 +150,46 @@ void init(GLFWwindow* window) {
     if (!engine) {
         closeWindow(nullptr, "Engine not created");
     }
-    LogToCSharp("Engine created");
+    GlobalLog("Engine created");
 
     filament::SwapChain* swapChain = engine->createSwapChain(getNativeWindow(window));
     if (!swapChain) {
         closeWindow(nullptr, "Swap chain not created");
     }
-    LogToCSharp("Swap chain created");
+    GlobalLog("Swap chain created");
 
     filament::Renderer* renderer = engine->createRenderer();
     if (!renderer) {
         closeWindow(nullptr, "Renderer not created");
     }
-    LogToCSharp("Renderer created");
+    GlobalLog("Renderer created");
 
     utils::Entity cameraEntity = utils::EntityManager::get().create();
     if (cameraEntity.isNull()) {
         closeWindow(nullptr, "Camera entity not created");
     }
-    LogToCSharp("Camera entity created");
+    GlobalLog("Camera entity created");
 
     Camera* camera = engine->createCamera(cameraEntity);
     if (!camera) {
         closeWindow(nullptr, "Camera not created");
     }
-    LogToCSharp("Camera created");
+    GlobalLog("Camera created");
 
     filament::View* view = engine->createView();
     if (!view) {
         closeWindow(nullptr, "View not created");
     }
-    LogToCSharp("View created");
+    GlobalLog("View created");
 
     filament::Scene* scene = engine->createScene();
     if (!scene) {
         closeWindow(nullptr, "Scene not created");
     }
-    LogToCSharp("Scene created");
+    GlobalLog("Scene created");
 
     view->setViewport({ 0, 0, static_cast<uint32_t>(g_frame_size_x), static_cast<uint32_t>(g_frame_size_y) });
-    LogToCSharp("Set viewport");
+    GlobalLog("Set viewport");
 
     {
         math::double3 eye(0.0, 0.0, 3.0);
@@ -197,7 +198,7 @@ void init(GLFWwindow* window) {
 
         math::mat4 viewMatrix = math::mat4::lookAt(eye, at, up);
         camera->setModelMatrix(math::mat4f(viewMatrix));
-        LogToCSharp("Set camera model matrix using lookAt");
+        GlobalLog("Set camera model matrix using lookAt");
     }
 
     camera->setProjection(
@@ -207,120 +208,117 @@ void init(GLFWwindow* window) {
         100.0f,
         filament::Camera::Fov::VERTICAL
     );
-    LogToCSharp("Set camera projection (Perspective)");
+    GlobalLog("Set camera projection (Perspective)");
 
     camera->lookAt(
         math::float3{ 0.0f, 0.0f, 5.0f },
         math::float3{ 0.0f, 0.0f, 0.0f },
         math::float3{ 0.0f, 1.0f, 0.0f });
-    LogToCSharp("Camera positioned");
+    GlobalLog("Camera positioned");
 
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
         .clear = true
         });
-    LogToCSharp("Set clear options");
+    GlobalLog("Set clear options");
 
     view->setPostProcessingEnabled(true);
-    LogToCSharp("Set post processing flag");
+    GlobalLog("Set post processing flag");
 
-    std::vector<uint8_t> materialData = loadFile(L"assets\\materials\\texturedLit.filamat");
+    std::vector<uint8_t> materialData = loadFile(L"materials\\texturedLit.filamat");
 	if (materialData.empty())
 		closeWindow(nullptr, "Material data not loaded");
-    LogToCSharp("Loaded material data of size " + std::to_string(materialData.size()));
-
+    GlobalLog("Loaded material data of size " + std::to_string(materialData.size()));
     
     filament::Material* material = filament::Material::Builder()
         .package(materialData.data(), materialData.size())
         .build(*engine);
     if (material == nullptr)
         closeWindow(nullptr, "Material not created");
-    LogToCSharp("Material created");
+    GlobalLog("Material created");
 
     filament::MaterialInstance* materialInstance = material->createInstance();
     if (materialInstance == nullptr)
         closeWindow(nullptr, "Material instance not created");
-    LogToCSharp("Material instance created");
+    GlobalLog("Material instance created");
 
-	Texture* albedoTexture = loadTexture(engine, L"assets\\textures\\color.png");
+	Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
 	if (albedoTexture == nullptr)
 		closeWindow(nullptr, "Albedo texture not loaded");
-	LogToCSharp("Loaded albedo texture");
+	GlobalLog("Loaded albedo texture");
 
-	Texture* normalTexture = loadTexture(engine, L"assets\\textures\\normal.png");
+	Texture* normalTexture = loadTexture(engine, L"textures\\normal.png");
 	if (normalTexture == nullptr)
 		closeWindow(nullptr, "Normal texture not loaded");
-	LogToCSharp("Loaded normal texture");
+	GlobalLog("Loaded normal texture");
 
-	Texture* roughnessTexture = loadTexture(engine, L"assets\\textures\\roughness.png");
+	Texture* roughnessTexture = loadTexture(engine, L"textures\\roughness.png");
 	if (roughnessTexture == nullptr)
 		closeWindow(nullptr, "Roughness texture not loaded");
-	LogToCSharp("Loaded roughness texture");
+	GlobalLog("Loaded roughness texture");
 
-	Texture* metallicTexture = loadTexture(engine, L"assets\\textures\\metallic.png");
+	Texture* metallicTexture = loadTexture(engine, L"textures\\metallic.png");
 	if (metallicTexture == nullptr)
 		closeWindow(nullptr, "Metallic texture not loaded");
-	LogToCSharp("Loaded metallic texture");
+	GlobalLog("Loaded metallic texture");
 
-	Texture* aoTexture = loadTexture(engine, L"assets\\textures\\ao.png");
+	Texture* aoTexture = loadTexture(engine, L"textures\\ao.png");
 	if (aoTexture == nullptr)
 		closeWindow(nullptr, "AO texture not loaded");
-	LogToCSharp("Loaded AO texture");
+	GlobalLog("Loaded AO texture");
 
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
     materialInstance->setParameter("albedo", albedoTexture, sampler);
-    LogToCSharp("Set albedo texture");
+    GlobalLog("Set albedo texture");
 
 	materialInstance->setParameter("normal", normalTexture, sampler);
-	LogToCSharp("Set normal texture");
+	GlobalLog("Set normal texture");
 
 	materialInstance->setParameter("roughness", roughnessTexture, sampler);
-	LogToCSharp("Set roughness texture");
+	GlobalLog("Set roughness texture");
 
 	materialInstance->setParameter("metallic", metallicTexture, sampler);
-	LogToCSharp("Set metallic texture");
+	GlobalLog("Set metallic texture");
 
 	materialInstance->setParameter("ao", aoTexture, sampler);
-	LogToCSharp("Set AO texture");
+	GlobalLog("Set AO texture");
 
     filamesh::MeshReader::MaterialRegistry registry;
-	registry.registerMaterialInstance("texturedLit", materialInstance);
-	LogToCSharp("Registered material instance");
+	registry.registerMaterialInstance("TexturedLit", materialInstance);
+	GlobalLog("Registered material instance");
 
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"assets\\meshes\\monkey.filamesh"))), registry);
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"Krysalis\\meshes\\monkey.filamesh"))), registry);
 	if (mesh.renderable.isNull())
 		closeWindow(nullptr, "Mesh not loaded");
-	LogToCSharp("Loaded mesh");
+	GlobalLog("Loaded mesh");
 
     scene->addEntity(mesh.renderable);
-	LogToCSharp("Added mesh to scene");
+	GlobalLog("Added mesh to scene");
 
     addLight(engine, scene);
-    LogToCSharp("Added light to scene");
+    GlobalLog("Added light to scene");
 
     view->setCamera(camera);
-    LogToCSharp("Set camera to view");
+    GlobalLog("Set camera to view");
 
     view->setScene(scene);
-    LogToCSharp("Set scene to view");
+    GlobalLog("Set scene to view");
 
-    /*
-    filament::IndirectLight* ibl = createIBL(engine, L"assets\\skyboxes\\lightroom_14b_ibl.ktx");
+    filament::IndirectLight* ibl = createIBL(engine, L"skyboxes\\lightroom_14b_ibl.ktx");
     if (ibl == nullptr)
         closeWindow(nullptr, "Failed to set up IBL");
-    LogToCSharp("Successfully set up IBL");
+    GlobalLog("Successfully set up IBL");
 
     ibl->setIntensity(30000.0f);
-	LogToCSharp("Set IBL intensity");
+	GlobalLog("Set IBL intensity");
 
     ibl->setRotation(filament::math::mat3f::rotation(0.5f, filament::math::float3{ 0, 1, 0 }));
-	LogToCSharp("Set IBL rotation");
+	GlobalLog("Set IBL rotation");
 
     scene->setIndirectLight(ibl);
-	LogToCSharp("Set indirect light to scene");
-    */
+	GlobalLog("Set indirect light to scene");
 
     _engine = engine;
     _swapchain = swapChain;
@@ -331,11 +329,11 @@ void init(GLFWwindow* window) {
     _scene = scene;
 
     TransformManager& tcm = _engine->getTransformManager();
-    LogToCSharp("Got transform manager");
+    GlobalLog("Got transform manager");
 
     tcm.setTransform(tcm.getInstance(_entity),
         math::mat4f::rotation(M_PI_4, math::float3{ 0, 1, 1 }));
-    LogToCSharp("Set transform");
+    GlobalLog("Set transform");
 }
 
 void display() {
@@ -352,44 +350,79 @@ void display() {
     }
 }
 
+void closeWindow(GLFWwindow* window, std::string reason)
+{
+    GlobalLog(reason);
+    GlobalLog("Initiating cleanup");
+
+    if (_engine) {
+        if (_renderer) {
+            _engine->destroy(_renderer);
+            GlobalLog("Renderer destroyed");
+        }
+        if (_view) {
+            _engine->destroy(_view);
+            GlobalLog("View destroyed");
+        }
+        if (_scene) {
+            _engine->destroy(_scene);
+            GlobalLog("Scene destroyed");
+        }
+        if (_swapchain) {
+            _engine->destroy(_swapchain);
+            GlobalLog("SwapChain destroyed");
+        }
+        filament::Engine::destroy(_engine);
+        GlobalLog("Engine destroyed");
+    }
+
+    if (window) {
+        glfwDestroyWindow(window);
+        GlobalLog("GLFW window destroyed");
+    }
+
+    glfwTerminate();
+    GlobalLog("GLFW terminated");
+}
+
 void runWindow() {
     try {
         if (!glfwInit()) {
             closeWindow(nullptr, "GLFW not initialized");
         }
-        LogToCSharp("GLFW initialized");
+        GlobalLog("GLFW initialized");
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        LogToCSharp("Set GLFW client API to NO_API");
+        GlobalLog("Set GLFW client API to NO_API");
 
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-        LogToCSharp("Set GLFW window resizable to false");
+        GlobalLog("Set GLFW window resizable to false");
 
         GLFWwindow* window = glfwCreateWindow(g_window_size_x, g_window_size_y, "Filament GLFW Example", nullptr, nullptr);
         if (window == nullptr) {
             closeWindow(nullptr, "Window not initialized");
         }
-        LogToCSharp("Window created");
+        GlobalLog("Window created");
 
         glfwSetWindowSizeCallback(window, reshape_window);
-        LogToCSharp("Set window size callback");
+        GlobalLog("Set window size callback");
 
         glfwSetFramebufferSizeCallback(window, reshape_framebuffer);
-        LogToCSharp("Set framebuffer size callback");
+        GlobalLog("Set framebuffer size callback");
 
         glfwSetKeyCallback(window, key_press);
-        LogToCSharp("Set key callback");
+        GlobalLog("Set key callback");
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-        LogToCSharp("Set input mode to sticky keys");
+        GlobalLog("Set input mode to sticky keys");
 
         init(window);
-        LogToCSharp("Initialized the renderer");
+        GlobalLog("Initialized the renderer");
 
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
-		LogToCSharp("Saved last frame time");
+		GlobalLog("Saved last frame time");
 
-		LogToCSharp("Renderer and window initialized successfully! Beginning main rendering and interaction loop.");
+		GlobalLog("Renderer and window initialized successfully! Beginning main rendering and interaction loop.");
         while (!glfwWindowShouldClose(window)) {
             auto currentTime = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> elapsed = currentTime - lastFrameTime;
@@ -415,39 +448,4 @@ void runWindow() {
     catch (...) {
         closeWindow(nullptr, "Error in rendering thread: Caught unknown exception");
     }
-}
-
-void closeWindow(GLFWwindow* window, std::string reason)
-{
-    LogToCSharp(reason);
-    LogToCSharp("Initiating cleanup");
-
-    if (_engine) {
-        if (_renderer) {
-            _engine->destroy(_renderer);
-            LogToCSharp("Renderer destroyed");
-        }
-        if (_view) {
-            _engine->destroy(_view);
-            LogToCSharp("View destroyed");
-        }
-        if (_scene) {
-            _engine->destroy(_scene);
-            LogToCSharp("Scene destroyed");
-        }
-        if (_swapchain) {
-            _engine->destroy(_swapchain);
-            LogToCSharp("SwapChain destroyed");
-        }
-        filament::Engine::destroy(_engine);
-        LogToCSharp("Engine destroyed");
-    }
-
-    if (window) {
-        glfwDestroyWindow(window);
-        LogToCSharp("GLFW window destroyed");
-    }
-
-    glfwTerminate();
-    LogToCSharp("GLFW terminated");
 }
