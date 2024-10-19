@@ -1,5 +1,5 @@
 # Krysalis
-A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [Resonite](https://resonite.com/) that replaces the Unity renderer in Resonite with a separate rendering pipeline.
+A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [Resonite](https://resonite.com/) that replaces the Unity renderer in Resonite with a separate rendering pipeline. It is also a prerequisite to a butterfly.
 
 ## Installation
 1. Install [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader).
