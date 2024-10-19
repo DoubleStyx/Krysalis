@@ -123,7 +123,7 @@ void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) 
 
 void addLight(filament::Engine* engine, filament::Scene* scene) {
     filament::LightManager& lm = engine->getLightManager();
-    LogToCSharp("Got light manager");
+    LogToCSharp("Found light manager");
 
     utils::Entity lightEntity = utils::EntityManager::get().create();
     if (lightEntity.isNull()) {
@@ -133,8 +133,8 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
 
     LightManager::Builder(LightManager::Type::POINT)
         .color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
-        .intensity(100.0f)
-        .position({ 0.0f, 0.0f, 3.0f })
+        .intensity(1000000.0f)
+        .position({ 0.0f, 0.0f, 10.0f })
         .falloff(100.0f)
         .build(*engine, lightEntity);
     LogToCSharp("Built light entity");
@@ -307,12 +307,12 @@ void init(GLFWwindow* window) {
     view->setScene(scene);
     LogToCSharp("Set scene to view");
 
+    /*
     filament::IndirectLight* ibl = createIBL(engine, L"assets\\skyboxes\\lightroom_14b_ibl.ktx");
     if (ibl == nullptr)
         closeWindow(nullptr, "Failed to set up IBL");
     LogToCSharp("Successfully set up IBL");
 
-    /*
     ibl->setIntensity(30000.0f);
 	LogToCSharp("Set IBL intensity");
 
