@@ -78,44 +78,52 @@ float rotationAngle = 0.0f;
 
 void* getNativeWindow(GLFWwindow* window) {
     LogToCSharp("Getting native window");
+
     HWND hwnd = glfwGetWin32Window(window);
     if (hwnd == nullptr) {
         closeWindow(nullptr, "Native window not found");
     }
     LogToCSharp("Got native window");
+
     return hwnd;
 }
 
 void reshape_window(GLFWwindow* window, int w, int h) {
     LogToCSharp("Reshaping window");
+
     (void)window; (void)w; (void)h;
     LogToCSharp("Reshaped window");
 }
 
 void reshape_framebuffer(GLFWwindow* window, int w, int h) {
     (void)window; (void)w; (void)h;
+	LogToCSharp("Reshaped framebuffer");
 }
 
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) {
     LogToCSharp("Key pressed");
+
     (void)window; (void)mods; (void)scancode;
     LogToCSharp("Key: " + std::to_string(key) + " Action: " + std::to_string(action));
+
     if (action != GLFW_PRESS) {
         LogToCSharp("Action not pressed");
+
         return;
     }
 
     if (key == GLFW_KEY_Q) {
         LogToCSharp("Key Q pressed");
+
         exit(0);
     }
-
     LogToCSharp("Key not Q");
 }
 
 void addLight(filament::Engine* engine, filament::Scene* scene) {
     filament::LightManager& lm = engine->getLightManager();
     LogToCSharp("Got light manager");
+
     utils::Entity lightEntity = utils::EntityManager::get().create();
     if (lightEntity.isNull()) {
         closeWindow(nullptr, "Light entity not created");
@@ -130,6 +138,7 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
         .castShadows(false)
         .build(*engine, lightEntity);
     LogToCSharp("Built light entity");
+
     scene->addEntity(lightEntity);
     LogToCSharp("Directional light added to scene");
 }
@@ -233,6 +242,10 @@ void init(GLFWwindow* window) {
     LogToCSharp("Material instance created");
 
 	Texture* albedoTexture = loadTexture(engine, "assets/textures/monkey.png");
+	if (albedoTexture == nullptr)
+		closeWindow(nullptr, "Albedo texture not loaded");
+	LogToCSharp("Loaded albedo texture");
+
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
@@ -241,12 +254,15 @@ void init(GLFWwindow* window) {
 
     filamesh::MeshReader::MaterialRegistry registry;
 	registry.registerMaterialInstance("defaultMaterial", materialInstance);
+	LogToCSharp("Registered material instance");
 
     filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", registry);
+	if (mesh.renderable.isNull())
+		closeWindow(nullptr, "Mesh not loaded");
+	LogToCSharp("Loaded mesh");
 
     scene->addEntity(mesh.renderable);
-
-    _entity = mesh.renderable;
+	LogToCSharp("Added mesh to scene");
 
     addLight(engine, scene);
     LogToCSharp("Added light to scene");
@@ -322,6 +338,7 @@ void runWindow() {
         LogToCSharp("Initialized the renderer");
 
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
+		LogToCSharp("Getting last frame time");
 
         while (!glfwWindowShouldClose(window)) {
             auto currentTime = std::chrono::high_resolution_clock::now();
