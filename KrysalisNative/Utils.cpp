@@ -10,27 +10,40 @@
 #include <iostream>
 #include <string>
 #include <mutex>
+#include <Windows.h>
+#include <Shlwapi.h>
 #include "KrysalisNative.h"
 #include "Utils.h"
 
-std::vector<uint8_t> loadFile(const std::string& filePath) {
-    std::ifstream file(filePath, std::ios::binary);
+std::wstring getFullPath(const std::wstring& relativePath) {
+	if (_dllDirectory.empty()) {
+		_dllDirectory = getDllDirectory();
+	}
+	return _dllDirectory + L"\\" + relativePath;
+}
+
+std::string wstringToString(const std::wstring& wstr) {
+    return std::string(wstr.begin(), wstr.end());
+}
+
+std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
+    std::ifstream file(getFullPath(relativePath), std::ios::binary);
     if (!file) {
-        throw std::runtime_error("Could not open file: " + filePath);
+        throw std::runtime_error("Could not open file: " + wstringToString(relativePath));
     }
     return std::vector<uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
-filament::Texture* loadTexture(filament::Engine* engine, const std::string& filePath) {
+filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath) {
     // Load file data into memory
-    std::vector<uint8_t> fileData = loadFile(filePath);
+    std::vector<uint8_t> fileData = loadFile(relativePath);
 
     // Decode the image using stb_image
     int width, height, channels;
     unsigned char* data = stbi_load_from_memory(fileData.data(), fileData.size(), &width, &height, &channels, 4); // 4 means RGBA
 
     if (!data) {
-        throw std::runtime_error("Failed to load image: " + filePath);
+        throw std::runtime_error("Failed to load image: " + wstringToString(relativePath));
     }
 
     // Create the Filament Texture
@@ -80,4 +93,26 @@ void LogToCSharp(const std::string& message)
 extern "C" __declspec(dllexport) void TestLogger(const char* msg)
 {
     LogToCSharp(msg);
+}
+
+std::wstring getDllDirectory() {
+    // Buffer to hold the path of the module (DLL or EXE)
+    WCHAR path[MAX_PATH];
+
+    // Get the module file name (this will give the full path of the current DLL)
+    HMODULE hModule = NULL;
+    if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        (LPCWSTR)getDllDirectory,
+        &hModule)) {
+        GetModuleFileName(hModule, path, sizeof(path) / sizeof(WCHAR));
+
+        // Remove the filename from the path to get only the directory
+        PathRemoveFileSpec(path);
+
+        // Return the directory as a std::wstring
+        return std::wstring(path);
+    }
+
+    // In case of failure, return an empty string
+    return std::wstring();
 }

@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 extern std::mutex logMutex;
+extern std::wstring _dllDirectory;
 
 void closeWindow(GLFWwindow* window, std::string reason);
 void runWindow();

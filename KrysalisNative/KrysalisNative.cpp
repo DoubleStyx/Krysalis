@@ -65,6 +65,7 @@ filament::Renderer* _renderer = nullptr;
 filament::Camera* _camera = nullptr;
 filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
+std::wstring _dllDirectory;
 utils::Entity _entity;
 std::mutex logMutex;
 
@@ -144,7 +145,7 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
 
 
 void init(GLFWwindow* window) {
-    filament::Engine* engine = filament::Engine::create();
+    filament::Engine* engine = filament::Engine::create(Engine::Backend::OPENGL);
     if (!engine) {
         closeWindow(nullptr, "Engine not created");
     }
@@ -223,10 +224,10 @@ void init(GLFWwindow* window) {
     view->setPostProcessingEnabled(false);
     LogToCSharp("Set post processing enabled");
 
-    std::vector<uint8_t> materialData = loadFile("assets/materials/TexturedLit.filamat");
+    std::vector<uint8_t> materialData = loadFile(L"assets\\materials\\texturedLit.filamat");
 	if (materialData.empty())
 		closeWindow(nullptr, "Material data not loaded");
-	LogToCSharp("Loaded material data");
+    LogToCSharp("Loader material data of size " + std::to_string(materialData.size()));
 
     filament::Material* material = filament::Material::Builder()
         .package(materialData.data(), materialData.size())
@@ -240,16 +241,49 @@ void init(GLFWwindow* window) {
         closeWindow(nullptr, "Material instance not created");
     LogToCSharp("Material instance created");
 
-	Texture* albedoTexture = loadTexture(engine, "assets/textures/monkey.png");
+
+	Texture* albedoTexture = loadTexture(engine, L"assets\\textures\\color.png");
 	if (albedoTexture == nullptr)
 		closeWindow(nullptr, "Albedo texture not loaded");
 	LogToCSharp("Loaded albedo texture");
+
+	Texture* normalTexture = loadTexture(engine, L"assets\\textures\\normal.png");
+	if (normalTexture == nullptr)
+		closeWindow(nullptr, "Normal texture not loaded");
+	LogToCSharp("Loaded normal texture");
+
+	Texture* roughnessTexture = loadTexture(engine, L"assets\\textures\\roughness.png");
+	if (roughnessTexture == nullptr)
+		closeWindow(nullptr, "Roughness texture not loaded");
+	LogToCSharp("Loaded roughness texture");
+
+	Texture* metallicTexture = loadTexture(engine, L"assets\\textures\\metallic.png");
+	if (metallicTexture == nullptr)
+		closeWindow(nullptr, "Metallic texture not loaded");
+	LogToCSharp("Loaded metallic texture");
+
+	Texture* aoTexture = loadTexture(engine, L"assets\\textures\\ao.png");
+	if (aoTexture == nullptr)
+		closeWindow(nullptr, "AO texture not loaded");
+	LogToCSharp("Loaded AO texture");
 
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
     materialInstance->setParameter("albedo", albedoTexture, sampler);
     LogToCSharp("Set albedo texture");
+
+	materialInstance->setParameter("normal", normalTexture, sampler);
+	LogToCSharp("Set normal texture");
+
+	materialInstance->setParameter("roughness", roughnessTexture, sampler);
+	LogToCSharp("Set roughness texture");
+
+	materialInstance->setParameter("metallic", metallicTexture, sampler);
+	LogToCSharp("Set metallic texture");
+
+	materialInstance->setParameter("ao", aoTexture, sampler);
+	LogToCSharp("Set AO texture");
 
     filamesh::MeshReader::MaterialRegistry registry;
 	registry.registerMaterialInstance("defaultMaterial", materialInstance);
