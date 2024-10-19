@@ -2,6 +2,7 @@
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
+#include <filament/Texture.h>
 #include <utils/Path.h>
 #include <fstream>
 #include <vector>

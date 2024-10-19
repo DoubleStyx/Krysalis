@@ -8,3 +8,5 @@
 #include <vector>
 
 std::vector<uint8_t> loadFile(const std::string& filePath);
+
+filament::Texture* loadTexture(filament::Engine* engine, const std::string& filePath);

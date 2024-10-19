@@ -21,9 +21,13 @@
 #include <filament/LightManager.h>
 #include <filament/Material.h>
 #include <filament/RenderableManager.h>
+#include <filament/Texture.h>
 #include <filameshio/MeshReader.h>
+#include <filament/TextureSampler.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
+#include <filament/Viewport.h>
+#include <filameshio/MeshReader.h>
 #include <fstream>
 #include <vector>
 #include <filamat/Enums.h>
@@ -32,7 +36,7 @@
 #include <filamat/Package.h>
 #include <utils/EntityManager.h>
 #include <utils/Path.h>
-#include <filament/Viewport.h>
+
 #include <Windows.h>
 #include <chrono>
 #include <thread>
@@ -228,15 +232,17 @@ void init(GLFWwindow* window) {
         closeWindow(nullptr, "Material instance not created");
     LogToCSharp("Material instance created");
 
-    Texture* albedoTexture = loadTexture(engine, ALBEDO_TEXTURE_DATA, ALBEDO_TEXTURE_SIZE);
+	Texture* albedoTexture = loadTexture(engine, "assets/textures/monkey.png");
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
-    materialInstance->setParameter("albedo", albedoTexture, textureSampler);
+    materialInstance->setParameter("albedo", albedoTexture, sampler);
     LogToCSharp("Set albedo texture");
 
-    filamat::
-	filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", materialInstance);
+    filamesh::MeshReader::MaterialRegistry registry;
+	registry.registerMaterialInstance("defaultMaterial", materialInstance);
+
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", registry);
 
     scene->addEntity(mesh.renderable);
 
