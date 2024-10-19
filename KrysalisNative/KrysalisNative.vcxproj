@@ -12,9 +12,11 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="KrysalisNative.h" />
+		<ClInclude Include="Utils.h" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClCompile Include="KrysalisNative.cpp" />
+		<ClCompile Include="Utils.cpp" />
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
 		<VCProjectVersion>20.0</VCProjectVersion>

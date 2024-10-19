@@ -7,6 +7,9 @@
     <ClCompile Include="KrysalisNative.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -15,5 +18,10 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{47c55454-6424-4685-8854-73aa04d7240f}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
