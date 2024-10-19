@@ -132,7 +132,7 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
 
     LightManager::Builder(LightManager::Type::DIRECTIONAL)
         .color(Color::toLinear<ACCURATE>(sRGBColor(0.98f, 0.92f, 0.89f)))
-        .intensity(110000)
+        .intensity(100)
         .direction({ 0.7, -1, -0.8 })
         .sunAngularRadius(1.9f)
         .castShadows(false)
@@ -289,7 +289,9 @@ void init(GLFWwindow* window) {
 	registry.registerMaterialInstance("defaultMaterial", materialInstance);
 	LogToCSharp("Registered material instance");
 
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", registry);
+  
+
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"assets/meshes/monkey.filamesh"))), registry);
 	if (mesh.renderable.isNull())
 		closeWindow(nullptr, "Mesh not loaded");
 	LogToCSharp("Loaded mesh");
@@ -318,7 +320,7 @@ void init(GLFWwindow* window) {
     LogToCSharp("Got transform manager");
 
     tcm.setTransform(tcm.getInstance(_entity),
-        math::mat4f::rotation(M_PI_4, math::float3{ 0, 0, 1 }));
+        math::mat4f::rotation(M_PI_4, math::float3{ 0, 1, 1 }));
     LogToCSharp("Set transform");
 }
 
