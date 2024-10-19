@@ -94,13 +94,10 @@ void reshape_framebuffer(GLFWwindow* window, int w, int h) {
 }
 
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    GlobalLog("Key pressed");
 
     (void)window; (void)mods; (void)scancode;
-    GlobalLog("Key: " + std::to_string(key) + " Action: " + std::to_string(action));
 
     if (action != GLFW_PRESS) {
-        GlobalLog("Action not pressed");
 
         return;
     }
@@ -108,9 +105,8 @@ void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) 
     if (key == GLFW_KEY_Q) {
         GlobalLog("Key Q pressed");
 
-        exit(0);
+        closeWindow(window, "Closing window");
     }
-    GlobalLog("Key not Q");
 }
 
 void addLight(filament::Engine* engine, filament::Scene* scene) {
@@ -289,7 +285,7 @@ void init(GLFWwindow* window) {
 	registry.registerMaterialInstance("TexturedLit", materialInstance);
 	GlobalLog("Registered material instance");
 
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"Krysalis\\meshes\\monkey.filamesh"))), registry);
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"meshes\\monkey.filamesh"))), registry);
 	if (mesh.renderable.isNull())
 		closeWindow(nullptr, "Mesh not loaded");
 	GlobalLog("Loaded mesh");
@@ -305,20 +301,6 @@ void init(GLFWwindow* window) {
 
     view->setScene(scene);
     GlobalLog("Set scene to view");
-
-    filament::IndirectLight* ibl = createIBL(engine, L"skyboxes\\lightroom_14b_ibl.ktx");
-    if (ibl == nullptr)
-        closeWindow(nullptr, "Failed to set up IBL");
-    GlobalLog("Successfully set up IBL");
-
-    ibl->setIntensity(30000.0f);
-	GlobalLog("Set IBL intensity");
-
-    ibl->setRotation(filament::math::mat3f::rotation(0.5f, filament::math::float3{ 0, 1, 0 }));
-	GlobalLog("Set IBL rotation");
-
-    scene->setIndirectLight(ibl);
-	GlobalLog("Set indirect light to scene");
 
     _engine = engine;
     _swapchain = swapChain;
@@ -383,6 +365,9 @@ void closeWindow(GLFWwindow* window, std::string reason)
 
     glfwTerminate();
     GlobalLog("GLFW terminated");
+
+    GlobalLog("Closing application");
+    exit(0);
 }
 
 void runWindow() {

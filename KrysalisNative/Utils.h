@@ -34,5 +34,4 @@ std::wstring stringToWstring(const std::string& str);
 std::string getFormattedTimestamp(std::time_t time);
 std::vector<uint8_t> loadFile(const std::wstring& relativePath);
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
-filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring& envMapPath);
 void closeLogFile();

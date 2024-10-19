@@ -101,9 +101,19 @@ void NativeLog(const std::string& message) {
     std::lock_guard<std::mutex> guard(logMutex);
 
     auto now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
-    std::string timestamp = std::ctime(&now_time);
-    timestamp.pop_back();
+    auto now_time = std::chrono::system_clock::to_time_t(now);
+
+    std::tm localTime;
+    localtime_s(&localTime, &now_time);
+
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()) % 1000;
+
+    std::ostringstream timestampStream;
+    timestampStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+    timestampStream << '.' << std::setfill('0') << std::setw(3) << milliseconds.count();
+
+    std::string timestamp = timestampStream.str();
 
     if (logFile.is_open()) {
         logFile << "[" << timestamp << "] " << message << std::endl;
@@ -138,44 +148,6 @@ std::wstring getDllDirectory() {
     }
 
     return std::wstring();
-}
-
-filament::IndirectLight* createIBL(filament::Engine* engine, const std::wstring& envMapPath) {
-    std::string envMapFilePath = wstringToString(getFullPath(envMapPath));
-
-    filament::Texture* environmentMap = nullptr;
-    filament::IndirectLight* ibl = nullptr;
-
-    try {
-        ktxreader::Ktx2Reader reader(*engine);
-
-        reader.requestFormat(filament::Texture::InternalFormat::RGBA8);
-
-        std::vector<uint8_t> fileData = loadFile(envMapPath);
-        size_t fileSize = fileData.size();
-
-        if (fileSize == 0) {
-            throw std::runtime_error("Environment map file is empty: " + envMapFilePath);
-        }
-
-        environmentMap = reader.load(reinterpret_cast<const uint8_t*>(fileData.data()), fileSize, ktxreader::Ktx2Reader::TransferFunction::LINEAR);
-
-        if (environmentMap == nullptr) {
-            throw std::runtime_error("Failed to load environment map: " + envMapFilePath);
-        }
-
-        ibl = filament::IndirectLight::Builder()
-            .reflections(environmentMap)
-            .intensity(30000.0f)
-            .build(*engine);
-
-    }
-    catch (const std::exception& e) {
-        GlobalLog(std::string("Failed to create IBL: ") + e.what());
-        return nullptr;
-    }
-
-    return ibl;
 }
 
 void openLogFile() {
