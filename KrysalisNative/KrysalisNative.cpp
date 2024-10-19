@@ -227,7 +227,7 @@ void init(GLFWwindow* window) {
     std::vector<uint8_t> materialData = loadFile(L"assets\\materials\\texturedLit.filamat");
 	if (materialData.empty())
 		closeWindow(nullptr, "Material data not loaded");
-    LogToCSharp("Loader material data of size " + std::to_string(materialData.size()));
+    LogToCSharp("Loaded material data of size " + std::to_string(materialData.size()));
 
     
     filament::Material* material = filament::Material::Builder()
@@ -241,7 +241,6 @@ void init(GLFWwindow* window) {
     if (materialInstance == nullptr)
         closeWindow(nullptr, "Material instance not created");
     LogToCSharp("Material instance created");
-
 
 	Texture* albedoTexture = loadTexture(engine, L"assets\\textures\\color.png");
 	if (albedoTexture == nullptr)
