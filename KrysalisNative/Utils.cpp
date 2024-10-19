@@ -11,6 +11,7 @@
 #include <string>
 #include <mutex>
 #include "KrysalisNative.h"
+#include "Utils.h"
 
 std::vector<uint8_t> loadFile(const std::string& filePath) {
     std::ifstream file(filePath, std::ios::binary);

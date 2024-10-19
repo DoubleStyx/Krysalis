@@ -1,8 +1,10 @@
 // KrysalisNative.h
 #pragma once
+#include "KrysalisNative.h"
+#include "Utils.h"
 #include <GLFW/glfw3.h>
 
-std::mutex logMutex;
+extern std::mutex logMutex;
 
 void closeWindow(GLFWwindow* window, std::string reason);
 void runWindow();
