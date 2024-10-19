@@ -118,8 +118,8 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
     GlobalLog("Light entity created");
 
     LightManager::Builder(LightManager::Type::DIRECTIONAL)
-        .color({ 0.95f, 0.9f, 0.85f })
-        .intensity(110000.0f)
+        .color({ 1.0f, 1.0f, 1.0f })
+        .intensity(1000000.0f)
         .direction({ 0.0f, -0.5f, -1.0f })
         .castShadows(true)
         .build(*engine, lightEntity);
@@ -200,8 +200,8 @@ void init(GLFWwindow* window) {
         math::float3{ 0.0f, 1.0f, 0.0f });
     GlobalLog("Camera positioned");
 
-    camera->setExposure(16.0f, 1.0f / 125.0f, 100.0f);
-	GlobalLog("Set camera exposure");
+    //camera->setExposure(16.0f, 1.0f / 125.0f, 100.0f);
+	//GlobalLog("Set camera exposure");
 
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
@@ -275,7 +275,7 @@ void init(GLFWwindow* window) {
     materialInstance->setParameter("clearCoat", 0.0f);
 	GlobalLog("Set clear coat");
 
-	materialInstance->setParameter("emissive", math::float4{ 0.1f, 0.1f, 0.1f, 1.0f });
+	materialInstance->setParameter("emissive", math::float4{ 0.0f, 0.0f, 0.0f, 1.0f });
 	GlobalLog("Set emissive");
 
     filamesh::MeshReader::MaterialRegistry registry;
