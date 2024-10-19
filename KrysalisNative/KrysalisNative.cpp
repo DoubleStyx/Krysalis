@@ -210,9 +210,9 @@ void init(GLFWwindow* window) {
     LogToCSharp("Set camera projection (Perspective)");
 
     camera->lookAt(
-        math::float3{ 0.0f, 0.0f, 5.0f },   // Eye position (move back to see the model)
-        math::float3{ 0.0f, 0.0f, 0.0f },   // Look-at position
-        math::float3{ 0.0f, 1.0f, 0.0f });  // Up vector
+        math::float3{ 0.0f, 0.0f, 5.0f },
+        math::float3{ 0.0f, 0.0f, 0.0f },
+        math::float3{ 0.0f, 1.0f, 0.0f });
     LogToCSharp("Camera positioned");
 
     renderer->setClearOptions({
