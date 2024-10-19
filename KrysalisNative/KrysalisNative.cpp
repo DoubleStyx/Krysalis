@@ -18,6 +18,7 @@
 #include <filament/VertexBuffer.h>
 #include <filament/IndexBuffer.h>
 #include <filament/TransformManager.h>
+#include <filament/Skybox.h>
 #include <filament/LightManager.h>
 #include <filament/Material.h>
 #include <filament/RenderableManager.h>
@@ -116,30 +117,17 @@ void addLight(filament::Engine* engine, filament::Scene* scene) {
     }
     GlobalLog("Light entity created");
 
-    LightManager::Builder(LightManager::Type::POINT)
+    LightManager::Builder(LightManager::Type::DIRECTIONAL)
         .color({ 0.95f, 0.9f, 0.85f })
-        .intensity(100000.0f)
-        .falloff(100.0f)
+        .intensity(110000.0f)
+        .direction({ 0.0f, -0.5f, -1.0f })
+        .castShadows(true)
         .build(*engine, lightEntity);
     GlobalLog("Built light entity");
-
-    TransformManager& tcm = engine->getTransformManager();
-    tcm.create(lightEntity);
-    GlobalLog("Created Transform component for light entity");
-
-    TransformManager::Instance lightInstance = tcm.getInstance(lightEntity);
-    if (lightInstance.isValid()) {
-        tcm.setTransform(lightInstance, math::mat4f::translation(math::float3{ 0.0f, 0.0f, 10.0f }));
-        GlobalLog("Set light position to (0, 0, 10)");
-    }
-    else {
-        GlobalLog("Failed to get TransformManager instance for light entity");
-    }
 
     scene->addEntity(lightEntity);
     GlobalLog("Added light entity to scene");
 }
-
 
 void init(GLFWwindow* window) {
     filament::Engine* engine = filament::Engine::create(Engine::Backend::OPENGL);
@@ -212,6 +200,9 @@ void init(GLFWwindow* window) {
         math::float3{ 0.0f, 1.0f, 0.0f });
     GlobalLog("Camera positioned");
 
+    camera->setExposure(16.0f, 1.0f / 125.0f, 100.0f);
+	GlobalLog("Set camera exposure");
+
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
         .clear = true
@@ -221,11 +212,11 @@ void init(GLFWwindow* window) {
     view->setPostProcessingEnabled(true);
     GlobalLog("Set post processing flag");
 
-    std::vector<uint8_t> materialData = loadFile(L"materials\\texturedLit.filamat");
-	if (materialData.empty())
-		closeWindow(nullptr, "Material data not loaded");
+    std::vector<uint8_t> materialData = loadFile(L"materials\\sandboxUnlit.filamat");
+    if (materialData.empty())
+        closeWindow(nullptr, "Material data not loaded");
     GlobalLog("Loaded material data of size " + std::to_string(materialData.size()));
-    
+
     filament::Material* material = filament::Material::Builder()
         .package(materialData.data(), materialData.size())
         .build(*engine);
@@ -238,63 +229,83 @@ void init(GLFWwindow* window) {
         closeWindow(nullptr, "Material instance not created");
     GlobalLog("Material instance created");
 
-	Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
-	if (albedoTexture == nullptr)
-		closeWindow(nullptr, "Albedo texture not loaded");
-	GlobalLog("Loaded albedo texture");
+    /*
+    Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
+    if (albedoTexture == nullptr)
+        closeWindow(nullptr, "Albedo texture not loaded");
+    GlobalLog("Loaded albedo texture");
 
-	Texture* normalTexture = loadTexture(engine, L"textures\\normal.png");
-	if (normalTexture == nullptr)
-		closeWindow(nullptr, "Normal texture not loaded");
-	GlobalLog("Loaded normal texture");
+    Texture* normalTexture = loadTexture(engine, L"textures\\normal.png");
+    if (normalTexture == nullptr)
+        closeWindow(nullptr, "Normal texture not loaded");
+    GlobalLog("Loaded normal texture");
 
-	Texture* roughnessTexture = loadTexture(engine, L"textures\\roughness.png");
-	if (roughnessTexture == nullptr)
-		closeWindow(nullptr, "Roughness texture not loaded");
-	GlobalLog("Loaded roughness texture");
+    Texture* roughnessTexture = loadTexture(engine, L"textures\\roughness.png");
+    if (roughnessTexture == nullptr)
+        closeWindow(nullptr, "Roughness texture not loaded");
+    GlobalLog("Loaded roughness texture");
 
-	Texture* metallicTexture = loadTexture(engine, L"textures\\metallic.png");
-	if (metallicTexture == nullptr)
-		closeWindow(nullptr, "Metallic texture not loaded");
-	GlobalLog("Loaded metallic texture");
+    Texture* metallicTexture = loadTexture(engine, L"textures\\metallic.png");
+    if (metallicTexture == nullptr)
+        closeWindow(nullptr, "Metallic texture not loaded");
+    GlobalLog("Loaded metallic texture");
 
-	Texture* aoTexture = loadTexture(engine, L"textures\\ao.png");
-	if (aoTexture == nullptr)
-		closeWindow(nullptr, "AO texture not loaded");
-	GlobalLog("Loaded AO texture");
+    Texture* aoTexture = loadTexture(engine, L"textures\\ao.png");
+    if (aoTexture == nullptr)
+        closeWindow(nullptr, "AO texture not loaded");
+    GlobalLog("Loaded AO texture");
+    */
 
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
+    /*
     materialInstance->setParameter("albedo", albedoTexture, sampler);
     GlobalLog("Set albedo texture");
 
-	materialInstance->setParameter("normal", normalTexture, sampler);
-	GlobalLog("Set normal texture");
+    materialInstance->setParameter("normal", normalTexture, sampler);
+    GlobalLog("Set normal texture");
 
-	materialInstance->setParameter("roughness", roughnessTexture, sampler);
-	GlobalLog("Set roughness texture");
+    materialInstance->setParameter("roughness", roughnessTexture, sampler);
+    GlobalLog("Set roughness texture");
 
-	materialInstance->setParameter("metallic", metallicTexture, sampler);
-	GlobalLog("Set metallic texture");
+    materialInstance->setParameter("metallic", metallicTexture, sampler);
+    GlobalLog("Set metallic texture");
 
-	materialInstance->setParameter("ao", aoTexture, sampler);
-	GlobalLog("Set AO texture");
+    materialInstance->setParameter("ao", aoTexture, sampler);
+    GlobalLog("Set AO texture");
+    */
+
+	materialInstance->setParameter("baseColor", math::float3{ 1.0f, 0.0f, 1.0f });
+	GlobalLog("Set base color");
+
+	materialInstance->setParameter("emissive", math::float4{ 1.0f, 1.0f, 1.0f, 1.0f });
+	GlobalLog("Set emissive color");
 
     filamesh::MeshReader::MaterialRegistry registry;
-	registry.registerMaterialInstance("TexturedLit", materialInstance);
-	GlobalLog("Registered material instance");
+    registry.registerMaterialInstance("Unlit", materialInstance);
+    GlobalLog("Registered material instance");
 
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"meshes\\monkey.filamesh"))), registry);
-	if (mesh.renderable.isNull())
-		closeWindow(nullptr, "Mesh not loaded");
-	GlobalLog("Loaded mesh");
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"meshes\\suzanne.filamesh"))), registry);
+    if (mesh.renderable.isNull())
+        closeWindow(nullptr, "Mesh not loaded");
+    GlobalLog("Loaded mesh");
 
     scene->addEntity(mesh.renderable);
-	GlobalLog("Added mesh to scene");
+    GlobalLog("Added mesh to scene");
 
     addLight(engine, scene);
     GlobalLog("Added light to scene");
+
+    filament::Skybox* skybox = filament::Skybox::Builder()
+        .color({0.035f, 0.035f, 0.035f, 1})
+        .build(*engine);
+	if (skybox == nullptr)
+		closeWindow(nullptr, "Skybox not created");
+	GlobalLog("Skybox created");
+
+    scene->setSkybox(skybox);
+    GlobalLog("Skybox set for the scene");
 
     view->setCamera(camera);
     GlobalLog("Set camera to view");
