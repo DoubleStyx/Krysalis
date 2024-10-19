@@ -212,7 +212,7 @@ void init(GLFWwindow* window) {
     view->setPostProcessingEnabled(true);
     GlobalLog("Set post processing flag");
 
-    std::vector<uint8_t> materialData = loadFile(L"materials\\sandboxUnlit.filamat");
+    std::vector<uint8_t> materialData = loadFile(L"materials\\texturedLitEmissive.filamat");
     if (materialData.empty())
         closeWindow(nullptr, "Material data not loaded");
     GlobalLog("Loaded material data of size " + std::to_string(materialData.size()));
@@ -229,7 +229,6 @@ void init(GLFWwindow* window) {
         closeWindow(nullptr, "Material instance not created");
     GlobalLog("Material instance created");
 
-    /*
     Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
     if (albedoTexture == nullptr)
         closeWindow(nullptr, "Albedo texture not loaded");
@@ -254,12 +253,10 @@ void init(GLFWwindow* window) {
     if (aoTexture == nullptr)
         closeWindow(nullptr, "AO texture not loaded");
     GlobalLog("Loaded AO texture");
-    */
 
     TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
         TextureSampler::MagFilter::LINEAR);
 
-    /*
     materialInstance->setParameter("albedo", albedoTexture, sampler);
     GlobalLog("Set albedo texture");
 
@@ -271,16 +268,15 @@ void init(GLFWwindow* window) {
 
     materialInstance->setParameter("metallic", metallicTexture, sampler);
     GlobalLog("Set metallic texture");
-
+     
     materialInstance->setParameter("ao", aoTexture, sampler);
     GlobalLog("Set AO texture");
-    */
 
-	materialInstance->setParameter("baseColor", math::float3{ 1.0f, 0.0f, 1.0f });
-	GlobalLog("Set base color");
+    materialInstance->setParameter("clearCoat", 0.0f);
+	GlobalLog("Set clear coat");
 
-	materialInstance->setParameter("emissive", math::float4{ 1.0f, 1.0f, 1.0f, 1.0f });
-	GlobalLog("Set emissive color");
+	materialInstance->setParameter("emissive", math::float4{ 0.1f, 0.1f, 0.1f, 1.0f });
+	GlobalLog("Set emissive");
 
     filamesh::MeshReader::MaterialRegistry registry;
     registry.registerMaterialInstance("Unlit", materialInstance);

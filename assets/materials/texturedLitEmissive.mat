@@ -1,5 +1,5 @@
 material {
-    name : LitTexturedEmissive,
+    name : Unlit, // change later
     requires : [
         uv0
     ],
