@@ -21,7 +21,11 @@
 #include <filament/LightManager.h>
 #include <filament/Material.h>
 #include <filament/RenderableManager.h>
+#include <filameshio/MeshReader.h>
+#include <filament/Material.h>
+#include <filament/MaterialInstance.h>
 #include <utils/EntityManager.h>
+#include <utils/Path.h>
 #include <filament/Viewport.h>
 #include <Windows.h>
 #include <chrono>
@@ -45,14 +49,6 @@ struct Vertex {
     uint32_t color;
 };
 
-static const Vertex TRIANGLE_VERTICES[3] = {
-    {{1.0f, 0.0f}, 0xffff0000u},
-    {{cosf(M_PI * 2 / 3), sinf(M_PI * 2 / 3)}, 0xff00ff00u},
-    {{cosf(M_PI * 4 / 3), sinf(M_PI * 4 / 3)}, 0xff0000ffu}
-};
-
-static constexpr uint16_t TRIANGLE_INDICES[3] = { 0, 1, 2 };
-
 filament::Engine* _engine = nullptr;
 filament::SwapChain* _swapchain = nullptr;
 filament::Renderer* _renderer = nullptr;
@@ -68,6 +64,41 @@ int g_frame_size_x = g_window_size_x;
 int g_frame_size_y = g_window_size_y;
 
 float rotationAngle = 0.0f;
+
+std::vector<char> readFileContents(const std::string& filePath) {
+    std::ifstream fileStream(filePath, std::ios::binary);
+    if (!fileStream) {
+        throw std::runtime_error("Failed to open file: " + filePath);
+    }
+
+    std::vector<char> buffer((std::istreambuf_iterator<char>(fileStream)),
+        std::istreambuf_iterator<char>());
+    return buffer;
+}
+
+void loadMeshFromFile(filament::Engine* engine, const std::string& filePath, const filament::MaterialInstance* materialInstance) {
+    std::vector<char> buffer = readFileContents(filePath);
+
+    if (buffer.empty()) {
+        LogToCSharp("Mesh file is empty or failed to read.");
+        return;
+    }
+	
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, filePath.c_str(), materialInstance);
+
+    if (!mesh.renderable) {
+        LogToCSharp("Failed to load mesh from file: " + filePath);
+        return;
+    }
+
+    LogToCSharp("Mesh loaded successfully from file: " + filePath);
+
+    // Add the renderable to the scene
+    _scene->addEntity(mesh.renderable);
+
+    // Store the renderable entity for later use (e.g., transformations)
+    _entity = mesh.renderable;
+}
 
 void* getNativeWindow(GLFWwindow* window) {
     LogToCSharp("Getting native window");
@@ -193,8 +224,14 @@ void init(GLFWwindow* window) {
     );
     LogToCSharp("Set camera projection (Perspective)");
 
+    camera->lookAt(
+        math::float3{ 0.0f, 0.0f, 5.0f },   // Eye position (move back to see the model)
+        math::float3{ 0.0f, 0.0f, 0.0f },   // Look-at position
+        math::float3{ 0.0f, 1.0f, 0.0f });  // Up vector
+    LogToCSharp("Camera positioned");
+
     renderer->setClearOptions({
-        .clearColor = {0.25f, 0.5f, 1.0f, 1.0f},
+        .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
         .clear = true
         });
     LogToCSharp("Set clear options");
@@ -202,63 +239,30 @@ void init(GLFWwindow* window) {
     view->setPostProcessingEnabled(false);
     LogToCSharp("Set post processing enabled");
 
-    filament::VertexBuffer* vb = filament::VertexBuffer::Builder()
-        .vertexCount(3)
-        .bufferCount(1)
-        .attribute(filament::VertexAttribute::POSITION, 0, filament::VertexBuffer::AttributeType::FLOAT2, offsetof(Vertex, position), sizeof(Vertex))
-        .attribute(filament::VertexAttribute::COLOR, 0, filament::VertexBuffer::AttributeType::UBYTE4, offsetof(Vertex, color), sizeof(Vertex))
-        .normalized(filament::VertexAttribute::COLOR)
+    filament::Material* material = filament::Material::Builder()
+        .package(MATERIAL_PACKAGE_DATA, MATERIAL_PACKAGE_SIZE)
         .build(*engine);
-    if (!vb) {
-        closeWindow(nullptr, "Vertex buffer not created");
-    }
-    LogToCSharp("Vertex buffer created");
+    if (material == nullptr)
+        closeWindow(nullptr, "Material not created");
+    LogToCSharp("Material created");
 
-    vb->setBufferAt(*engine, 0,
-        filament::VertexBuffer::BufferDescriptor(TRIANGLE_VERTICES, sizeof(TRIANGLE_VERTICES), nullptr));
-    LogToCSharp("Set vertex buffer");
+    filament::MaterialInstance* materialInstance = material->createInstance();
+    if (materialInstance == nullptr)
+        closeWindow(nullptr, "Material instance not created");
+    LogToCSharp("Material instance created");
 
-    filament::IndexBuffer* ib = filament::IndexBuffer::Builder()
-        .indexCount(3)
-        .bufferType(filament::IndexBuffer::IndexType::USHORT)
-        .build(*engine);
-    if (!ib) {
-        closeWindow(nullptr, "Index buffer not created");
-    }
-    LogToCSharp("Index buffer created");
+    Texture* albedoTexture = loadTexture(engine, ALBEDO_TEXTURE_DATA, ALBEDO_TEXTURE_SIZE);
+    TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
+        TextureSampler::MagFilter::LINEAR);
 
-    ib->setBuffer(*engine,
-        filament::IndexBuffer::BufferDescriptor(TRIANGLE_INDICES, sizeof(TRIANGLE_INDICES), nullptr));
-    LogToCSharp("Set index buffer");
+    materialInstance->setParameter("albedo", albedoTexture, textureSampler);
+    LogToCSharp("Set albedo texture");
 
-    const filament::Material* material = engine->getDefaultMaterial();
-    if (!material) {
-        closeWindow(nullptr, "Default material not available");
-    }
-    LogToCSharp("Got default material");
+	filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, "assets/meshes/monkey.filamesh", materialInstance);
 
-    utils::Entity renderable = utils::EntityManager::get().create();
-    if (renderable.isNull()) {
-        closeWindow(nullptr, "Renderable not created");
-    }
-    LogToCSharp("Renderable created");
+    scene->addEntity(mesh.renderable);
 
-    filament::RenderableManager::Builder builder(1);
-    builder
-        .boundingBox({ { -1, -1, -1 }, { 1, 1, 1 } })
-        .material(0, material->getDefaultInstance())
-        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib, 0, 3)
-        .culling(false)
-        .receiveShadows(false)
-        .castShadows(false);
-    filament::RenderableManager::Builder::Result result = builder.build(*engine, renderable);
-    if (result != filament::RenderableManager::Builder::Result::Success) {
-        closeWindow(nullptr, "Renderable not built successfully");
-    }
-    LogToCSharp("Renderable built");
-
-    scene->addEntity(renderable);
-    LogToCSharp("Added renderable to scene");
+    _entity = mesh.renderable;
 
     addLight(engine, scene);
     LogToCSharp("Added light to scene");
@@ -341,7 +345,6 @@ void runWindow() {
 
             if (elapsed.count() >= TARGET_FRAME_DURATION) {
                 lastFrameTime = currentTime;
-                LogToCSharp("Rendering frame");
 
                 glfwPollEvents();
                 display();
