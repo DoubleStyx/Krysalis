@@ -442,5 +442,5 @@ FodyWeavers.xsd
 !assets/**
 
 # Compiled files
-.filamesh
-.filamat
+*.filamesh
+*.filamat

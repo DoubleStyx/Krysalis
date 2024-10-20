@@ -91,8 +91,8 @@
     <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
     <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
     <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
-    <ModsDirectory>$(ResonitePath)rml_mods</ModsDirectory>
-    <KrysalisDirectory>$(ModsDirectory)Krysalis</KrysalisDirectory>
+    <ModsDirectory>$(ResonitePath)\rml_mods</ModsDirectory>
+    <KrysalisDirectory>$(ModsDirectory)\Krysalis</KrysalisDirectory>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
@@ -107,38 +107,43 @@
   </Target>
   <Import Project="..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
   <PropertyGroup>
-    <AssetsDirectory>$(ProjectDir)..\\assets</AssetsDirectory>
-    <MaterialsDirectory>$(AssetsDirectory)\\materials</MaterialsDirectory>
-    <MeshesDirectory>$(AssetsDirectory)\\meshes</MeshesDirectory>
-    <BinDirectory>$(AssetsDirectory)\\bin</BinDirectory>
-    <FilameshExecutable>$(BinDirectory)\\filamesh.exe</FilameshExecutable>
-    <MatcExecutable>$(BinDirectory)\\matc.exe</MatcExecutable>
+    <AssetsDirectory>$(ProjectDir)..\assets</AssetsDirectory>
+    <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
+    <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
+    <BinDirectory>$(AssetsDirectory)\bin</BinDirectory>
+    <FilameshExecutable>$(BinDirectory)\filamesh.exe</FilameshExecutable>
+    <MatcExecutable>$(BinDirectory)\matc.exe</MatcExecutable>
   </PropertyGroup>
   <ItemGroup>
-    <MaterialFiles Include="$(MaterialsDirectory)\\*.mat" />
-    <MeshFiles Include="$(MeshesDirectory)\\*.obj" />
-  </ItemGroup>
-  <ItemGroup>
-    <AssetFiles Include="$(AssetsDirectory)\\**\\*.*" />
+    <MaterialFiles Include="$(MaterialsDirectory)\*.mat" />
+    <MeshFiles Include="$(MeshesDirectory)\*.obj" />
   </ItemGroup>
   <ItemGroup>
     <MaterialFile Include="@(MaterialFiles)">
-      <OutputFile>$(MaterialsDirectory)\\%(Filename).filamat</OutputFile>
+      <OutputFile>$(MaterialsDirectory)\%(Filename).filamat</OutputFile>
     </MaterialFile>
     <MeshFile Include="@(MeshFiles)">
-      <OutputFile>$(MeshesDirectory)\\%(Filename).filamesh</OutputFile>
+      <OutputFile>$(MeshesDirectory)\%(Filename).filamesh</OutputFile>
     </MeshFile>
   </ItemGroup>
-  <Target Name="CompileMaterials" BeforeTargets="Build">
-    <Exec Command="$(MatcExecutable) -o %(MaterialFile.OutputFile) %(MaterialFile.FullPath)"
-      Condition="Exists('%(MaterialFile.FullPath)') AND (!Exists('%(MaterialFile.OutputFile)') OR '%(MaterialFile.FullPath)' > '%(MaterialFile.OutputFile)')" />
+  <Target Name="CompileMaterials" BeforeTargets="Build"
+    Inputs="@(MaterialFile->'%(FullPath)')"
+    Outputs="@(MaterialFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(MatcExecutable)&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;"
+      Condition="Exists('$(MatcExecutable)')"
+      StandardOutputImportance="High"
+      StandardErrorImportance="High" />
   </Target>
-  <Target Name="CompileMeshes" BeforeTargets="Build">
-    <Exec Command="$(FilameshExecutable) -o %(MeshFile.OutputFile) %(MeshFile.FullPath)"
-      Condition="Exists('%(MeshFile.FullPath)') AND (!Exists('%(MeshFile.OutputFile)') OR '%(MeshFile.FullPath)' > '%(MeshFile.OutputFile)')" />
+  <Target Name="CompileMeshes" BeforeTargets="Build"
+    Inputs="@(MeshFile->'%(FullPath)')"
+    Outputs="@(MeshFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(FilameshExecutable)&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
+      Condition="Exists('$(FilameshExecutable)')"
+      StandardOutputImportance="High"
+      StandardErrorImportance="High" />
   </Target>
   <ItemGroup>
-    <AssetFiles Include="$(AssetsDirectory)\\**\\*.*" />
+    <AssetFiles Include="$(AssetsDirectory)\**\*.*" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
