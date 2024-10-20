@@ -48,3 +48,4 @@ void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
     filament::VertexBuffer** vb, filament::IndexBuffer** ib);
 void updateScene();
 void loadScene(filament::Engine* engine, filament::Scene* scene);
+void VerifyComponents(filament::Engine* engine);

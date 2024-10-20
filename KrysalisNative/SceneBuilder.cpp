@@ -18,6 +18,7 @@
 #include <filament/Texture.h>
 #include <filameshio/MeshReader.h>
 #include <filament/TextureSampler.h>
+#include <utils/Entity.h>
 #include <math/mat4.h>
 #include <math/vec4.h>
 #include <math/vec3.h>
@@ -103,8 +104,59 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
 
         scene->addEntity(entity);
 		GlobalLog("Added entity to scene");
+
+        auto uuidOpt = uuids::uuid::from_string(obj["id"].GetString());
+
+        if (uuidOpt) {  // Check if the optional contains a valid uuid
+            _entities[uuidOpt.value()] = entity;
+        }
+        else {
+            // Handle the case where the UUID string is invalid
+            GlobalLog("Invalid UUID string");
+        }
+    }
+	GlobalLog("Finished processing scene objects");
+
+	VerifyComponents(engine);  // TEMPORARY
+	GlobalLog("Verified components");
+}
+
+void VerifyComponents(filament::Engine* engine) { // TEMPORARY
+    // Get references to the relevant component managers from the engine
+    TransformManager& transformManager = engine->getTransformManager();
+    RenderableManager& renderableManager = engine->getRenderableManager();
+    LightManager& lightManager = engine->getLightManager();
+
+    // Loop through each entity
+    for (const auto& [uuid, entity] : _entities) {
+        GlobalLog("Entity UUID: " + to_string(uuid));
+
+        // Check if the entity has a transform component
+        if (transformManager.hasComponent(entity)) {
+            GlobalLog("  - Has Transform Component");
+        }
+        else {
+            GlobalLog("  - Missing Transform Component");
+        }
+
+        // Check if the entity has a renderable component
+        if (renderableManager.hasComponent(entity)) {
+            GlobalLog("  - Has Renderable Component");
+        }
+        else {
+            GlobalLog("  - Missing Renderable Component");
+        }
+
+        // Check if the entity has a light component
+        if (lightManager.hasComponent(entity)) {
+            GlobalLog("  - Has Light Component");
+        }
+        else {
+            GlobalLog("  - Missing Light Component");
+        }
     }
 }
+
 
 filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
     filament::LightManager::Builder builder(
@@ -202,35 +254,44 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
 
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
-	GlobalLog("Obtained TransformManager");
+    GlobalLog("Obtained TransformManager");
+
+    // Ensure the entity has a Transform Component
+    if (!tcm.hasComponent(entity)) {
+        tcm.create(entity);
+        GlobalLog("Created Transform Component for entity");
+    }
 
     const rapidjson::Value& position = obj["transform"]["position"];
     const rapidjson::Value& rotation = obj["transform"]["rotation"];
     const rapidjson::Value& scale = obj["transform"]["scale"];
-	GlobalLog("Obtained transform components");
+    GlobalLog("Obtained transform components");
 
     math::float3 translationVector = math::float3(position[0].GetFloat(), position[1].GetFloat(), position[2].GetFloat());
     math::mat4f translation = math::mat4f::translation(translationVector);
-	GlobalLog("Created translation matrix");
+    GlobalLog("Created translation matrix");
 
     float angle = rotation[0].GetFloat();
-    float axisX = rotation[1].GetFloat(); 
+    float axisX = rotation[1].GetFloat();
     float axisY = rotation[2].GetFloat();
     float axisZ = rotation[3].GetFloat();
 
     math::mat4f rotationMat = math::mat4f::rotation(angle, math::float3(axisX, axisY, axisZ));
-	GlobalLog("Created rotation matrix");
+    GlobalLog("Created rotation matrix");
 
-	math::float3 scaleVector = math::float3(scale[0].GetFloat(), scale[1].GetFloat(), scale[2].GetFloat());
-	math::mat4f scaleMat = math::mat4f::scaling(scaleVector);
-	GlobalLog("Created scale matrix");
+    math::float3 scaleVector = math::float3(scale[0].GetFloat(), scale[1].GetFloat(), scale[2].GetFloat());
+    math::mat4f scaleMat = math::mat4f::scaling(scaleVector);
+    GlobalLog("Created scale matrix");
 
     math::mat4f transform = translation * rotationMat * scaleMat;
-	GlobalLog("Created transform matrix");
+    GlobalLog("Created transform matrix");
 
-    tcm.setTransform(tcm.getInstance(entity), transform);
-	GlobalLog("Set transform");
+    // Set the transform for the entity using its valid instance
+    auto instance = tcm.getInstance(entity);
+    tcm.setTransform(instance, transform);
+    GlobalLog("Set transform");
 }
+
 
 void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
     filamesh::MeshReader::MaterialRegistry& materialRegistry,

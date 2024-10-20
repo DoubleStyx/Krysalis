@@ -170,9 +170,9 @@ void init(GLFWwindow* window) {
         camera->setModelMatrix(math::mat4f(viewMatrix));
         GlobalLog("Set camera model matrix using lookAt");
     }
-
+    
     camera->setProjection(
-        45.0f,
+        60.0f,
         static_cast<float>(g_frame_size_x) / g_frame_size_y,
         0.1f,
         100.0f,
@@ -181,9 +181,9 @@ void init(GLFWwindow* window) {
     GlobalLog("Set camera projection (Perspective)");
 
     camera->lookAt(
-        math::float3{ 0.0f, 0.0f, 5.0f },  // Eye position (camera position)
-        math::float3{ 0.0f, 0.0f, 10.0f }, // Target position (now behind the camera)
-        math::float3{ 0.0f, 1.0f, 0.0f }); // Up vector
+        math::float3{ 0.0f, 0.0f, 2.0f },   // Move camera closer to objects
+        math::float3{ 0.0f, 0.0f, 0.0f },   // Look at the origin
+        math::float3{ 0.0f, 1.0f, 0.0f });
     GlobalLog("Camera positioned");
 
     // better validation for certain actions?
@@ -204,6 +204,8 @@ void init(GLFWwindow* window) {
 
     loadScene(engine, scene);
     GlobalLog("Loaded scene");
+
+
 
     _engine = engine;
     _swapchain = swapChain;
