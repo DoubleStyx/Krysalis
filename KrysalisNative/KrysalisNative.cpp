@@ -1,5 +1,8 @@
 // KrysalisNative.cpp
+// main rendering loop, pipeline initialization, and window creation/management
+
 #define GLFW_EXPOSE_NATIVE_WIN32
+// clean up headers at some point, perhaps with a tool
 #include <iostream>
 #include <filesystem>
 #include <string>
@@ -46,39 +49,45 @@
 #include <boost/uuid/uuid_io.hpp>
 #include "KrysalisNative.h"
 #include "Utils.h"
+#include "SceneBuilder.h"
 
+// Most logging happens here, but we can log elsewhere as the project grows.
+
+// other namespaces worth including? Maybe simplify namespace usage? Don't want conflicts or ambiguity though.
 using namespace filament;
 using namespace math;
 
-double TARGET_FPS = 60.0;
+double TARGET_FPS = 60.0; // get screen refresh rate
 double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
 
+// Do we still need this?
 struct Vertex {
     math::float2 position;
     uint32_t color;
 };
 
+// "static singletons"
 filament::Engine* _engine = nullptr;
 filament::SwapChain* _swapchain = nullptr;
 filament::Renderer* _renderer = nullptr;
 filament::Camera* _camera = nullptr;
 filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
-utils::Entity _entity;
 
-std::unordered_map<std::
+// scene lives here
+std::unordered_map<boost::uuids::uuid, utils::Entity> _entities; // component managers handle entity-component associations
 
+// Get monitor resolution
 int g_window_size_x = 512;
 int g_window_size_y = 512;
 int g_frame_size_x = g_window_size_x;
 int g_frame_size_y = g_window_size_y;
 
-float rotationAngle = 0.0f;
-
+// can this be moved elsewhere?
 void* getNativeWindow(GLFWwindow* window) {
-    GlobalLog("Getting native window");
+    GlobalLog("Getting native window"); // Do we need so much logging? I guess why not? We could have a log priority. Libraries?
 
-    HWND hwnd = glfwGetWin32Window(window);
+    HWND hwnd = glfwGetWin32Window(window); // We're focused on Windows support for now
     if (hwnd == nullptr) {
         closeWindow(nullptr, "Native window not found");
     }
@@ -87,6 +96,7 @@ void* getNativeWindow(GLFWwindow* window) {
     return hwnd;
 }
 
+// Do something here
 void reshape_window(GLFWwindow* window, int w, int h) {
     GlobalLog("Reshaping window");
 
@@ -94,11 +104,13 @@ void reshape_window(GLFWwindow* window, int w, int h) {
     GlobalLog("Reshaped window");
 }
 
+// Do something here
 void reshape_framebuffer(GLFWwindow* window, int w, int h) {
     (void)window; (void)w; (void)h;
 	GlobalLog("Reshaped framebuffer");
 }
 
+// Get all key and mouse events and send to resonite
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     (void)window; (void)mods; (void)scancode;
@@ -113,25 +125,6 @@ void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) 
 
         closeWindow(window, "Closing window");
     }
-}
-
-void addLight(filament::Engine* engine, filament::Scene* scene) {
-    utils::Entity lightEntity = utils::EntityManager::get().create();
-    if (lightEntity.isNull()) {
-        closeWindow(nullptr, "Light entity not created");
-    }
-    GlobalLog("Light entity created");
-
-    LightManager::Builder(LightManager::Type::DIRECTIONAL)
-        .color({ 1.0f, 1.0f, 1.0f })
-        .intensity(1000000.0f)
-        .direction({ 0.0f, -0.5f, -1.0f })
-        .castShadows(true)
-        .build(*engine, lightEntity);
-    GlobalLog("Built light entity");
-
-    scene->addEntity(lightEntity);
-    GlobalLog("Added light entity to scene");
 }
 
 void init(GLFWwindow* window) {
@@ -180,6 +173,8 @@ void init(GLFWwindow* window) {
     view->setViewport({ 0, 0, static_cast<uint32_t>(g_frame_size_x), static_cast<uint32_t>(g_frame_size_y) });
     GlobalLog("Set viewport");
 
+    // Eventually get camera from Resonite's active camera
+    // We let resonite handle the camera transform
     {
         math::double3 eye(0.0, 0.0, 3.0);
         math::double3 at(0.0, 0.0, 0.0);
@@ -208,6 +203,7 @@ void init(GLFWwindow* window) {
     //camera->setExposure(16.0f, 1.0f / 125.0f, 100.0f);
 	//GlobalLog("Set camera exposure");
 
+    // better validation for certain actions?
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
         .clear = true
@@ -216,97 +212,6 @@ void init(GLFWwindow* window) {
 
     view->setPostProcessingEnabled(true);
     GlobalLog("Set post processing flag");
-
-    std::vector<uint8_t> materialData = loadFile(L"materials\\texturedLitEmissive.filamat");
-    if (materialData.empty())
-        closeWindow(nullptr, "Material data not loaded");
-    GlobalLog("Loaded material data of size " + std::to_string(materialData.size()));
-
-    filament::Material* material = filament::Material::Builder()
-        .package(materialData.data(), materialData.size())
-        .build(*engine);
-    if (material == nullptr)
-        closeWindow(nullptr, "Material not created");
-    GlobalLog("Material created");
-
-    filament::MaterialInstance* materialInstance = material->createInstance();
-    if (materialInstance == nullptr)
-        closeWindow(nullptr, "Material instance not created");
-    GlobalLog("Material instance created");
-
-    Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
-    if (albedoTexture == nullptr)
-        closeWindow(nullptr, "Albedo texture not loaded");
-    GlobalLog("Loaded albedo texture");
-
-    Texture* normalTexture = loadTexture(engine, L"textures\\normal.png");
-    if (normalTexture == nullptr)
-        closeWindow(nullptr, "Normal texture not loaded");
-    GlobalLog("Loaded normal texture");
-
-    Texture* roughnessTexture = loadTexture(engine, L"textures\\roughness.png");
-    if (roughnessTexture == nullptr)
-        closeWindow(nullptr, "Roughness texture not loaded");
-    GlobalLog("Loaded roughness texture");
-
-    Texture* metallicTexture = loadTexture(engine, L"textures\\metallic.png");
-    if (metallicTexture == nullptr)
-        closeWindow(nullptr, "Metallic texture not loaded");
-    GlobalLog("Loaded metallic texture");
-
-    Texture* aoTexture = loadTexture(engine, L"textures\\ao.png");
-    if (aoTexture == nullptr)
-        closeWindow(nullptr, "AO texture not loaded");
-    GlobalLog("Loaded AO texture");
-
-    TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
-        TextureSampler::MagFilter::LINEAR);
-
-    materialInstance->setParameter("albedo", albedoTexture, sampler);
-    GlobalLog("Set albedo texture");
-
-    materialInstance->setParameter("normal", normalTexture, sampler);
-    GlobalLog("Set normal texture");
-
-    materialInstance->setParameter("roughness", roughnessTexture, sampler);
-    GlobalLog("Set roughness texture");
-
-    materialInstance->setParameter("metallic", metallicTexture, sampler);
-    GlobalLog("Set metallic texture");
-     
-    materialInstance->setParameter("ao", aoTexture, sampler);
-    GlobalLog("Set AO texture");
-
-    materialInstance->setParameter("clearCoat", 0.0f);
-	GlobalLog("Set clear coat");
-
-	materialInstance->setParameter("emissive", math::float4{ 0.0f, 0.0f, 0.0f, 1.0f });
-	GlobalLog("Set emissive");
-
-    filamesh::MeshReader::MaterialRegistry registry;
-    registry.registerMaterialInstance("Unlit", materialInstance);
-    GlobalLog("Registered material instance");
-
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"meshes\\suzanne.filamesh"))), registry);
-    if (mesh.renderable.isNull())
-        closeWindow(nullptr, "Mesh not loaded");
-    GlobalLog("Loaded mesh");
-
-    scene->addEntity(mesh.renderable);
-    GlobalLog("Added mesh to scene");
-
-    addLight(engine, scene);
-    GlobalLog("Added light to scene");
-
-    filament::Skybox* skybox = filament::Skybox::Builder()
-        .color({0.035f, 0.035f, 0.035f, 1})
-        .build(*engine);
-	if (skybox == nullptr)
-		closeWindow(nullptr, "Skybox not created");
-	GlobalLog("Skybox created");
-
-    scene->setSkybox(skybox);
-    GlobalLog("Skybox set for the scene");
 
     view->setCamera(camera);
     GlobalLog("Set camera to view");
@@ -319,24 +224,11 @@ void init(GLFWwindow* window) {
     _renderer = renderer;
     _camera = camera;
     _view = view;
-    _entity = mesh.renderable;
     _scene = scene;
-
-    TransformManager& tcm = _engine->getTransformManager();
-    GlobalLog("Got transform manager");
-
-    tcm.setTransform(tcm.getInstance(_entity),
-        math::mat4f::rotation(M_PI_4, math::float3{ 0, 1, 1 }));
-    GlobalLog("Set transform");
 }
 
 void display() {
     if (_renderer->beginFrame(_swapchain)) {
-        rotationAngle += 0.01f;
-
-        TransformManager& tcm = _engine->getTransformManager();
-        tcm.setTransform(tcm.getInstance(_entity),
-            math::mat4f::rotation(rotationAngle, math::float3{ 0, 0, 1 }));
 
         _renderer->render(_view);
 
@@ -401,32 +293,33 @@ void runWindow() {
         }
         GlobalLog("Window created");
 
-        glfwSetWindowSizeCallback(window, reshape_window);
-        GlobalLog("Set window size callback");
-
-        glfwSetFramebufferSizeCallback(window, reshape_framebuffer);
-        GlobalLog("Set framebuffer size callback");
-
-        glfwSetKeyCallback(window, key_press);
-        GlobalLog("Set key callback");
-
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         GlobalLog("Set input mode to sticky keys");
 
+        setCallbacks(window);
+
         init(window);
         GlobalLog("Initialized the renderer");
+
+        loadScene();
+		GlobalLog("Loaded scene");
 
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
 		GlobalLog("Saved last frame time");
 
 		GlobalLog("Renderer and window initialized successfully! Beginning main rendering and interaction loop.");
+		std::chrono::steady_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = currentTime - lastFrameTime;
+
+        // this needs to be optimized as much as possible
         while (!glfwWindowShouldClose(window)) {
-            auto currentTime = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapsed = currentTime - lastFrameTime;
+            currentTime = std::chrono::high_resolution_clock::now();
+            elapsed = currentTime - lastFrameTime;
 
             if (elapsed.count() >= TARGET_FRAME_DURATION) {
                 lastFrameTime = currentTime;
 
+                updateScene(); // handle scene changes, probably in some sort of queue or buffer
                 glfwPollEvents();
                 display();
                 glfwSwapBuffers(window);
@@ -439,10 +332,51 @@ void runWindow() {
 
         closeWindow(window, "Closing application");
     }
-    catch (const std::exception& e) {
+    catch (const std::exception& e) { // better way to do exceptions? Throw our own?
         closeWindow(nullptr, "Error in rendering thread: " + std::string(e.what()));
     }
     catch (...) {
         closeWindow(nullptr, "Error in rendering thread: Caught unknown exception");
     }
+}
+
+// might not need every callback here, but we'll see
+void setCallbacks(GLFWwindow* window) {
+    glfwSetCharCallback(window, nullptr);
+
+    glfwSetCharModsCallback(window, nullptr);
+
+    glfwSetCursorEnterCallback(window, nullptr);
+
+    glfwSetCursorPosCallback(window, nullptr);
+
+    glfwSetDropCallback(window, nullptr);
+
+    glfwSetErrorCallback(nullptr);
+
+    glfwSetFramebufferSizeCallback(window, reshape_framebuffer);
+
+    glfwSetKeyCallback(window, key_press);
+
+    glfwSetMonitorCallback(nullptr);
+
+    glfwSetMouseButtonCallback(window, nullptr);
+
+    glfwSetScrollCallback(window, nullptr);
+
+    glfwSetWindowCloseCallback(window, nullptr);
+
+    glfwSetWindowContentScaleCallback(window, nullptr);
+
+    glfwSetWindowFocusCallback(window, nullptr);
+
+    glfwSetWindowIconifyCallback(window, nullptr);
+
+    glfwSetWindowMaximizeCallback(window, nullptr);
+
+    glfwSetWindowPosCallback(window, nullptr);
+
+    glfwSetWindowRefreshCallback(window, nullptr);
+
+    glfwSetWindowSizeCallback(window, reshape_window);
 }

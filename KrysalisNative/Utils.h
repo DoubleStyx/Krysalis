@@ -8,6 +8,7 @@
 #include <vector>
 #include "KrysalisNative.h"
 #include "Utils.h"
+#include "SceneBuilder.h"
 
 using namespace filament;
 using namespace math;
@@ -21,17 +22,20 @@ extern LogCallback logCallback;
 
 extern "C" __declspec(dllexport) void startRenderingThread();
 extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback);
-extern "C" __declspec(dllexport) void TestLogger(const char* msg);
 extern "C" __declspec(dllexport) void openLogFile();
 
 void GlobalLog(const std::string& message);
 void NativeLog(const std::string& message);
 void ManagedLog(const std::string& message);
+
+// There's a lot of stuff here. Maybe an easier way?
 std::wstring getDllDirectory();
 std::wstring getFullPath(const std::wstring& relativePath);
 std::string wstringToString(const std::wstring& wstr);
 std::wstring stringToWstring(const std::string& str);
 std::string getFormattedTimestamp(std::time_t time);
+
+// Maybe move to separate I/O file?
 std::vector<uint8_t> loadFile(const std::wstring& relativePath);
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
 void closeLogFile();

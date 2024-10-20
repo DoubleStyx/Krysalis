@@ -1,4 +1,5 @@
 ﻿// Utils.cs
+// helper/utility functions for managed tasks
 using System.Runtime.InteropServices;
 using ResoniteModLoader;
 

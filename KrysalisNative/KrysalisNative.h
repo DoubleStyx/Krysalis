@@ -3,8 +3,13 @@
 #include <math/vec2.h>
 #include <math/compiler.h>
 #include <GLFW/glfw3.h>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include "KrysalisNative.h"
 #include "KrysalisNative.h"
 #include "Utils.h"
+#include "SceneBuilder.h"
 
 using namespace filament;
 using namespace math;
@@ -29,6 +34,8 @@ extern filament::View* _view;
 extern filament::Scene* _scene;
 extern utils::Entity _entity;
 
+extern std::unordered_map<boost::uuids::uuid, utils::Entity> _entities;
+
 extern int g_window_size_x;
 extern int g_window_size_y;
 extern int g_frame_size_x;
@@ -40,7 +47,6 @@ void closeWindow(GLFWwindow* window, std::string reason);
 void runWindow();
 void display();
 void init(GLFWwindow* window);
-void addLight(filament::Engine* engine, filament::Scene* scene);
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods);
 void reshape_framebuffer(GLFWwindow* window, int w, int h);
 void reshape_window(GLFWwindow* window, int w, int h);

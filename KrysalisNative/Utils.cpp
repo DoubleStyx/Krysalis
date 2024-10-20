@@ -1,4 +1,6 @@
 // Utils.cpp
+// Miscellaneous utility/helper functions
+
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
@@ -20,6 +22,7 @@
 #include <codecvt>
 #include "KrysalisNative.h"
 #include "Utils.h"
+#include "SceneBuilder.h"
 
 using namespace filament;
 using namespace math;
@@ -126,11 +129,6 @@ void NativeLog(const std::string& message) {
 void GlobalLog(const std::string& message) {
 	NativeLog(message);
 	ManagedLog(message);
-}
-
-extern "C" __declspec(dllexport) void TestLogger(const char* msg)
-{
-    ManagedLog(msg);
 }
 
 std::wstring getDllDirectory() {
