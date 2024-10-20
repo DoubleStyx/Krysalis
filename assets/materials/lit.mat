@@ -41,6 +41,5 @@ fragment {
         material.metallic = texture(materialParams_metallic, getUV0()).r;
         material.clearCoat = materialParams.clearCoat;
         material.ambientOcclusion = texture(materialParams_ao, getUV0()).r;
-        material.emissive = materialParams.emissive;
     }
 }

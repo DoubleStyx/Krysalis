@@ -118,27 +118,33 @@
     <MaterialFiles Include="$(MaterialsDirectory)\\*.mat" />
     <MeshFiles Include="$(MeshesDirectory)\\*.obj" />
   </ItemGroup>
-  <Target Name="CompileMaterials" BeforeTargets="Build">
-    <Exec Command="$(MatcExecutable) -o $(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat %(MaterialFiles.FullPath)"
-      Condition="Exists('%(MaterialFiles.FullPath)') AND (!Exists('$(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat') OR %(MaterialFiles.FullPath) > $(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat)" />
-  </Target>
-
-  <Target Name="CompileMeshes" BeforeTargets="Build">
-    <Exec Command="$(FilameshExecutable) -o $(MeshesDirectory)\\%(MeshFiles.Filename).filamesh %(MeshFiles.FullPath)"
-      Condition="Exists('%(MeshFiles.FullPath)') AND (!Exists('$(MeshesDirectory)\\%(MeshFiles.Filename).filamesh') OR %(MeshFiles.FullPath) > $(MeshesDirectory)\\%(MeshFiles.Filename).filamesh)" />
-  </Target>
-
   <ItemGroup>
     <AssetFiles Include="$(AssetsDirectory)\\**\\*.*" />
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
-      <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
-      <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
-
-      <Message Text="Copying assets from $(AssetsDirectory) to $(KrysalisDirectory)" Importance="high" />
-
-      <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(KrysalisDirectory)" />
+  <ItemGroup>
+    <MaterialFile Include="@(MaterialFiles)">
+      <OutputFile>$(MaterialsDirectory)\\%(Filename).filamat</OutputFile>
+    </MaterialFile>
+    <MeshFile Include="@(MeshFiles)">
+      <OutputFile>$(MeshesDirectory)\\%(Filename).filamesh</OutputFile>
+    </MeshFile>
+  </ItemGroup>
+  <Target Name="CompileMaterials" BeforeTargets="Build">
+    <Exec Command="$(MatcExecutable) -o %(MaterialFile.OutputFile) %(MaterialFile.FullPath)"
+      Condition="Exists('%(MaterialFile.FullPath)') AND (!Exists('%(MaterialFile.OutputFile)') OR '%(MaterialFile.FullPath)' > '%(MaterialFile.OutputFile)')" />
   </Target>
+  <Target Name="CompileMeshes" BeforeTargets="Build">
+    <Exec Command="$(FilameshExecutable) -o %(MeshFile.OutputFile) %(MeshFile.FullPath)"
+      Condition="Exists('%(MeshFile.FullPath)') AND (!Exists('%(MeshFile.OutputFile)') OR '%(MeshFile.FullPath)' > '%(MeshFile.OutputFile)')" />
+  </Target>
+  <ItemGroup>
+    <AssetFiles Include="$(AssetsDirectory)\\**\\*.*" />
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
+    <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
 
+    <Message Text="Copying assets from $(AssetsDirectory) to $(KrysalisDirectory)" Importance="high" />
+    <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(KrysalisDirectory)" />
+  </Target>
 </Project>
