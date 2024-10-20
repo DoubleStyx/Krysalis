@@ -17,29 +17,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Set hardcoded version components
-      - name: Set version components
-        run: |
-          echo "MAJOR_VERSION=1" >> $env:GITHUB_ENV
-          echo "MINOR_VERSION=2" >> $env:GITHUB_ENV
-        shell: pwsh
-
-      # Generate full version number using the run number
       - name: Generate version number
         run: |
           $patch_version = ${{ github.run_number }}
-          $version = "${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.$patch_version"
+          $version = "$patch_version"
           echo "VERSION=$version" >> $env:GITHUB_ENV
         shell: pwsh
 
+      # Cache Filament Library
+      - name: Cache Filament Library
+        id: cache-filament
+        uses: actions/cache@v3
+        with:
+          path: C:/Libraries/filament-windows
+          key: filament-v1.55.0
+
+      # Download Filament Library if cache is not hit
       - name: Download Filament Library
+        if: steps.cache-filament.outputs.cache-hit != 'true'
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament-windows.tgz"
           tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
         shell: pwsh
 
+      # Cache GLFW Library
+      - name: Cache GLFW Library
+        id: cache-glfw
+        uses: actions/cache@v3
+        with:
+          path: C:/Libraries/glfw-3.4.bin.WIN64
+          key: glfw-3.4
+
+      # Download GLFW if cache is not hit
       - name: Download GLFW
+        if: steps.cache-glfw.outputs.cache-hit != 'true'
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
           Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.bin.WIN64.zip"
@@ -75,15 +87,15 @@ jobs:
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts-${{ env.VERSION }}.zip"
+          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
         shell: pwsh
 
-      # Upload artifact to GitHub Actions storage (this is optional, not related to GitHub releases)
+      # Upload artifact to GitHub Actions storage (optional, not related to GitHub releases)
       - name: Upload artifact to GitHub Actions
         uses: actions/upload-artifact@v3
         with:
-          name: KrysalisArtifacts-${{ env.VERSION }}
-          path: KrysalisArtifacts-${{ env.VERSION }}.zip
+          name: Krysalis-${{ env.VERSION }}
+          path: Krysalis-${{ env.VERSION }}.zip
 
       # Create a new release
       - name: Create GitHub Release
@@ -104,6 +116,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./KrysalisArtifacts-${{ env.VERSION }}.zip
-          asset_name: KrysalisArtifacts-${{ env.VERSION }}.zip
+          asset_path: ./Krysalis-${{ env.VERSION }}.zip
+          asset_name: Krysalis-${{ env.VERSION }}.zip
           asset_content_type: application/zip
