@@ -7,13 +7,13 @@
         "component": {
         "lightType": "directional",
         "color": [1.0, 1.0, 1.0],
-        "intensity": 100000.0,
-        "direction": [0.0, -1.0, -1.0],
+        "intensity": 1000000.0,
+        "direction": [0.0, 1.0, 1.0],
         "castShadows": true
         },
         "transform": {
         "position": [0.0, 10.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0, 0.0],
+        "rotation": [0.0, 1.0, 0.0, 0.0],
         "scale": [1.0, 1.0, 1.0]
         }
     },
@@ -24,12 +24,12 @@
         "component": {
         "lightType": "point",
         "color": [0.8, 0.8, 1.0],   
-        "intensity": 50000.0,
+        "intensity": 1000000.0,
         "falloff": 20.0 
         },
         "transform": {
-        "position": [2.0, 5.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0, 0.0],
+        "position": [2.0, 5.0, 7.0],
+        "rotation": [0.0, 1.0, 0.0, 0.0],
         "scale": [1.0, 1.0, 1.0]
         }
     },
@@ -79,8 +79,8 @@
         ]
         },
         "transform": {
-        "position": [0.0, 0.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0, 0.0],
+        "position": [0.0, 1.5, 0.0],
+        "rotation": [-75.0, 1.0, 0.0, 2.0],
         "scale": [1.0, 1.0, 1.0]
         }
     },
@@ -98,7 +98,7 @@
                 {
                 "type": "float3",
                 "name": "baseColor",
-                "value": [0.0, 1.0, 0.0] 
+                "value": [0.0, 0.4, 0.0] 
                 },
                 {
                 "type": "float4",
@@ -110,8 +110,8 @@
         ]
         },
         "transform": {
-        "position": [0.0, 0.0, 0.0],
-        "rotation": [0.0, 0.0, 0.0, 0.0],
+        "position": [0.0, 0.0, 0.5],
+        "rotation": [60.0, 1.0, -3.0, 0.0],
         "scale": [1.0, 1.0, 1.0]
         }
     }
