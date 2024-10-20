@@ -206,8 +206,6 @@ void init(GLFWwindow* window) {
     loadScene(engine, scene);
     GlobalLog("Loaded scene");
 
-
-
     _engine = engine;
     _swapchain = swapChain;
     _renderer = renderer;

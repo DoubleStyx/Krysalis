@@ -92,7 +92,7 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
             filament::LightManager::Builder lightBuilder = createLightComponent(obj);
 			GlobalLog("Created light builder");
             lightBuilder.build(*engine, entity);
-			GlobalLog("Built light");
+			GlobalLog("Created light component");
         }
         else if (type == "mesh") {
             createMeshComponent(engine, scene, obj, entity);
@@ -157,7 +157,6 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
     }
 }
 
-
 filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
     filament::LightManager::Builder builder(
         std::string(obj["component"]["lightType"].GetString()) == "directional"
@@ -187,70 +186,70 @@ filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj
 
 void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
     std::string meshURI = obj["component"]["meshURI"].GetString();
-	GlobalLog("Mesh URI: " + meshURI);
+    GlobalLog("Mesh URI: " + meshURI);
 
     filamesh::MeshReader::MaterialRegistry materialRegistry;
 
     const rapidjson::Value& materials = obj["component"]["materials"];
-	GlobalLog("Obtained materials");
+    GlobalLog("Obtained materials");
 
+    // Load materials and create material instances
     for (rapidjson::SizeType i = 0; i < materials.Size(); i++) {
         const rapidjson::Value& materialJson = materials[i];
-		GlobalLog("Processing material " + std::to_string(i));
+        GlobalLog("Processing material " + std::to_string(i));
         std::string materialURI = materialJson["materialURI"].GetString();
-		GlobalLog("Material URI: " + materialURI);
+        GlobalLog("Material URI: " + materialURI);
 
         filament::Material* material = loadMaterial(engine, materialURI);
-		GlobalLog("Loaded material");
+        GlobalLog("Loaded material");
         filament::MaterialInstance* materialInstance = material->createInstance();
-		GlobalLog("Created material instance");
+        GlobalLog("Created material instance");
 
+        // Set material parameters
         const rapidjson::Value& parameters = materialJson["parameters"];
-		GlobalLog("Obtained parameters");
+        GlobalLog("Obtained parameters");
         for (rapidjson::SizeType j = 0; j < parameters.Size(); j++) {
             const rapidjson::Value& param = parameters[j];
-			GlobalLog("Processing parameter " + std::to_string(j));
+            GlobalLog("Processing parameter " + std::to_string(j));
             std::string paramName = param["name"].GetString();
-			GlobalLog("Parameter name: " + paramName);
+            GlobalLog("Parameter name: " + paramName);
 
             if (std::string(param["type"].GetString()) == "sampler2d") {
                 filament::Texture* texture = loadTexture(engine, stringToWstring(param["value"].GetString()));
-				GlobalLog("Loaded texture");
+                GlobalLog("Loaded texture");
                 materialInstance->setParameter(paramName.c_str(), texture, filament::TextureSampler());
-				GlobalLog("Set parameter");
+                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float") {
                 materialInstance->setParameter(paramName.c_str(), param["value"].GetFloat());
-				GlobalLog("Set parameter");
+                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float3") {
                 materialInstance->setParameter(paramName.c_str(), math::float3(
                     param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat()));
-				GlobalLog("Set parameter");
+                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float4") {
                 materialInstance->setParameter(paramName.c_str(), math::float4(
                     param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat(), param["value"][3].GetFloat()));
-				GlobalLog("Set parameter");
+                GlobalLog("Set parameter");
             }
         }
 
+        // Register the material instance (if needed)
         utils::CString materialName(materialJson["materialName"].GetString());
         materialRegistry.registerMaterialInstance(materialName, materialInstance);
-		GlobalLog("Registered material instance");
+        GlobalLog("Registered material instance");
     }
 
-    filament::VertexBuffer* vb;
-    filament::IndexBuffer* ib;
-    loadMeshFromFile(engine, meshURI, materialRegistry, &vb, &ib);
-	GlobalLog("Loaded mesh");
+    filamesh::MeshReader::Mesh mesh = loadMeshFromFile(engine, meshURI, materialRegistry);
+    GlobalLog("Loaded mesh");
 
-    filament::RenderableManager::Builder(1)
-        .boundingBox({ {0, 0, 0}, {1, 1, 1} })
-        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
-        .build(*engine, entity);
-	GlobalLog("Built renderable component");
+	scene->addEntity(mesh.renderable);
+    GlobalLog("Built renderable component");
 }
+
+
 
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
@@ -293,9 +292,8 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
 }
 
 
-void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
-    filamesh::MeshReader::MaterialRegistry& materialRegistry,
-    filament::VertexBuffer** vb, filament::IndexBuffer** ib) {
+filamesh::MeshReader::Mesh loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
+    filamesh::MeshReader::MaterialRegistry& materialRegistry) {
     std::wstring fullPath = getFullPath(stringToWstring(meshURI));
 	GlobalLog("Full path: " + wstringToString(fullPath));
 
@@ -306,8 +304,7 @@ void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
         throw std::runtime_error("Failed to load mesh: " + meshURI);
     }
 
-    *vb = mesh.vertexBuffer;
-    *ib = mesh.indexBuffer;
+    return mesh;
 }
 
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {

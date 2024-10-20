@@ -43,9 +43,8 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
 std::vector<uint8_t> loadFile(const std::wstring& relativePath);
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI);
-void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
-    filamesh::MeshReader::MaterialRegistry& materialRegistry,
-    filament::VertexBuffer** vb, filament::IndexBuffer** ib);
+filamesh::MeshReader::Mesh loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
+    filamesh::MeshReader::MaterialRegistry& materialRegistry);
 void updateScene();
 void loadScene(filament::Engine* engine, filament::Scene* scene);
-void VerifyComponents(filament::Engine* engine);
+void VerifyComponents(filament::Engine* engine); // TEMPORARY
