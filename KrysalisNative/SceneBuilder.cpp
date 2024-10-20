@@ -90,7 +90,7 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
 
         if (type == "light") {
             filament::LightManager::Builder lightBuilder = createLightComponent(obj);
-			GlobalLog("Created light builder");
+			GlobalLog("Created light builder"); //move this to createLightComponent
             lightBuilder.build(*engine, entity);
 			GlobalLog("Built light");
         }
@@ -157,7 +157,7 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
     }
 }
 
-
+// check previous
 filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
     filament::LightManager::Builder builder(
         std::string(obj["component"]["lightType"].GetString()) == "directional"
@@ -185,6 +185,7 @@ filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj
     return builder;
 }
 
+// is scene needed? check previous
 void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
     std::string meshURI = obj["component"]["meshURI"].GetString();
 	GlobalLog("Mesh URI: " + meshURI);
@@ -241,17 +242,18 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
     }
 
     filament::VertexBuffer* vb;
-    filament::IndexBuffer* ib;
+    filament::IndexBuffer* ib; // maybe pass the mesh instance directly?
     loadMeshFromFile(engine, meshURI, materialRegistry, &vb, &ib);
 	GlobalLog("Loaded mesh");
 
     filament::RenderableManager::Builder(1)
         .boundingBox({ {0, 0, 0}, {1, 1, 1} })
         .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
-        .build(*engine, entity);
+        .build(*engine, entity); // pass material registry here
 	GlobalLog("Built renderable component");
 }
 
+// check previous
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
     GlobalLog("Obtained TransformManager");
@@ -292,7 +294,7 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
     GlobalLog("Set transform");
 }
 
-
+// check previous 
 void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
     filamesh::MeshReader::MaterialRegistry& materialRegistry,
     filament::VertexBuffer** vb, filament::IndexBuffer** ib) {
@@ -307,9 +309,10 @@ void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
     }
 
     *vb = mesh.vertexBuffer;
-    *ib = mesh.indexBuffer;
+    *ib = mesh.indexBuffer; // necessary?
 }
 
+// needed? check previous implementation 
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {
     std::vector<uint8_t> materialData = loadFile(stringToWstring(materialURI));
 	GlobalLog("Loaded material data");
@@ -338,6 +341,7 @@ std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
     return std::vector<uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
+// how did we do this before?
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath) {
     std::vector<uint8_t> fileData = loadFile(relativePath);
 	GlobalLog("Loaded file data");
