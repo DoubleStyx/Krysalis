@@ -17,6 +17,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Change major and minor version components here
+      - name: Set version components
+        run: |
+          echo "MAJOR_VERSION=1" >> $GITHUB_ENV
+          echo "MINOR_VERSION=0" >> $GITHUB_ENV
+
+      - name: Generate version number
+        run: |
+          PATCH_VERSION=${{ github.run_number }}
+          VERSION="${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.${PATCH_VERSION}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Download Filament Library
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
@@ -62,10 +74,10 @@ jobs:
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts.zip"
+          Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts-${{ env.VERSION }}.zip"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: KrysalisArtifacts
-          path: KrysalisArtifacts.zip
+          name: KrysalisArtifacts-${{ env.VERSION }}
+          path: KrysalisArtifacts-${{ env.VERSION }}.zip
