@@ -25,8 +25,7 @@
         "lightType": "point",
         "color": [0.8, 0.8, 1.0],   
         "intensity": 50000.0,
-        "falloff": 20.0,
-        "position": [2.0, 5.0, 0.0]  
+        "falloff": 20.0 
         },
         "transform": {
         "position": [2.0, 5.0, 0.0],
