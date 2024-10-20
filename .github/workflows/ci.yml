@@ -63,8 +63,8 @@ jobs:
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
-          Copy-Item -Path "KrysalisManaged/bin/Release/netstandard2.1/KrysalisManaged.dll" -Destination "artifact/" -Force
-          Copy-Item -Path "KrysalisNative/x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
+          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
+          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
           Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
         shell: pwsh
 
