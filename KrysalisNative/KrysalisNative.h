@@ -13,6 +13,8 @@
 
 using namespace filament;
 using namespace math;
+using namespace utils;
+using namespace filamesh;
 
 extern double TARGET_FPS;
 extern double TARGET_FRAME_DURATION;

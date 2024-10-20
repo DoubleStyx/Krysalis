@@ -27,6 +27,8 @@
 
 using namespace filament;
 using namespace math;
+using namespace utils;
+using namespace filamesh;
 
 std::mutex logMutex;
 std::ofstream logFile;

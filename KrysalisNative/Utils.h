@@ -14,6 +14,8 @@
 
 using namespace filament;
 using namespace math;
+using namespace utils;
+using namespace filamesh;
 
 typedef void (*LogCallback)(const char* message);
 

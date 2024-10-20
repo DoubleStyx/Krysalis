@@ -52,6 +52,8 @@
 // other namespaces worth including? Maybe simplify namespace usage? Don't want conflicts or ambiguity though.
 using namespace filament;
 using namespace math;
+using namespace utils;
+using namespace filamesh;
 
 double TARGET_FPS = 60.0; // get screen refresh rate eventually
 double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
@@ -104,7 +106,7 @@ void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) 
     if (action != GLFW_PRESS) {
         return;
     }
-    */
+    */ // needed for now?
 
     if (key == GLFW_KEY_Q) {
         GlobalLog("Key Q pressed");
@@ -181,13 +183,12 @@ void init(GLFWwindow* window) {
     GlobalLog("Set camera projection (Perspective)");
 
     camera->lookAt(
-        math::float3{ 0.0f, 0.0f, 5.0f }, // Camera position
-        math::float3{ 0.0f, 0.0f, 0.0f }, // Look at the origin
-        math::float3{ 0.0f, 1.0f, 0.0f }  // Up vector
+        math::float3{ 0.0f, 0.0f, 5.0f },
+        math::float3{ 0.0f, 0.0f, 0.0f },
+        math::float3{ 0.0f, 1.0f, 0.0f }
     );
     GlobalLog("Camera positioned");
 
-    // better validation for certain actions?
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
         .clear = true

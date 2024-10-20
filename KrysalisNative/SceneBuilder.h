@@ -35,16 +35,19 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
+using namespace filament;
+using namespace math;
+using namespace utils;
+using namespace filamesh;
+
 rapidjson::Document loadSceneFromFile(const std::string& relativePath);
 void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjson::Document& sceneData);
-filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj);
+void createLightComponent(Engine* engine, const rapidjson::Value& obj, utils::Entity entity);
 void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity);
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity);
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
 std::vector<uint8_t> loadFile(const std::wstring& relativePath);
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI);
-filamesh::MeshReader::Mesh loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
-    filamesh::MeshReader::MaterialRegistry& materialRegistry);
 void updateScene();
 void loadScene(filament::Engine* engine, filament::Scene* scene);
 void VerifyComponents(filament::Engine* engine); // TEMPORARY

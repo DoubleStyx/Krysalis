@@ -36,9 +36,15 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
+// namespaces?
 using namespace filament;
+using namespace math;
+using namespace utils;
+using namespace filamesh;
 
 // auto sort and format cpp files?
+// monad pattern? To have better logging?
+// more informative logging?
 
 void updateScene() {
     // Update the scene from event-driven changesets
@@ -47,6 +53,7 @@ void updateScene() {
 void loadScene(filament::Engine* engine, filament::Scene* scene) {
     rapidjson::Document document = loadSceneFromFile("scenes\\testScene.json"); // load from file since we don't have dynamic loading yet
     GlobalLog("Loaded scene from file");
+
     createScene(engine, scene, document);
 	GlobalLog("Created scene");
 }
@@ -85,13 +92,12 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
 
         utils::Entity entity = em.create();
 		GlobalLog("Created entity");
+
         std::string type = obj["type"].GetString();
 		GlobalLog("Obtained object type");
 
         if (type == "light") {
-            filament::LightManager::Builder lightBuilder = createLightComponent(obj);
-			GlobalLog("Created light builder");
-            lightBuilder.build(*engine, entity);
+            createLightComponent(engine, obj, entity);
 			GlobalLog("Created light component");
         }
         else if (type == "mesh") {
@@ -106,12 +112,13 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
 		GlobalLog("Added entity to scene");
 
         auto uuidOpt = uuids::uuid::from_string(obj["id"].GetString());
+		GlobalLog("Obtained UUID string");
 
-        if (uuidOpt) {  // Check if the optional contains a valid uuid
+        if (uuidOpt) { // add more checks? what else can fail? add checks upfront or any where issues occur?
             _entities[uuidOpt.value()] = entity;
+			GlobalLog("Added entity to entities map");
         }
         else {
-            // Handle the case where the UUID string is invalid
             GlobalLog("Invalid UUID string");
         }
     }
@@ -122,16 +129,18 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
 }
 
 void VerifyComponents(filament::Engine* engine) { // TEMPORARY
-    // Get references to the relevant component managers from the engine
     TransformManager& transformManager = engine->getTransformManager();
-    RenderableManager& renderableManager = engine->getRenderableManager();
-    LightManager& lightManager = engine->getLightManager();
+	GlobalLog("Obtained TransformManager");
 
-    // Loop through each entity
+    RenderableManager& renderableManager = engine->getRenderableManager();
+	GlobalLog("Obtained RenderableManager");
+
+    LightManager& lightManager = engine->getLightManager(); // can probably remove excessive logging for actions that don't fail
+	GlobalLog("Obtained LightManager");
+
     for (const auto& [uuid, entity] : _entities) {
         GlobalLog("Entity UUID: " + to_string(uuid));
 
-        // Check if the entity has a transform component
         if (transformManager.hasComponent(entity)) {
             GlobalLog("  - Has Transform Component");
         }
@@ -139,7 +148,6 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
             GlobalLog("  - Missing Transform Component");
         }
 
-        // Check if the entity has a renderable component
         if (renderableManager.hasComponent(entity)) {
             GlobalLog("  - Has Renderable Component");
         }
@@ -147,7 +155,6 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
             GlobalLog("  - Missing Renderable Component");
         }
 
-        // Check if the entity has a light component
         if (lightManager.hasComponent(entity)) {
             GlobalLog("  - Has Light Component");
         }
@@ -157,7 +164,7 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
     }
 }
 
-filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
+void createLightComponent(Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::LightManager::Builder builder(
         std::string(obj["component"]["lightType"].GetString()) == "directional"
         ? filament::LightManager::Type::DIRECTIONAL
@@ -181,7 +188,8 @@ filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj
 		GlobalLog("Set cast shadows");
     }
 
-    return builder;
+    builder.build(*engine, entity);
+	GlobalLog("Built light component");
 }
 
 void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
@@ -193,30 +201,33 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
     const rapidjson::Value& materials = obj["component"]["materials"];
     GlobalLog("Obtained materials");
 
-    // Load materials and create material instances
     for (rapidjson::SizeType i = 0; i < materials.Size(); i++) {
         const rapidjson::Value& materialJson = materials[i];
         GlobalLog("Processing material " + std::to_string(i));
+
         std::string materialURI = materialJson["materialURI"].GetString();
         GlobalLog("Material URI: " + materialURI);
 
         filament::Material* material = loadMaterial(engine, materialURI);
         GlobalLog("Loaded material");
+
         filament::MaterialInstance* materialInstance = material->createInstance();
         GlobalLog("Created material instance");
 
-        // Set material parameters
         const rapidjson::Value& parameters = materialJson["parameters"];
         GlobalLog("Obtained parameters");
+
         for (rapidjson::SizeType j = 0; j < parameters.Size(); j++) {
             const rapidjson::Value& param = parameters[j];
             GlobalLog("Processing parameter " + std::to_string(j));
+
             std::string paramName = param["name"].GetString();
             GlobalLog("Parameter name: " + paramName);
 
             if (std::string(param["type"].GetString()) == "sampler2d") {
                 filament::Texture* texture = loadTexture(engine, stringToWstring(param["value"].GetString()));
                 GlobalLog("Loaded texture");
+
                 materialInstance->setParameter(paramName.c_str(), texture, filament::TextureSampler());
                 GlobalLog("Set parameter");
             }
@@ -236,26 +247,29 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
             }
         }
 
-        // Register the material instance (if needed)
         utils::CString materialName(materialJson["materialName"].GetString());
+		GlobalLog("Obtained material name");
+
         materialRegistry.registerMaterialInstance(materialName, materialInstance);
         GlobalLog("Registered material instance");
     }
 
-    filamesh::MeshReader::Mesh mesh = loadMeshFromFile(engine, meshURI, materialRegistry);
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(stringToWstring(meshURI)))), materialRegistry); // this is bad
+    GlobalLog("Loaded mesh");
+
+    if (mesh.renderable.isNull()) {
+        throw std::runtime_error("Failed to load mesh: " + meshURI);
+    }
     GlobalLog("Loaded mesh");
 
 	scene->addEntity(mesh.renderable);
     GlobalLog("Built renderable component");
 }
 
-
-
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
     GlobalLog("Obtained TransformManager");
 
-    // Ensure the entity has a Transform Component
     if (!tcm.hasComponent(entity)) {
         tcm.create(entity);
         GlobalLog("Created Transform Component for entity");
@@ -274,8 +288,9 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
     float axisX = rotation[1].GetFloat();
     float axisY = rotation[2].GetFloat();
     float axisZ = rotation[3].GetFloat();
+	GlobalLog("Obtained rotation components");
 
-    math::mat4f rotationMat = math::mat4f::rotation(angle, math::float3(axisX, axisY, axisZ));
+    math::mat4f rotationMat = math::mat4f::rotation(angle, math::float3(axisX, axisY, axisZ)); // avoid axis-angle eventually
     GlobalLog("Created rotation matrix");
 
     math::float3 scaleVector = math::float3(scale[0].GetFloat(), scale[1].GetFloat(), scale[2].GetFloat());
@@ -285,31 +300,15 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
     math::mat4f transform = translation * rotationMat * scaleMat;
     GlobalLog("Created transform matrix");
 
-    // Set the transform for the entity using its valid instance
     auto instance = tcm.getInstance(entity);
     tcm.setTransform(instance, transform);
     GlobalLog("Set transform");
 }
 
-
-filamesh::MeshReader::Mesh loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
-    filamesh::MeshReader::MaterialRegistry& materialRegistry) {
-    std::wstring fullPath = getFullPath(stringToWstring(meshURI));
-	GlobalLog("Full path: " + wstringToString(fullPath));
-
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(fullPath)), materialRegistry);
-	GlobalLog("Loaded mesh");
-
-    if (mesh.renderable.isNull()) {
-        throw std::runtime_error("Failed to load mesh: " + meshURI);
-    }
-
-    return mesh;
-}
-
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {
     std::vector<uint8_t> materialData = loadFile(stringToWstring(materialURI));
 	GlobalLog("Loaded material data");
+
     if (materialData.empty()) {
         throw std::runtime_error("Failed to load material: " + materialURI);
     }
@@ -322,6 +321,7 @@ filament::Material* loadMaterial(filament::Engine* engine, const std::string& ma
     if (!material) {
         throw std::runtime_error("Failed to create material from: " + materialURI);
     }
+	GlobalLog("Created material");
 
     return material;
 }
@@ -329,6 +329,7 @@ filament::Material* loadMaterial(filament::Engine* engine, const std::string& ma
 std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
     std::ifstream file(getFullPath(relativePath), std::ios::binary);
 	GlobalLog("Opened file: " + wstringToString(getFullPath(relativePath)));
+
     if (!file) {
         throw std::runtime_error("Could not open file: " + wstringToString(relativePath));
     }
@@ -346,6 +347,7 @@ filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& rel
     if (!data) {
         throw std::runtime_error("Failed to load image: " + wstringToString(relativePath));
     }
+	GlobalLog("Loaded image data successfully");
 
     filament::Texture* texture = filament::Texture::Builder()
         .width(width)
