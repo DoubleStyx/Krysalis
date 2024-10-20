@@ -78,8 +78,32 @@ jobs:
           Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts-${{ env.VERSION }}.zip"
         shell: pwsh
 
-      - name: Upload artifact
+      # Upload artifact to GitHub Actions storage (this is optional, not related to GitHub releases)
+      - name: Upload artifact to GitHub Actions
         uses: actions/upload-artifact@v3
         with:
           name: KrysalisArtifacts-${{ env.VERSION }}
           path: KrysalisArtifacts-${{ env.VERSION }}.zip
+
+      # Create a new release
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}  # Use the generated version number as the tag
+          release_name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: true  # Set to true if this is a pre-release
+
+      # Upload the artifact to the created release
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./KrysalisArtifacts-${{ env.VERSION }}.zip
+          asset_name: KrysalisArtifacts-${{ env.VERSION }}.zip
+          asset_content_type: application/zip
