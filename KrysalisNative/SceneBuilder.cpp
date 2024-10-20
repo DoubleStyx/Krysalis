@@ -44,7 +44,7 @@ void updateScene() {
 }
 
 void loadScene(filament::Engine* engine, filament::Scene* scene) {
-    rapidjson::Document document = loadSceneFromFile("scenes\\scene.json"); // load from file since we don't have dynamic loading yet
+    rapidjson::Document document = loadSceneFromFile("scenes\\testScene.json"); // load from file since we don't have dynamic loading yet
     GlobalLog("Loaded scene from file");
     createScene(engine, scene, document);
 	GlobalLog("Created scene");
@@ -250,10 +250,7 @@ void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
 }
 
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {
-    std::wstring fullPath = getFullPath(stringToWstring(materialURI));
-	GlobalLog("Full path: " + wstringToString(fullPath));
-
-    std::vector<uint8_t> materialData = loadFile(fullPath);
+    std::vector<uint8_t> materialData = loadFile(stringToWstring(materialURI));
 	GlobalLog("Loaded material data");
     if (materialData.empty()) {
         throw std::runtime_error("Failed to load material: " + materialURI);
@@ -273,7 +270,7 @@ filament::Material* loadMaterial(filament::Engine* engine, const std::string& ma
 
 std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
     std::ifstream file(getFullPath(relativePath), std::ios::binary);
-	GlobalLog("Opened file: " + wstringToString(relativePath));
+	GlobalLog("Opened file: " + wstringToString(getFullPath(relativePath)));
     if (!file) {
         throw std::runtime_error("Could not open file: " + wstringToString(relativePath));
     }

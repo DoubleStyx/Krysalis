@@ -39,26 +39,26 @@
         "name": "litSuzanne",
         "type": "mesh",
         "component": {
-        "meshURI": "assets/meshes/litSuzanne.filamesh",
+        "meshURI": "meshes\\litSuzanne.filamesh",
         "materials": [
             {
-            "materialURI": "assets/materials/lit.filamat",
+            "materialURI": "materials\\lit.filamat",
             "materialName": "Lit",
             "parameters": [
                 {
                     "type" : "sampler2d",
                     "name" : "albedo",
-                    "value" : "assets/textures/litSuzanneAlbedo.jpg"
+                    "value" : "textures\\litSuzanneAlbedo.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "roughness",
-                    "value" : "assets/textures/litSuzanneRoughness.jpg"
+                    "value" : "textures\\litSuzanneRoughness.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "metallic",
-                    "value" : "assets/textures/litSuzanneMetallic.jpg"
+                    "value" : "textures\\litSuzanneMetallic.png"
                 },
                 {
                     "type" : "float",
@@ -68,12 +68,12 @@
                 {
                     "type" : "sampler2d",
                     "name" : "normal",
-                    "value" : "assets/textures/litSuzanneNormal.jpg"
+                    "value" : "textures\\litSuzanneNormal.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "ao",
-                    "value" : "assets/textures/litSuzanneAo.jpg"
+                    "value" : "textures\\litSuzanneAo.png"
                 }
             ]
             }
@@ -90,10 +90,10 @@
         "name": "unlitTorus",
         "type": "mesh",
         "component": {
-        "meshURI": "assets/meshes/unlitTorus.filamesh",
+        "meshURI": "meshes\\unlitTorus.filamesh",
         "materials": [
             {
-            "materialURI": "assets/materials/unlit.filamat",
+            "materialURI": "materials\\unlit.filamat",
             "materialName": "Unlit",
             "parameters": [
                 {
@@ -104,7 +104,7 @@
                 {
                 "type": "float4",
                 "name": "emissive",
-                "value": 0.9
+                "value": [0.9, 0.2, 0.0, 1.0]
                 }
             ]
             }
