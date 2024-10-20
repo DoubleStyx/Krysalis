@@ -1,5 +1,6 @@
 // Utils.h
 #pragma once
+#define NOMINMAX
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>

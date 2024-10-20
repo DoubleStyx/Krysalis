@@ -1,11 +1,10 @@
 // KrysalisNative.h
 #pragma once
+#define NOMINMAX
 #include <math/vec2.h>
 #include <math/compiler.h>
 #include <GLFW/glfw3.h>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "uuid.h"
 #include <unordered_map>
 #include "KrysalisNative.h"
 #include "KrysalisNative.h"
@@ -33,16 +32,13 @@ extern filament::Renderer* _renderer;
 extern filament::Camera* _camera;
 extern filament::View* _view;
 extern filament::Scene* _scene;
-extern utils::Entity _entity;
 
-extern std::unordered_map<boost::uuids::uuid, utils::Entity> _entities;
+extern std::unordered_map<uuids::uuid, utils::Entity> _entities;
 
 extern int g_window_size_x;
 extern int g_window_size_y;
 extern int g_frame_size_x;
 extern int g_frame_size_y;
-
-extern float rotationAngle;
 
 void closeWindow(GLFWwindow* window, std::string reason);
 void runWindow();
@@ -52,3 +48,4 @@ void key_press(GLFWwindow* window, int key, int scancode, int action, int mods);
 void reshape_framebuffer(GLFWwindow* window, int w, int h);
 void reshape_window(GLFWwindow* window, int w, int h);
 void* getNativeWindow(GLFWwindow* window);
+void setCallbacks(GLFWwindow* window);

@@ -1,6 +1,6 @@
 // KrysalisNative.cpp
 // main rendering loop, pipeline initialization, and window creation/management
-
+#define NOMINMAX
 #define GLFW_EXPOSE_NATIVE_WIN32
 // clean up headers at some point, perhaps with a tool
 #include <iostream>
@@ -44,9 +44,7 @@
 #include <Windows.h>
 #include <chrono>
 #include <thread>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "uuid.h"
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
@@ -75,7 +73,7 @@ filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
 
 // scene lives here
-std::unordered_map<boost::uuids::uuid, utils::Entity> _entities; // component managers handle entity-component associations
+std::unordered_map<uuids::uuid, utils::Entity> _entities; // component managers handle entity-component associations
 
 // Get monitor resolution
 int g_window_size_x = 512;

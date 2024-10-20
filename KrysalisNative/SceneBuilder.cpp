@@ -1,6 +1,6 @@
 // SceneBuilder.cpp
 // scene loading and updating
-
+#define NOMINMAX
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
@@ -47,7 +47,6 @@ void loadScene() {
     loadSceneFromFile("scenes\\scene.json"); // load from file since we don't have dynamic loading yet
 }
 
-
 rapidjson::Document loadSceneFromFile(const std::string& relativePath) {
     // Open the file using ifstream
     std::ifstream file(wstringToString(getFullPath(stringToWstring(relativePath))));
@@ -70,7 +69,6 @@ rapidjson::Document loadSceneFromFile(const std::string& relativePath) {
     // Return the parsed document (which is the JSON object in RapidJSON)
     return sceneData;
 }
-
 
 void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjson::Document& sceneData) {
     utils::EntityManager& em = utils::EntityManager::get();
@@ -101,7 +99,6 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
     }
 }
 
-
 filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
     filament::LightManager::Builder builder(
         std::string(obj["component"]["lightType"].GetString()) == "directional"
@@ -123,14 +120,11 @@ filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj
     return builder;
 }
 
-
 void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
     std::string meshURI = obj["component"]["meshURI"].GetString();
 
-    // Load the mesh (use a function to handle this)
-    filament::VertexBuffer* vb;
-    filament::IndexBuffer* ib;
-    loadMeshFromFile(engine, meshURI, &vb, &ib);
+    // Create a MaterialRegistry to store material instances
+    filamesh::MeshReader::MaterialRegistry materialRegistry;
 
     // Create material instances from the JSON
     const rapidjson::Value& materials = obj["component"]["materials"];
@@ -138,10 +132,11 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
         const rapidjson::Value& materialJson = materials[i];
         std::string materialURI = materialJson["materialURI"].GetString();
 
+        // Load the material and create an instance
         filament::Material* material = loadMaterial(engine, materialURI);
         filament::MaterialInstance* materialInstance = material->createInstance();
 
-        // Apply parameters
+        // Apply material parameters
         const rapidjson::Value& parameters = materialJson["parameters"];
         for (rapidjson::SizeType j = 0; j < parameters.Size(); j++) {
             const rapidjson::Value& param = parameters[j];
@@ -164,15 +159,22 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
             }
         }
 
-        // Build the renderable component
-        filament::RenderableManager::Builder(1)
-            .boundingBox({ {0, 0, 0}, {1, 1, 1} })
-            .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
-            .material(0, materialInstance)
-            .build(*engine, entity);
+        // Register the material instance in the MaterialRegistry with its name
+        utils::CString materialName(materialJson["materialName"].GetString());
+        materialRegistry.registerMaterialInstance(materialName, materialInstance);
     }
-}
 
+    // Load the mesh, passing in the materialRegistry
+    filament::VertexBuffer* vb;
+    filament::IndexBuffer* ib;
+    loadMeshFromFile(engine, meshURI, materialRegistry, &vb, &ib);
+
+    // Build the renderable component (attach the mesh to the entity)
+    filament::RenderableManager::Builder(1)
+        .boundingBox({ {0, 0, 0}, {1, 1, 1} })
+        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, vb, ib)
+        .build(*engine, entity);
+}
 
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
@@ -202,13 +204,14 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
     tcm.setTransform(tcm.getInstance(entity), transform);
 }
 
-
-void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI, filament::VertexBuffer** vb, filament::IndexBuffer** ib) {
+void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
+    filamesh::MeshReader::MaterialRegistry& materialRegistry,
+    filament::VertexBuffer** vb, filament::IndexBuffer** ib) {
     // Convert meshURI to a wide string if needed and get the full path
     std::wstring fullPath = getFullPath(stringToWstring(meshURI));
 
-    // Load the mesh from the file
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(fullPath)));
+    // Load the mesh using the material registry
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(fullPath)), materialRegistry);
 
     if (mesh.renderable.isNull()) {
         throw std::runtime_error("Failed to load mesh: " + meshURI);
