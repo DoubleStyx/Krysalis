@@ -35,6 +35,7 @@ LogCallback logCallback = nullptr;
 std::wstring getFullPath(const std::wstring& relativePath) {
 	if (_dllDirectory.empty()) {
 		_dllDirectory = getDllDirectory();
+		GlobalLog("Found DLL directory: " + wstringToString(_dllDirectory));
 	}
 	return _dllDirectory + L"\\" + relativePath;
 }
@@ -50,7 +51,9 @@ std::wstring stringToWstring(const std::string& str) {
 extern "C" __declspec(dllexport) void startRenderingThread()
 {
     std::thread renderThread(runWindow);
+	GlobalLog("Started rendering thread");
     renderThread.detach();
+	GlobalLog("Detached rendering thread");
 }
 
 extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback)
@@ -99,14 +102,16 @@ void GlobalLog(const std::string& message) {
 
 std::wstring getDllDirectory() {
     WCHAR path[MAX_PATH];
-
     HMODULE hModule = NULL;
+
     if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
         (LPCWSTR)getDllDirectory,
         &hModule)) {
         GetModuleFileName(hModule, path, sizeof(path) / sizeof(WCHAR));
+		GlobalLog("Found DLL path: " + wstringToString(std::wstring(path)));
 
         PathRemoveFileSpec(path);
+		GlobalLog("Found DLL directory: " + wstringToString(std::wstring(path)));
 
         return std::wstring(path);
     }
@@ -121,21 +126,25 @@ void openLogFile() {
     std::string timestamp = getFormattedTimestamp(now_time);
 
     std::wstring relativePath = stringToWstring("logs\\" + timestamp + ".log");
+
     logFile.open(getFullPath(relativePath), std::ios::out | std::ios::app);
 }
 
-void closeLogFile() {
+void closeLogFile() { 
     if (logFile.is_open()) {
         logFile.close();
+		GlobalLog("Closed log file");
     }
 }
 
 std::string getFormattedTimestamp(std::time_t time) {
     std::tm localTime;
     localtime_s(&localTime, &time);
+	GlobalLog("Got local time");
 
     std::ostringstream oss;
     oss << std::put_time(&localTime, "%Y-%m-%d_%H-%M-%S");
+	GlobalLog("Formatted timestamp");
 
     return oss.str();
 }

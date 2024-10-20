@@ -1,5 +1,5 @@
 // KrysalisNative.cpp
-// main rendering loop, pipeline initialization, and window creation/management
+// main rendering loop, pipeline initialization, window creation/management
 #define NOMINMAX
 #define GLFW_EXPOSE_NATIVE_WIN32
 // clean up headers at some point, perhaps with a tool
@@ -49,22 +49,13 @@
 #include "Utils.h"
 #include "SceneBuilder.h"
 
-// Most logging happens here, but we can log elsewhere as the project grows.
-
 // other namespaces worth including? Maybe simplify namespace usage? Don't want conflicts or ambiguity though.
 using namespace filament;
 using namespace math;
 
-double TARGET_FPS = 60.0; // get screen refresh rate
+double TARGET_FPS = 60.0; // get screen refresh rate eventually
 double TARGET_FRAME_DURATION = 1.0 / TARGET_FPS;
 
-// Do we still need this?
-struct Vertex {
-    math::float2 position;
-    uint32_t color;
-};
-
-// "static singletons"
 filament::Engine* _engine = nullptr;
 filament::SwapChain* _swapchain = nullptr;
 filament::Renderer* _renderer = nullptr;
@@ -72,10 +63,9 @@ filament::Camera* _camera = nullptr;
 filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
 
-// scene lives here
-std::unordered_map<uuids::uuid, utils::Entity> _entities; // component managers handle entity-component associations
+std::unordered_map<uuids::uuid, utils::Entity> _entities;
 
-// Get monitor resolution
+// Get monitor resolution eventually
 int g_window_size_x = 512;
 int g_window_size_y = 512;
 int g_frame_size_x = g_window_size_x;
@@ -83,8 +73,6 @@ int g_frame_size_y = g_window_size_y;
 
 // can this be moved elsewhere?
 void* getNativeWindow(GLFWwindow* window) {
-    GlobalLog("Getting native window"); // Do we need so much logging? I guess why not? We could have a log priority. Libraries?
-
     HWND hwnd = glfwGetWin32Window(window); // We're focused on Windows support for now
     if (hwnd == nullptr) {
         closeWindow(nullptr, "Native window not found");
@@ -96,8 +84,6 @@ void* getNativeWindow(GLFWwindow* window) {
 
 // Do something here
 void reshape_window(GLFWwindow* window, int w, int h) {
-    GlobalLog("Reshaping window");
-
     (void)window; (void)w; (void)h;
     GlobalLog("Reshaped window");
 }
@@ -112,16 +98,18 @@ void reshape_framebuffer(GLFWwindow* window, int w, int h) {
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     (void)window; (void)mods; (void)scancode;
+	GlobalLog("Key pressed");
 
+    /*
     if (action != GLFW_PRESS) {
-
         return;
     }
+    */
 
     if (key == GLFW_KEY_Q) {
         GlobalLog("Key Q pressed");
 
-        closeWindow(window, "Closing window");
+        closeWindow(window, "Window close initiated from keypress");
     }
 }
 
@@ -198,9 +186,6 @@ void init(GLFWwindow* window) {
         math::float3{ 0.0f, 1.0f, 0.0f });
     GlobalLog("Camera positioned");
 
-    //camera->setExposure(16.0f, 1.0f / 125.0f, 100.0f);
-	//GlobalLog("Set camera exposure");
-
     // better validation for certain actions?
     renderer->setClearOptions({
         .clearColor = {0.0f, 0.0f, 0.0f, 1.0f},
@@ -217,12 +202,16 @@ void init(GLFWwindow* window) {
     view->setScene(scene);
     GlobalLog("Set scene to view");
 
+    loadScene(engine, scene);
+    GlobalLog("Loaded scene");
+
     _engine = engine;
     _swapchain = swapChain;
     _renderer = renderer;
     _camera = camera;
     _view = view;
     _scene = scene;
+	GlobalLog("Assigned singletons");
 }
 
 void display() {
@@ -237,7 +226,6 @@ void display() {
 void closeWindow(GLFWwindow* window, std::string reason)
 {
     GlobalLog(reason);
-    GlobalLog("Initiating cleanup");
 
     if (_engine) {
         if (_renderer) {
@@ -268,7 +256,7 @@ void closeWindow(GLFWwindow* window, std::string reason)
     glfwTerminate();
     GlobalLog("GLFW terminated");
 
-    GlobalLog("Closing application");
+	closeLogFile();
     exit(0);
 }
 
@@ -295,21 +283,18 @@ void runWindow() {
         GlobalLog("Set input mode to sticky keys");
 
         setCallbacks(window);
+		GlobalLog("Set callbacks");
 
         init(window);
         GlobalLog("Initialized the renderer");
 
-        loadScene();
-		GlobalLog("Loaded scene");
-
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
 		GlobalLog("Saved last frame time");
 
-		GlobalLog("Renderer and window initialized successfully! Beginning main rendering and interaction loop.");
 		std::chrono::steady_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = currentTime - lastFrameTime;
+		GlobalLog("Calculated elapsed time");
 
-        // this needs to be optimized as much as possible
         while (!glfwWindowShouldClose(window)) {
             currentTime = std::chrono::high_resolution_clock::now();
             elapsed = currentTime - lastFrameTime;
@@ -317,7 +302,7 @@ void runWindow() {
             if (elapsed.count() >= TARGET_FRAME_DURATION) {
                 lastFrameTime = currentTime;
 
-                updateScene(); // handle scene changes, probably in some sort of queue or buffer
+                updateScene();
                 glfwPollEvents();
                 display();
                 glfwSwapBuffers(window);
@@ -330,7 +315,7 @@ void runWindow() {
 
         closeWindow(window, "Closing application");
     }
-    catch (const std::exception& e) { // better way to do exceptions? Throw our own?
+    catch (const std::exception& e) {
         closeWindow(nullptr, "Error in rendering thread: " + std::string(e.what()));
     }
     catch (...) {
@@ -338,43 +323,61 @@ void runWindow() {
     }
 }
 
-// might not need every callback here, but we'll see
 void setCallbacks(GLFWwindow* window) {
     glfwSetCharCallback(window, nullptr);
+	GlobalLog("Set char callback");
 
     glfwSetCharModsCallback(window, nullptr);
+	GlobalLog("Set char mods callback");
 
     glfwSetCursorEnterCallback(window, nullptr);
+	GlobalLog("Set cursor enter callback");
 
     glfwSetCursorPosCallback(window, nullptr);
+	GlobalLog("Set cursor pos callback");
 
     glfwSetDropCallback(window, nullptr);
+	GlobalLog("Set drop callback");
 
     glfwSetErrorCallback(nullptr);
+	GlobalLog("Set error callback");
 
     glfwSetFramebufferSizeCallback(window, reshape_framebuffer);
+	GlobalLog("Set framebuffer size callback");
 
     glfwSetKeyCallback(window, key_press);
+	GlobalLog("Set key callback");
 
     glfwSetMonitorCallback(nullptr);
+	GlobalLog("Set monitor callback");
 
     glfwSetMouseButtonCallback(window, nullptr);
+	GlobalLog("Set mouse button callback");
 
     glfwSetScrollCallback(window, nullptr);
+	GlobalLog("Set scroll callback");
 
     glfwSetWindowCloseCallback(window, nullptr);
+	GlobalLog("Set window close callback");
 
     glfwSetWindowContentScaleCallback(window, nullptr);
+	GlobalLog("Set window content scale callback");
 
     glfwSetWindowFocusCallback(window, nullptr);
+	GlobalLog("Set window focus callback");
 
     glfwSetWindowIconifyCallback(window, nullptr);
+    GlobalLog("Set window iconify callback");
 
     glfwSetWindowMaximizeCallback(window, nullptr);
+	GlobalLog("Set window maximize callback");
 
     glfwSetWindowPosCallback(window, nullptr);
+	GlobalLog("Set window pos callback");
 
     glfwSetWindowRefreshCallback(window, nullptr);
+	GlobalLog("Set window refresh callback");
 
     glfwSetWindowSizeCallback(window, reshape_window);
+	GlobalLog("Set window size callback");
 }

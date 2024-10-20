@@ -23,8 +23,8 @@
 #include <math/vec3.h>
 #include <math/quat.h>
 #include <utils/EntityManager.h>
-#include <rapidjson/document.h>   // For parsing JSON
-#include <rapidjson/istreamwrapper.h>  // For handling input stream to JSON
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -47,4 +47,4 @@ void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI,
     filamesh::MeshReader::MaterialRegistry& materialRegistry,
     filament::VertexBuffer** vb, filament::IndexBuffer** ib);
 void updateScene();
-void loadScene();
+void loadScene(filament::Engine* engine, filament::Scene* scene);

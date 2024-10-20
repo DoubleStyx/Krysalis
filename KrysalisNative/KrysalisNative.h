@@ -24,8 +24,6 @@ extern double TARGET_FRAME_DURATION;
 #define M_PI_4 0.78539816339744830962
 #endif
 
-extern struct Vertex;
-
 extern filament::Engine* _engine;
 extern filament::SwapChain* _swapchain; 
 extern filament::Renderer* _renderer;

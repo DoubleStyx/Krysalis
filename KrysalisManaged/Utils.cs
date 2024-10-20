@@ -2,6 +2,8 @@
 // helper/utility functions for managed tasks
 using System.Runtime.InteropServices;
 using ResoniteModLoader;
+using FrooxEngine;
+using HarmonyLib;
 
 namespace KrysalisManaged;
 internal class Utils
@@ -26,7 +28,9 @@ internal class Utils
     public static void InitializeLogging()
     {
         registerLogCallback(LogMessage);
+        ResoniteMod.Msg("Registered log callback");
         openLogFile();
+        ResoniteMod.Msg("Opened log file");
     }
 }
 

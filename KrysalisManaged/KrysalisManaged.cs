@@ -17,9 +17,13 @@ public class KrysalisManaged : ResoniteMod
     public override void OnEngineInit()
     {
         Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
+        Msg("Registered Harmony instance");
         harmony.PatchAll();
+        Msg("Patched all methods");
         Utils.InitializeLogging();
+        Msg("Initialized logging");
         Utils.startRenderingThread();
+        Msg("Started rendering thread");
     }
 
     [HarmonyPatch(typeof(Engine), "FinishInitialization")]
@@ -27,7 +31,7 @@ public class KrysalisManaged : ResoniteMod
     {
         static void Postfix(Engine __instance)
         {
-            // placeholder
+            Msg("This is a message ran from a patch.");
         }
     }
 }
