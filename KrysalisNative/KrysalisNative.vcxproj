@@ -107,28 +107,31 @@
   </Target>
   <Import Project="..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
   <PropertyGroup>
-    <AssetsDirectory>$(ProjectDir)..\assets</AssetsDirectory>
-    <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
-    <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
-    <BinDirectory>$(AssetsDirectory)\bin</BinDirectory>
-    <FilameshExecutable>$(BinDirectory)\filamesh.exe</FilameshExecutable>
-    <MatcExecutable>$(BinDirectory)\matc.exe</MatcExecutable>
+    <AssetsDirectory>$(ProjectDir)..\\assets</AssetsDirectory>
+    <MaterialsDirectory>$(AssetsDirectory)\\materials</MaterialsDirectory>
+    <MeshesDirectory>$(AssetsDirectory)\\meshes</MeshesDirectory>
+    <BinDirectory>$(AssetsDirectory)\\bin</BinDirectory>
+    <FilameshExecutable>$(BinDirectory)\\filamesh.exe</FilameshExecutable>
+    <MatcExecutable>$(BinDirectory)\\matc.exe</MatcExecutable>
   </PropertyGroup>
   <ItemGroup>
-    <MaterialFiles Include="$(MaterialsDirectory)\*.mat" />
-    <MeshFiles Include="$(MeshesDirectory)\*.obj" />
+    <MaterialFiles Include="$(MaterialsDirectory)\\*.mat" />
+    <MeshFiles Include="$(MeshesDirectory)\\*.obj" />
   </ItemGroup>
   <Target Name="CompileMaterials" BeforeTargets="Build">
-    <Exec Command="$(MatcExecutable) -o $(MaterialsDirectory)\%(MaterialFiles.Filename).filamat %(FullPath)"
-      Condition="Exists('%(FullPath)') AND (!Exists('$(MaterialsDirectory)\%(MaterialFiles.Filename).filamat') OR %(FullPath) > $(MaterialsDirectory)\%(MaterialFiles.Filename).filamat)" />
+    <Exec Command="$(MatcExecutable) -o $(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat %(MaterialFiles.FullPath)"
+      Condition="Exists('%(MaterialFiles.FullPath)') AND (!Exists('$(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat') OR %(MaterialFiles.FullPath) > $(MaterialsDirectory)\\%(MaterialFiles.Filename).filamat)" />
   </Target>
+
   <Target Name="CompileMeshes" BeforeTargets="Build">
-    <Exec Command="$(FilameshExecutable) -o $(MeshesDirectory)\%(MeshFiles.Filename).filamesh %(FullPath)"
-      Condition="Exists('%(FullPath)') AND (!Exists('$(MeshesDirectory)\%(MeshFiles.Filename).filamesh') OR %(FullPath) > $(MeshesDirectory)\%(MeshFiles.Filename).filamesh)" />
+    <Exec Command="$(FilameshExecutable) -o $(MeshesDirectory)\\%(MeshFiles.Filename).filamesh %(MeshFiles.FullPath)"
+      Condition="Exists('%(MeshFiles.FullPath)') AND (!Exists('$(MeshesDirectory)\\%(MeshFiles.Filename).filamesh') OR %(MeshFiles.FullPath) > $(MeshesDirectory)\\%(MeshFiles.Filename).filamesh)" />
   </Target>
+
   <ItemGroup>
-      <AssetFiles Include="$(AssetsDirectory)\**\*.*" />
+    <AssetFiles Include="$(AssetsDirectory)\\**\\*.*" />
   </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
       <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
       <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
@@ -137,4 +140,5 @@
 
       <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(KrysalisDirectory)" />
   </Target>
+
 </Project>
