@@ -59,6 +59,7 @@ extern "C" __declspec(dllexport) void startRenderingThread()
 extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback)
 {
     logCallback = callback;
+	ManagedLog("Registered log callback"); // this should work?
 }
 
 void ManagedLog(const std::string& message)
@@ -96,8 +97,25 @@ void NativeLog(const std::string& message) {
 }
 
 void GlobalLog(const std::string& message) {
-	NativeLog(message);
-	ManagedLog(message);
+	bool hasLogCallback = logCallback != nullptr;
+	bool hasLogFile = logFile.is_open();
+	if (!hasLogCallback && !hasLogFile) {
+		return;
+	}
+	else if (hasLogFile && !hasLogCallback) {
+		NativeLog(message);
+		NativeLog("Warning: Log callback is not set");
+		return;
+	}
+	else if (!hasLogFile && hasLogCallback) {
+		ManagedLog(message);
+		ManagedLog("Warning: Log file is not open");
+		return;
+	}
+    else {
+        NativeLog(message);
+        ManagedLog(message);
+    }
 }
 
 std::wstring getDllDirectory() {
@@ -121,13 +139,19 @@ std::wstring getDllDirectory() {
 
 void openLogFile() {
     auto currentTime = std::chrono::system_clock::now();
+	ManagedLog("Got current time");
 
     std::time_t now_time = std::chrono::system_clock::to_time_t(currentTime);
+	ManagedLog("Got time_t");
+
     std::string timestamp = getFormattedTimestamp(now_time);
+	ManagedLog("Got formatted timestamp: " + timestamp);
 
     std::wstring relativePath = stringToWstring("logs\\" + timestamp + ".log");
+	ManagedLog("Got relative path: " + wstringToString(relativePath));
 
     logFile.open(getFullPath(relativePath), std::ios::out | std::ios::app);
+	ManagedLog("Opened log file at " + wstringToString(getFullPath(relativePath)));
 }
 
 void closeLogFile() { 
