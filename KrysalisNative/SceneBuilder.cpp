@@ -4,7 +4,6 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
-#include <nlohmann/json.hpp>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -17,7 +16,24 @@
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
 #include <filament/Texture.h>
+#include <filameshio/MeshReader.h>
+#include <filament/TextureSampler.h>
+#include <math/mat4.h>
+#include <math/vec4.h>
+#include <math/vec3.h>
+#include <math/quat.h>
 #include <utils/EntityManager.h>
+#include <rapidjson/document.h>   // For parsing JSON
+#include <rapidjson/istreamwrapper.h>  // For handling input stream to JSON
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <string>
+#include <sstream> // deduplicate
+#include <stb_image.h>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 using namespace filament;
 
@@ -31,7 +47,8 @@ void loadScene() {
     loadSceneFromFile("scenes\\scene.json"); // load from file since we don't have dynamic loading yet
 }
 
-nlohmann::json loadSceneFromFile(const std::string& relativePath) {
+
+rapidjson::Document loadSceneFromFile(const std::string& relativePath) {
     // Open the file using ifstream
     std::ifstream file(wstringToString(getFullPath(stringToWstring(relativePath))));
 
@@ -40,21 +57,31 @@ nlohmann::json loadSceneFromFile(const std::string& relativePath) {
         throw std::runtime_error("Could not open file: " + relativePath);
     }
 
-    // Read the JSON data
-    nlohmann::json sceneData;
-    file >> sceneData;
+    // Use IStreamWrapper to read the file into a RapidJSON document
+    rapidjson::IStreamWrapper isw(file);
+    rapidjson::Document sceneData;
+    sceneData.ParseStream(isw);  // Parse the stream directly into the JSON Document
 
-    // Return the loaded JSON data
+    // Check for parsing errors
+    if (sceneData.HasParseError()) {
+        throw std::runtime_error("Error parsing JSON file: " + relativePath);
+    }
+
+    // Return the parsed document (which is the JSON object in RapidJSON)
     return sceneData;
 }
 
-void createScene(filament::Engine* engine, filament::Scene* scene, const nlohmann::json& sceneData) {
+
+void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjson::Document& sceneData) {
     utils::EntityManager& em = utils::EntityManager::get();
 
-    for (const auto& obj : sceneData["objects"]) {
+    const rapidjson::Value& objects = sceneData["objects"];
+    for (rapidjson::SizeType i = 0; i < objects.Size(); i++) {
+        const rapidjson::Value& obj = objects[i];
+
         // Create a new entity
         utils::Entity entity = em.create();
-        std::string type = obj["type"];
+        std::string type = obj["type"].GetString();
 
         // Handle light components
         if (type == "light") {
@@ -74,56 +101,31 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const nlohman
     }
 }
 
-filament::LightManager::Builder createLightComponent(const nlohmann::json& obj) {
-    /*
-    utils::Entity lightEntity = utils::EntityManager::get().create();
-    if (lightEntity.isNull()) {
-        closeWindow(nullptr, "Light entity not created");
-    }
-    GlobalLog("Light entity created");
 
-    LightManager::Builder(LightManager::Type::DIRECTIONAL)
-        .color({ 1.0f, 1.0f, 1.0f })
-        .intensity(1000000.0f)
-        .direction({ 0.0f, -0.5f, -1.0f })
-        .castShadows(true)
-        .build(*engine, lightEntity);
-    GlobalLog("Built light entity");
-
-    scene->addEntity(lightEntity);
-    GlobalLog("Added light entity to scene");
-    */
+filament::LightManager::Builder createLightComponent(const rapidjson::Value& obj) {
     filament::LightManager::Builder builder(
-        obj["component"]["lightType"] == "directional"
+        std::string(obj["component"]["lightType"].GetString()) == "directional"
         ? filament::LightManager::Type::DIRECTIONAL
         : filament::LightManager::Type::POINT);
 
-    auto color = obj["component"]["color"];
-    builder.color({ color[0], color[1], color[2] })
-        .intensity(obj["component"]["intensity"]);
+    const rapidjson::Value& color = obj["component"]["color"];
+    builder.color({ color[0].GetFloat(), color[1].GetFloat(), color[2].GetFloat() })
+        .intensity(obj["component"]["intensity"].GetFloat());
 
-    if (obj["component"]["lightType"] == "point") {
-        builder.falloff(obj["component"]["falloff"]);
+    if (std::string(obj["component"]["lightType"].GetString()) == "point") {
+        builder.falloff(obj["component"]["falloff"].GetFloat());
     }
 
-    if (obj["component"].contains("castShadows") && obj["component"]["castShadows"]) {
+    if (obj["component"].HasMember("castShadows") && obj["component"]["castShadows"].GetBool()) {
         builder.castShadows(true);
     }
 
     return builder;
 }
 
-void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const nlohmann::json& obj, utils::Entity entity) {
-    /*
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(L"meshes\\suzanne.filamesh"))), registry);
-    if (mesh.renderable.isNull())
-        closeWindow(nullptr, "Mesh not loaded");
-    GlobalLog("Loaded mesh");
 
-    scene->addEntity(mesh.renderable);
-    GlobalLog("Added mesh to scene");
-    */
-    std::string meshURI = obj["component"]["meshURI"];
+void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
+    std::string meshURI = obj["component"]["meshURI"].GetString();
 
     // Load the mesh (use a function to handle this)
     filament::VertexBuffer* vb;
@@ -131,28 +133,34 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
     loadMeshFromFile(engine, meshURI, &vb, &ib);
 
     // Create material instances from the JSON
-    const json& materials = obj["component"]["materials"];
-    for (const auto& materialJson : materials) {
-        std::string materialURI = materialJson["materialURI"];
+    const rapidjson::Value& materials = obj["component"]["materials"];
+    for (rapidjson::SizeType i = 0; i < materials.Size(); i++) {
+        const rapidjson::Value& materialJson = materials[i];
+        std::string materialURI = materialJson["materialURI"].GetString();
 
         filament::Material* material = loadMaterial(engine, materialURI);
         filament::MaterialInstance* materialInstance = material->createInstance();
 
         // Apply parameters
-        for (const auto& param : materialJson["parameters"]) {
-            std::string paramName = param["name"];
-            if (param["type"] == "sampler2d") {
-                filament::Texture* texture = loadTexture(engine, param["value"]);
+        const rapidjson::Value& parameters = materialJson["parameters"];
+        for (rapidjson::SizeType j = 0; j < parameters.Size(); j++) {
+            const rapidjson::Value& param = parameters[j];
+            std::string paramName = param["name"].GetString();
+
+            if (std::string(param["type"].GetString()) == "sampler2d") {
+                filament::Texture* texture = loadTexture(engine, stringToWstring(param["value"].GetString()));
                 materialInstance->setParameter(paramName.c_str(), texture, filament::TextureSampler());
             }
-            else if (param["type"] == "float") {
-                materialInstance->setParameter(paramName.c_str(), param["value"].get<float>());
+            else if (std::string(param["type"].GetString()) == "float") {
+                materialInstance->setParameter(paramName.c_str(), param["value"].GetFloat());
             }
-            else if (param["type"] == "float3") {
-                materialInstance->setParameter(paramName.c_str(), math::float3(param["value"][0], param["value"][1], param["value"][2]));
+            else if (std::string(param["type"].GetString()) == "float3") {
+                materialInstance->setParameter(paramName.c_str(), math::float3(
+                    param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat()));
             }
-            else if (param["type"] == "float4") {
-                materialInstance->setParameter(paramName.c_str(), math::float4(param["value"][0], param["value"][1], param["value"][2], param["value"][3]));
+            else if (std::string(param["type"].GetString()) == "float4") {
+                materialInstance->setParameter(paramName.c_str(), math::float4(
+                    param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat(), param["value"][3].GetFloat()));
             }
         }
 
@@ -165,16 +173,28 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
     }
 }
 
-void applyTransform(filament::Engine* engine, const nlohmann::json& obj, utils::Entity entity) {
+
+void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
 
-    auto position = obj["transform"]["position"];
-    auto rotation = obj["transform"]["rotation"];
-    auto scale = obj["transform"]["scale"];
+    const rapidjson::Value& position = obj["transform"]["position"];
+    const rapidjson::Value& rotation = obj["transform"]["rotation"];
+    const rapidjson::Value& scale = obj["transform"]["scale"];
 
-    math::mat4f translation = math::mat4f::translation({ position[0], position[1], position[2] });
-    math::mat4f rotationMat = math::mat4f::rotationEulerXYZ(rotation[0], rotation[1], rotation[2]);
-    math::mat4f scaleMat = math::mat4f::scaling({ scale[0], scale[1], scale[2] });
+    math::float3 translationVector = math::float3(position[0].GetFloat(), position[1].GetFloat(), position[2].GetFloat());
+    math::mat4f translation = math::mat4f::translation(translationVector);
+
+    float angle = rotation[0].GetFloat();
+    float axisX = rotation[1].GetFloat(); 
+    float axisY = rotation[2].GetFloat();
+    float axisZ = rotation[3].GetFloat();
+
+
+    // Create the rotation matrix from the axis-angle
+    math::mat4f rotationMat = math::mat4f::rotation(angle, math::float3(axisX, axisY, axisZ));
+
+	math::float3 scaleVector = math::float3(scale[0].GetFloat(), scale[1].GetFloat(), scale[2].GetFloat());
+	math::mat4f scaleMat = math::mat4f::scaling(scaleVector);
 
     // Combine translation, rotation, and scale into one transform matrix
     math::mat4f transform = translation * rotationMat * scaleMat;
@@ -183,88 +203,74 @@ void applyTransform(filament::Engine* engine, const nlohmann::json& obj, utils::
 }
 
 
-void createMaterialComponent(filament::Engine* engine, filament::Scene* scene, const nlohmann::json& obj, utils::Entity entity) {
-    /*
-    std::vector<uint8_t> materialData = loadFile(L"materials\\texturedLitEmissive.filamat");
-    if (materialData.empty())
-        closeWindow(nullptr, "Material data not loaded");
-    GlobalLog("Loaded material data of size " + std::to_string(materialData.size()));
+void loadMeshFromFile(filament::Engine* engine, const std::string& meshURI, filament::VertexBuffer** vb, filament::IndexBuffer** ib) {
+    // Convert meshURI to a wide string if needed and get the full path
+    std::wstring fullPath = getFullPath(stringToWstring(meshURI));
 
+    // Load the mesh from the file
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(fullPath)));
+
+    if (mesh.renderable.isNull()) {
+        throw std::runtime_error("Failed to load mesh: " + meshURI);
+    }
+
+    // Extract the vertex and index buffers from the mesh
+    *vb = mesh.vertexBuffer;
+    *ib = mesh.indexBuffer;
+}
+
+filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {
+    // Convert the materialURI to a wide string and get the full path
+    std::wstring fullPath = getFullPath(stringToWstring(materialURI));
+
+    // Load the material file data
+    std::vector<uint8_t> materialData = loadFile(fullPath);
+    if (materialData.empty()) {
+        throw std::runtime_error("Failed to load material: " + materialURI);
+    }
+
+    // Create and build the material from the package
     filament::Material* material = filament::Material::Builder()
         .package(materialData.data(), materialData.size())
         .build(*engine);
-    if (material == nullptr)
-        closeWindow(nullptr, "Material not created");
-    GlobalLog("Material created");
 
-    filament::MaterialInstance* materialInstance = material->createInstance();
-    if (materialInstance == nullptr)
-        closeWindow(nullptr, "Material instance not created");
-    GlobalLog("Material instance created");
+    if (!material) {
+        throw std::runtime_error("Failed to create material from: " + materialURI);
+    }
 
-    filamesh::MeshReader::MaterialRegistry registry;
-    registry.registerMaterialInstance("Unlit", materialInstance);
-    GlobalLog("Registered material instance");
-    */
+    return material;
 }
 
-void CreateTextureComponent() {
-    /*
-    
-    Texture* albedoTexture = loadTexture(engine, L"textures\\color.png");
-    if (albedoTexture == nullptr)
-        closeWindow(nullptr, "Albedo texture not loaded");
-    GlobalLog("Loaded albedo texture");
-
-    Texture* normalTexture = loadTexture(engine, L"textures\\normal.png");
-    if (normalTexture == nullptr)
-        closeWindow(nullptr, "Normal texture not loaded");
-    GlobalLog("Loaded normal texture");
-
-    Texture* roughnessTexture = loadTexture(engine, L"textures\\roughness.png");
-    if (roughnessTexture == nullptr)
-        closeWindow(nullptr, "Roughness texture not loaded");
-    GlobalLog("Loaded roughness texture");
-
-    Texture* metallicTexture = loadTexture(engine, L"textures\\metallic.png");
-    if (metallicTexture == nullptr)
-        closeWindow(nullptr, "Metallic texture not loaded");
-    GlobalLog("Loaded metallic texture");
-
-    Texture* aoTexture = loadTexture(engine, L"textures\\ao.png");
-    if (aoTexture == nullptr)
-        closeWindow(nullptr, "AO texture not loaded");
-    GlobalLog("Loaded AO texture");
-
-    TextureSampler sampler(TextureSampler::MinFilter::LINEAR_MIPMAP_LINEAR,
-        TextureSampler::MagFilter::LINEAR);
-    */
-
-
+std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
+    std::ifstream file(getFullPath(relativePath), std::ios::binary);
+    if (!file) {
+        throw std::runtime_error("Could not open file: " + wstringToString(relativePath));
+    }
+    return std::vector<uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
+filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath) {
+    std::vector<uint8_t> fileData = loadFile(relativePath);
 
-void SetParametersOnMaterial() {
-    /*
-    materialInstance->setParameter("albedo", albedoTexture, sampler);
-    GlobalLog("Set albedo texture");
+    int width, height, channels;
+    unsigned char* data = stbi_load_from_memory(fileData.data(), fileData.size(), &width, &height, &channels, 4);
 
-    materialInstance->setParameter("normal", normalTexture, sampler);
-    GlobalLog("Set normal texture");
+    if (!data) {
+        throw std::runtime_error("Failed to load image: " + wstringToString(relativePath));
+    }
 
-    materialInstance->setParameter("roughness", roughnessTexture, sampler);
-    GlobalLog("Set roughness texture");
+    filament::Texture* texture = filament::Texture::Builder()
+        .width(width)
+        .height(height)
+        .levels(1)
+        .format(filament::Texture::InternalFormat::RGBA8)
+        .build(*engine);
 
-    materialInstance->setParameter("metallic", metallicTexture, sampler);
-    GlobalLog("Set metallic texture");
-     
-    materialInstance->setParameter("ao", aoTexture, sampler);
-    GlobalLog("Set AO texture");
+    filament::Texture::PixelBufferDescriptor buffer(data, size_t(width * height * 4),
+        filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
+        [](void* buffer, size_t, void*) { stbi_image_free(buffer); });
 
-    materialInstance->setParameter("clearCoat", 0.0f);
-	GlobalLog("Set clear coat");
+    texture->setImage(*engine, 0, std::move(buffer));
 
-	materialInstance->setParameter("emissive", math::float4{ 0.0f, 0.0f, 0.0f, 1.0f });
-	GlobalLog("Set emissive");
-    */
+    return texture;
 }

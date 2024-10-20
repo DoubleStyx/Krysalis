@@ -6,6 +6,7 @@
 #include <utils/Path.h>
 #include <fstream>
 #include <vector>
+#include <mutex>
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
@@ -35,7 +36,4 @@ std::string wstringToString(const std::wstring& wstr);
 std::wstring stringToWstring(const std::string& str);
 std::string getFormattedTimestamp(std::time_t time);
 
-// Maybe move to separate I/O file?
-std::vector<uint8_t> loadFile(const std::wstring& relativePath);
-filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
 void closeLogFile();

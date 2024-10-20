@@ -6,6 +6,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <unordered_map>
 #include "KrysalisNative.h"
 #include "KrysalisNative.h"
 #include "Utils.h"
@@ -27,7 +28,7 @@ extern double TARGET_FRAME_DURATION;
 extern struct Vertex;
 
 extern filament::Engine* _engine;
-extern filament::SwapChain* _swapchain;
+extern filament::SwapChain* _swapchain; 
 extern filament::Renderer* _renderer;
 extern filament::Camera* _camera;
 extern filament::View* _view;

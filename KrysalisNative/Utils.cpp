@@ -47,40 +47,6 @@ std::wstring stringToWstring(const std::string& str) {
     return std::wstring(str.begin(), str.end());
 }
 
-std::vector<uint8_t> loadFile(const std::wstring& relativePath) {
-    std::ifstream file(getFullPath(relativePath), std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Could not open file: " + wstringToString(relativePath));
-    }
-    return std::vector<uint8_t>(std::istreambuf_iterator<char>(file), {});
-}
-
-filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath) {
-    std::vector<uint8_t> fileData = loadFile(relativePath);
-
-    int width, height, channels;
-    unsigned char* data = stbi_load_from_memory(fileData.data(), fileData.size(), &width, &height, &channels, 4);
-
-    if (!data) {
-        throw std::runtime_error("Failed to load image: " + wstringToString(relativePath));
-    }
-
-    filament::Texture* texture = filament::Texture::Builder()
-        .width(width)
-        .height(height)
-        .levels(1)
-        .format(filament::Texture::InternalFormat::RGBA8)
-        .build(*engine);
-
-    filament::Texture::PixelBufferDescriptor buffer(data, size_t(width * height * 4),
-        filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
-        [](void* buffer, size_t, void*) { stbi_image_free(buffer); });
-
-    texture->setImage(*engine, 0, std::move(buffer));
-
-    return texture;
-} 
-
 extern "C" __declspec(dllexport) void startRenderingThread()
 {
     std::thread renderThread(runWindow);
