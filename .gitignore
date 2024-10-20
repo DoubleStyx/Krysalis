@@ -440,3 +440,7 @@ FodyWeavers.xsd
 # External libs and assets
 !external/**
 !assets/**
+
+# Compiled files
+.filamesh
+.filamat
