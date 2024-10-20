@@ -41,6 +41,9 @@
 #include <Windows.h>
 #include <chrono>
 #include <thread>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include "KrysalisNative.h"
 #include "Utils.h"
 
@@ -62,6 +65,8 @@ filament::Camera* _camera = nullptr;
 filament::View* _view = nullptr;
 filament::Scene* _scene = nullptr;
 utils::Entity _entity;
+
+std::unordered_map<std::
 
 int g_window_size_x = 512;
 int g_window_size_y = 512;

@@ -1,0 +1,120 @@
+{
+    "objects": [
+    {
+        "id": "3a95997b-5bb3-4838-a61a-15717cc1517a",
+        "name": "sun",
+        "type": "light",
+        "component": {
+        "lightType": "directional",
+        "color": [1.0, 1.0, 1.0],
+        "intensity": 100000.0,
+        "direction": [0.0, -1.0, -1.0],
+        "castShadows": true
+        },
+        "transform": {
+        "position": [0.0, 10.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+        }
+    },
+    {
+        "id": "90863c1a-dcdf-4669-b6e2-9c0d47ed6292",
+        "name": "pointLight",
+        "type": "light",
+        "component": {
+        "lightType": "point",
+        "color": [0.8, 0.8, 1.0],   
+        "intensity": 50000.0,
+        "falloff": 20.0,
+        "position": [2.0, 5.0, 0.0]  
+        },
+        "transform": {
+        "position": [2.0, 5.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+        }
+    },
+    {
+        "id": "b40c2d44-eafc-49f9-9212-f70f0767fb04",
+        "name": "litSuzanne",
+        "type": "mesh",
+        "component": {
+        "meshURI": "assets/meshes/litSuzanne.filamesh",
+        "materials": [
+            {
+            "materialURI": "assets/materials/lit.filamat",
+            "materialName": "Lit",
+            "parameters": [
+                {
+                    "type" : "sampler2d",
+                    "name" : "albedo",
+                    "value" : "assets/textures/litSuzanneAlbedo.jpg"
+                },
+                {
+                    "type" : "sampler2d",
+                    "name" : "roughness",
+                    "value" : "assets/textures/litSuzanneRoughness.jpg"
+                },
+                {
+                    "type" : "sampler2d",
+                    "name" : "metallic",
+                    "value" : "assets/textures/litSuzanneMetallic.jpg"
+                },
+                {
+                    "type" : "float",
+                    "name" : "clearCoat",
+                    "value" : 0.0
+                },
+                {
+                    "type" : "sampler2d",
+                    "name" : "normal",
+                    "value" : "assets/textures/litSuzanneNormal.jpg"
+                },
+                {
+                    "type" : "sampler2d",
+                    "name" : "ao",
+                    "value" : "assets/textures/litSuzanneAo.jpg"
+                }
+            ]
+            }
+        ]
+        },
+        "transform": {
+        "position": [0.0, 0.0, 0.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+        }
+    },
+    {
+        "id": "c0bbba76-4a0c-4051-8adb-2212c92f495f",
+        "name": "unlitTorus",
+        "type": "mesh",
+        "component": {
+        "meshURI": "assets/meshes/unlitTorus.filamesh",
+        "materials": [
+            {
+            "materialURI": "assets/materials/unlit.filamat",
+            "materialName": "Unlit",
+            "parameters": [
+                {
+                "type": "float3",
+                "name": "baseColor",
+                "value": [0.0, 1.0, 0.0] 
+                },
+                {
+                "type": "float4",
+                "name": "emissive",
+                "value": 0.9
+                }
+            ]
+            }
+        ]
+        },
+        "transform": {
+        "position": [2.0, 0.0, 1.0],
+        "rotation": [0.0, 0.0, 0.0],
+        "scale": [1.0, 1.0, 1.0]
+        }
+    }
+    ]
+}  

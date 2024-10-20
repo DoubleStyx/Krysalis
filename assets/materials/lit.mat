@@ -1,5 +1,5 @@
 material {
-    name : Unlit, // change later
+    name : Lit,
     requires : [
         uv0
     ],
@@ -28,10 +28,6 @@ material {
         {
             type : sampler2d,
             name : ao
-        },
-        {
-            type : float4,
-            name : emissive
         }
     ],
 }
