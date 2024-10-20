@@ -3,8 +3,10 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
 
 ## Installation
 1. Install [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader).
-1. Place [KrysalisManaged.dll](https://github.com/DoubleStyx/Krysalis/releases/latest/download/KrysalisManaged.dll) and [KrysalisNative.dll](https://github.com/DoubleStyx/Krysalis/releases/latest/download/KrysalisManaged.dll) into your `rml_mods` folder. This folder should be at `C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods` for a default install. You can create it if it's missing, or if you launch the game once with ResoniteModLoader installed it will create this folder for you.
-1. Start the game. If you want to verify that the mod is working you can check your Resonite logs.
+2. Extract the contents of the provided zip file into your `rml_mods` directory. This will include:
+   - `KrysalisManaged.dll`, which should be placed at the root of the `rml_mods` directory.
+   - The `Krysalis` folder, which contains all relevant subfolder assets and `KrysalisNative.dll`.
+3. Start the game. If you want to verify that the mod is working, you can check your Resonite logs for relevant entries from the `Krysalis` mod.
 
 ## Building
 ### Prerequisites
@@ -28,14 +30,8 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
 
 ### Building the Solution
 1. **Open the Solution**: Open the `.sln` file in Visual Studio 2022.
-2. **Build the Solution**: In Visual Studio, build the solution using the **Release** configuration. This will compile both the C# and C++ parts of the mod.
-3. **Deploying the DLLs**: After a successful build, the generated DLLs (`KrysalisManaged.dll` and `KrysalisNative.dll`) will be automatically copied to the `rml_mods` folder of your Resonite installation.
-
-   If the files aren’t automatically moved, you can manually copy them to:
-   
-   ```bash
-   C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods
-   ```
+2. **Build the Solution**: In Visual Studio, build the solution using either the **Debug** or **Release** configuration.
+3. **Deploying the DLLs**: After a successful build, the generated DLLs (`KrysalisManaged.dll` and `KrysalisNative.dll`) will be automatically copied to the `rml_mods` folder of your Resonite installation, preserving the folder structure described earlier.
 
 ### Testing
-Once the build is complete and the DLLs are in place, launch Resonite and verify that the mod works by checking the game logs. You should see relevant log entries from the `Krysalis` mod if everything is set up correctly.
+Once the build is complete and the DLLs are in place, launch Resonite and verify that the mod works by checking the game logs. You should see relevant log entries from the `Krysalis` mod if everything is set up correctly. You can also view Krysalis-specific logs in `rml_mods/Krysalis/logs`.
