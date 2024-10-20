@@ -17,45 +17,30 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-#       - name: Download Filament Library
-#         run: |
-#           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
-#           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament-windows.tgz"
-#           tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
-#           ls C:/Libraries/filament-windows/
+      - name: Download Filament Library
+        run: |
+          New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
+          Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament-windows.tgz"
+          tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
+          ls C:/Libraries/filament-windows/
 
-#       - name: Download GLFW
-#         run: |
-#           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
-#           Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.bin.WIN64.zip"
-#           Expand-Archive -Path "glfw-3.4.bin.WIN64.zip" -DestinationPath "C:/Libraries/glfw-3.4.bin.WIN64/"
-#           Move-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/*" -Destination "C:/Libraries/glfw-3.4.bin.WIN64/" -Force
-#           Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
-#           ls C:/Libraries/glfw-3.4.bin.WIN64/
+      - name: Download GLFW
+        run: |
+          New-Item -ItemType Directory -Path "C:/Libraries/" -Force
+          Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.bin.WIN64.zip"
+          Expand-Archive -Path "glfw-3.4.bin.WIN64.zip" -DestinationPath "C:/Libraries/glfw-3.4.bin.WIN64/"
+          Move-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/*" -Destination "C:/Libraries/glfw-3.4.bin.WIN64/" -Force
+          Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
+          ls C:/Libraries/glfw-3.4.bin.WIN64/
 
-#       - name: Install Vulkan SDK
-#         uses: humbletim/setup-vulkan-sdk@v1.2.0
-#         with:
-#           vulkan-query-version: 1.3.290.0
-#           vulkan-components: Vulkan-Headers, Vulkan-Loader
-#           vulkan-use-cache: false
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v1
 
-#       - name: Move Vulkan SDK install location
-#         shell: powershell
-#         run: |
-#           New-Item -Path "C:/VulkanSDK" -ItemType Directory -Force
-#           Move-Item -Path "$env:VULKAN_SDK/*" -Destination "C:/VulkanSDK/1.3.290.0/" -Force
-#           Remove-Item -Path "$env:VULKAN_SDK/" -Recurse -Force
-#           ls C:/VulkanSDK/1.3.290.0/ -r
-          
-#       - name: Set up MSBuild
-#         uses: microsoft/setup-msbuild@v1
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v1
 
-#       - name: Set up NuGet
-#         uses: NuGet/setup-nuget@v1
+      - name: Install dependencies
+        run: nuget restore Krysalis.sln
 
-#       - name: Install dependencies
-#         run: nuget restore Krysalis.sln
-
-#       - name: Build the solution
-#         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"
+      - name: Build the solution
+        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"

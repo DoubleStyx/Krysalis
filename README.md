@@ -20,13 +20,11 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
    d-----         9/28/2024   7:20 PM                glfw-3.4.bin.WIN64
    ```
 
-3. **Vulkan SDK**: Install the **Vulkan SDK version 1.3.290.0**. You can download the installer from the [LunarG Vulkan SDK website](https://vulkan.lunarg.com/). Make sure the SDK is installed properly and that environment variables such as `VULKAN_SDK` are set up for Visual Studio to detect.
-
-4. **Resonite**: Install Resonite. The mod is tested within the Resonite environment, so you'll need to have it installed to verify any changes. The ResoniteModLoader should also be installed and configured to load the mod.
+3. **Resonite**: Install Resonite. The mod is tested within the Resonite environment, so you'll need to have it installed to verify any changes. The ResoniteModLoader should also be installed and configured to load the mod.
 
 ### Build Configuration
 - **Platform**: The project currently only supports **Windows** builds and targets **x64** architecture.
-- **Dependencies**: Ensure that the `C:/Libraries` directory contains the necessary GLFW and Filament files as outlined above, and that the Vulkan SDK is correctly installed. Future updates may allow for more flexible paths or versions, but for now, use the specified versions for compatibility.
+- **Dependencies**: Ensure that the `C:/Libraries` directory contains the necessary GLFW and Filament files as outlined above. Future updates may allow for more flexible paths or versions, but for now, use the specified versions for compatibility.
 
 ### Building the Solution
 1. **Open the Solution**: Open the `.sln` file in Visual Studio 2022.
