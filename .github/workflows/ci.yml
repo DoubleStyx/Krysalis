@@ -8,10 +8,6 @@ on:
     branches:
       - main
 
-defaults:
-  run:
-    shell: pwsh
-
 jobs:
   build:
     name: Build Solution
@@ -21,46 +17,36 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Generate version number using run number
-      - name: Generate version number
+      # Set hardcoded version components
+      - name: Set version components
         run: |
           echo "MAJOR_VERSION=1" >> $env:GITHUB_ENV
           echo "MINOR_VERSION=2" >> $env:GITHUB_ENV
+        shell: pwsh
+
+      # Generate full version number using the run number
+      - name: Generate version number
+        run: |
           $patch_version = ${{ github.run_number }}
           $version = "${{ env.MAJOR_VERSION }}.${{ env.MINOR_VERSION }}.$patch_version"
           echo "VERSION=$version" >> $env:GITHUB_ENV
+        shell: pwsh
 
-      # Cache Filament Library
-      - name: Cache Filament Library
-        uses: actions/cache@v3
-        with:
-          path: C:/Libraries/filament-windows
-          key: filament-v1.55.0
-
-      # Download Filament Library (if not cached)
       - name: Download Filament Library
-        if: steps.cache-filament.outputs.cache-hit != 'true'
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/filament-windows/" -Force
           Invoke-WebRequest -Uri "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-windows.tgz" -OutFile "filament-windows.tgz"
           tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
+        shell: pwsh
 
-      # Cache GLFW Library
-      - name: Cache GLFW Library
-        uses: actions/cache@v3
-        with:
-          path: C:/Libraries/glfw-3.4.bin.WIN64
-          key: glfw-3.4
-
-      # Download GLFW (if not cached)
       - name: Download GLFW
-        if: steps.cache-glfw.outputs.cache-hit != 'true'
         run: |
           New-Item -ItemType Directory -Path "C:/Libraries/" -Force
           Invoke-WebRequest -Uri "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip" -OutFile "glfw-3.4.bin.WIN64.zip"
           Expand-Archive -Path "glfw-3.4.bin.WIN64.zip" -DestinationPath "C:/Libraries/glfw-3.4.bin.WIN64/"
           Move-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/*" -Destination "C:/Libraries/glfw-3.4.bin.WIN64/" -Force
           Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
+        shell: pwsh
 
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
@@ -80,10 +66,24 @@ jobs:
           Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
           Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
           Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
+        shell: pwsh
+
+      - name: List artifact directory contents (optional)
+        run: |
+          Get-ChildItem -Path "artifact" -Recurse
+        shell: pwsh
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
+          Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts-${{ env.VERSION }}.zip"
+        shell: pwsh
+
+      # Upload artifact to GitHub Actions storage (this is optional, not related to GitHub releases)
+      - name: Upload artifact to GitHub Actions
+        uses: actions/upload-artifact@v3
+        with:
+          name: KrysalisArtifacts-${{ env.VERSION }}
+          path: KrysalisArtifacts-${{ env.VERSION }}.zip
 
       # Create a new release
       - name: Create GitHub Release
@@ -104,6 +104,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Krysalis-${{ env.VERSION }}.zip
-          asset_name: Krysalis-${{ env.VERSION }}.zip
+          asset_path: ./KrysalisArtifacts-${{ env.VERSION }}.zip
+          asset_name: KrysalisArtifacts-${{ env.VERSION }}.zip
           asset_content_type: application/zip
