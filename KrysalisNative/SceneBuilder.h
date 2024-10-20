@@ -42,8 +42,8 @@ using namespace filamesh;
 
 rapidjson::Document loadSceneFromFile(const std::string& relativePath);
 void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjson::Document& sceneData);
-void createLightComponent(Engine* engine, const rapidjson::Value& obj, utils::Entity entity);
-void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity);
+utils::Entity createLightComponent(Engine* engine, const rapidjson::Value& obj);
+utils::Entity createMeshComponent(filament::Engine* engine, const rapidjson::Value& obj);
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity);
 filament::Texture* loadTexture(filament::Engine* engine, const std::wstring& relativePath);
 std::vector<uint8_t> loadFile(const std::wstring& relativePath);

@@ -90,18 +90,17 @@ void createScene(filament::Engine* engine, filament::Scene* scene, const rapidjs
         const rapidjson::Value& obj = objects[i];
 		GlobalLog("Processing object " + std::to_string(i));
 
-        utils::Entity entity = em.create();
-		GlobalLog("Created entity");
+        utils::Entity entity;
 
         std::string type = obj["type"].GetString();
 		GlobalLog("Obtained object type");
 
         if (type == "light") {
-            createLightComponent(engine, obj, entity);
+            entity = createLightComponent(engine, obj);
 			GlobalLog("Created light component");
         }
         else if (type == "mesh") {
-            createMeshComponent(engine, scene, obj, entity);
+            entity = createMeshComponent(engine, obj);
 			GlobalLog("Created mesh component");
         }
 
@@ -164,7 +163,9 @@ void VerifyComponents(filament::Engine* engine) { // TEMPORARY
     }
 }
 
-void createLightComponent(Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
+utils::Entity createLightComponent(Engine* engine, const rapidjson::Value& obj) {
+	utils::Entity entity = utils::EntityManager::get().create();
+
     filament::LightManager::Builder builder(
         std::string(obj["component"]["lightType"].GetString()) == "directional"
         ? filament::LightManager::Type::DIRECTIONAL
@@ -190,9 +191,11 @@ void createLightComponent(Engine* engine, const rapidjson::Value& obj, utils::En
 
     builder.build(*engine, entity);
 	GlobalLog("Built light component");
+
+	return entity;
 }
 
-void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const rapidjson::Value& obj, utils::Entity entity) {
+utils::Entity createMeshComponent(filament::Engine* engine, const rapidjson::Value& obj) {
     std::string meshURI = obj["component"]["meshURI"].GetString();
     GlobalLog("Mesh URI: " + meshURI);
 
@@ -227,29 +230,22 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
             if (std::string(param["type"].GetString()) == "sampler2d") {
                 filament::Texture* texture = loadTexture(engine, stringToWstring(param["value"].GetString()));
                 GlobalLog("Loaded texture");
-
                 materialInstance->setParameter(paramName.c_str(), texture, filament::TextureSampler());
-                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float") {
                 materialInstance->setParameter(paramName.c_str(), param["value"].GetFloat());
-                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float3") {
                 materialInstance->setParameter(paramName.c_str(), math::float3(
                     param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat()));
-                GlobalLog("Set parameter");
             }
             else if (std::string(param["type"].GetString()) == "float4") {
                 materialInstance->setParameter(paramName.c_str(), math::float4(
                     param["value"][0].GetFloat(), param["value"][1].GetFloat(), param["value"][2].GetFloat(), param["value"][3].GetFloat()));
-                GlobalLog("Set parameter");
             }
         }
 
         utils::CString materialName(materialJson["materialName"].GetString());
-        GlobalLog("Obtained material name");
-
         materialRegistry.registerMaterialInstance(materialName, materialInstance);
         GlobalLog("Registered material instance");
     }
@@ -261,20 +257,10 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
         throw std::runtime_error("Failed to load mesh: " + meshURI);
     }
 
-    // ?
-    filament::RenderableManager& rm = engine->getRenderableManager();
-    filament::RenderableManager::Instance renderableInstance = rm.getInstance(mesh.renderable);
-    Box singleBox = rm.getAxisAlignedBoundingBox(renderableInstance);
-
-    filament::RenderableManager::Builder(1)
-        .boundingBox(singleBox)
-        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, mesh.vertexBuffer, mesh.indexBuffer)
-        .material(0, materialRegistry.getMaterialInstance("Lit"))
-        .build(*engine, entity);
-
-    scene->addEntity(entity);
-    GlobalLog("Added entity with renderable to scene");
+    return mesh.renderable;
 }
+
+
 
 
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
