@@ -148,8 +148,9 @@
   <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
-
     <Message Text="Copying assets from $(AssetsDirectory) to $(KrysalisDirectory)" Importance="high" />
-    <Copy SourceFiles="@(AssetFiles)" DestinationFolder="$(KrysalisDirectory)" />
+    <Copy SourceFiles="@(AssetFiles)"
+      DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
   </Target>
 </Project>
