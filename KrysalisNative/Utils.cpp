@@ -7,6 +7,7 @@
 #include <filament/Texture.h>
 #include <utils/Path.h>
 #include <fstream>
+#include <filesystem>
 #include <vector>
 #include <stb_image.h>
 #include <iostream>
@@ -139,20 +140,30 @@ std::wstring getDllDirectory() {
 
 void openLogFile() {
     auto currentTime = std::chrono::system_clock::now();
-	ManagedLog("Got current time");
+    ManagedLog("Got current time");
 
     std::time_t now_time = std::chrono::system_clock::to_time_t(currentTime);
-	ManagedLog("Got time_t");
+    ManagedLog("Got time_t");
 
     std::string timestamp = getFormattedTimestamp(now_time);
-	ManagedLog("Got formatted timestamp: " + timestamp);
+    ManagedLog("Got formatted timestamp: " + timestamp);
+
+    std::wstring logDirectory = stringToWstring("logs");
+    if (!std::filesystem::exists(logDirectory)) {
+        ManagedLog("Logs directory does not exist. Creating logs directory.");
+        std::filesystem::create_directories(logDirectory);
+    }
+    else {
+        ManagedLog("Logs directory exists.");
+    }
 
     std::wstring relativePath = stringToWstring("logs\\" + timestamp + ".log");
-	ManagedLog("Got relative path: " + wstringToString(relativePath));
+    ManagedLog("Got relative path: " + wstringToString(relativePath));
 
     logFile.open(getFullPath(relativePath), std::ios::out | std::ios::app);
-	ManagedLog("Opened log file at " + wstringToString(getFullPath(relativePath)));
+    ManagedLog("Opened log file at " + wstringToString(getFullPath(relativePath)));
 }
+
 
 void closeLogFile() { 
     if (logFile.is_open()) {

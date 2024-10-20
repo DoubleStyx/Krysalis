@@ -52,7 +52,7 @@ void loadScene(filament::Engine* engine, filament::Scene* scene) {
 
 rapidjson::Document loadSceneFromFile(const std::string& relativePath) {
     std::ifstream file(wstringToString(getFullPath(stringToWstring(relativePath))));
-	GlobalLog("Opened file: " + relativePath);
+	GlobalLog("Opened file: " + wstringToString(getFullPath(stringToWstring(relativePath))));
 
     if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + relativePath);
