@@ -119,12 +119,12 @@
     <MeshFiles Include="$(MeshesDirectory)\*.obj" />
   </ItemGroup>
   <Target Name="CompileMaterials" BeforeTargets="Build">
-    <Exec Command="$(MatcExecutable) -o $(MaterialsDirectory)\%(Filename).filamat %(FullPath)"
-      Condition="Exists('%(FullPath)') AND (!Exists('$(MaterialsDirectory)\%(Filename).filamat') OR %(FullPath) > $(MaterialsDirectory)\%(Filename).filamat)" />
+    <Exec Command="$(MatcExecutable) -o $(MaterialsDirectory)\%(MaterialFiles.Filename).filamat %(FullPath)"
+      Condition="Exists('%(FullPath)') AND (!Exists('$(MaterialsDirectory)\%(MaterialFiles.Filename).filamat') OR %(FullPath) > $(MaterialsDirectory)\%(MaterialFiles.Filename).filamat)" />
   </Target>
   <Target Name="CompileMeshes" BeforeTargets="Build">
-    <Exec Command="$(FilameshExecutable) -o $(MeshesDirectory)\%(Filename).filamesh %(FullPath)"
-      Condition="Exists('%(FullPath)') AND (!Exists('$(MeshesDirectory)\%(Filename).filamesh') OR %(FullPath) > $(MeshesDirectory)\%(Filename).filamesh)" />
+    <Exec Command="$(FilameshExecutable) -o $(MeshesDirectory)\%(MeshFiles.Filename).filamesh %(FullPath)"
+      Condition="Exists('%(FullPath)') AND (!Exists('$(MeshesDirectory)\%(MeshFiles.Filename).filamesh') OR %(FullPath) > $(MeshesDirectory)\%(MeshFiles.Filename).filamesh)" />
   </Target>
   <ItemGroup>
       <AssetFiles Include="$(AssetsDirectory)\**\*.*" />
