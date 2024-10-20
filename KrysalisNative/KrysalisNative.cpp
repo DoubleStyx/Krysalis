@@ -48,6 +48,7 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
+#include "TestUtils.h"
 
 // other namespaces worth including? Maybe simplify namespace usage? Don't want conflicts or ambiguity though.
 using namespace filament;

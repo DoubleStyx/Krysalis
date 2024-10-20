@@ -10,6 +10,7 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
+#include "TestUtils.h"
 
 using namespace filament;
 using namespace math;

@@ -13,11 +13,13 @@
   <ItemGroup>
     <ClInclude Include="KrysalisNative.h" />
     <ClInclude Include="SceneBuilder.h" />
+    <ClInclude Include="TestUtils.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KrysalisNative.cpp" />
     <ClCompile Include="SceneBuilder.cpp" />
+    <ClCompile Include="TestUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -49,19 +51,7 @@
     <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <PropertyGroup>
-    <ExternalIncludeDir>$(MSBuildThisFileDirectory)..\external\include</ExternalIncludeDir>
-    <FilamentIncludeDir>C:\Libraries\filament-windows\include</FilamentIncludeDir>
-    <FilamentLibDirDebug>C:\Libraries\filament-windows\lib\x86_64\mdd</FilamentLibDirDebug>
-    <FilamentLibDirRelease>C:\Libraries\filament-windows\lib\x86_64\md</FilamentLibDirRelease>
-    <GLFWIncludeDir>C:\Libraries\glfw-3.4.bin.WIN64\include</GLFWIncludeDir>
-    <GLFWLibDir>C:\Libraries\glfw-3.4.bin.WIN64\lib-vc2022</GLFWLibDir>
-    <CommonIncludeDirs>$(ExternalIncludeDir);$(FilamentIncludeDir);$(GLFWIncludeDir)</CommonIncludeDirs>
-    <CommonLibDirs>$(GLFWLibDir)</CommonLibDirs>
-    <CommonDependencies>Shlwapi.lib;glfw3.lib;opengl32.lib;backend.lib;basis_transcoder.lib;bluegl.lib;bluevk.lib;camutils.lib;civetweb.lib;dracodec.lib;filabridge.lib;filaflat.lib;filamat.lib;filament-iblprefilter.lib;filament.lib;filameshio.lib;geometry.lib;gltfio.lib;gltfio_core.lib;ibl-lite.lib;ibl.lib;image.lib;ktxreader.lib;matdbg.lib;meshoptimizer.lib;mikktspace.lib;shaders.lib;smol-v.lib;stb.lib;uberarchive.lib;uberzlib.lib;utils.lib;viewer.lib;vkshaders.lib;zstd.lib;</CommonDependencies>
-    <CommonCppStandard>stdcpp20</CommonCppStandard>
-    <CommonOptions>/ignore:4099</CommonOptions>
-  </PropertyGroup>
+  <Import Project="$(SolutionDir)\Common.props" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(CommonIncludeDirs);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -106,14 +96,6 @@
     <Error Condition="!Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets'))" />
   </Target>
   <Import Project="..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
-  <PropertyGroup>
-    <AssetsDirectory>$(ProjectDir)..\assets</AssetsDirectory>
-    <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
-    <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
-    <BinDirectory>$(AssetsDirectory)\bin</BinDirectory>
-    <FilameshExecutable>$(BinDirectory)\filamesh.exe</FilameshExecutable>
-    <MatcExecutable>$(BinDirectory)\matc.exe</MatcExecutable>
-  </PropertyGroup>
   <ItemGroup>
     <MaterialFiles Include="$(MaterialsDirectory)\*.mat" />
     <MeshFiles Include="$(MeshesDirectory)\*.obj" />
@@ -126,21 +108,11 @@
       <OutputFile>$(MeshesDirectory)\%(Filename).filamesh</OutputFile>
     </MeshFile>
   </ItemGroup>
-  <Target Name="CompileMaterials" BeforeTargets="Build"
-    Inputs="@(MaterialFile->'%(FullPath)')"
-    Outputs="@(MaterialFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(MatcExecutable)&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;"
-      Condition="Exists('$(MatcExecutable)')"
-      StandardOutputImportance="High"
-      StandardErrorImportance="High" />
+  <Target Name="CompileMaterials" BeforeTargets="Build" Inputs="@(MaterialFile->'%(FullPath)')" Outputs="@(MaterialFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(MatcExecutable)&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;" Condition="Exists('$(MatcExecutable)')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
-  <Target Name="CompileMeshes" BeforeTargets="Build"
-    Inputs="@(MeshFile->'%(FullPath)')"
-    Outputs="@(MeshFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(FilameshExecutable)&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
-      Condition="Exists('$(FilameshExecutable)')"
-      StandardOutputImportance="High"
-      StandardErrorImportance="High" />
+  <Target Name="CompileMeshes" BeforeTargets="Build" Inputs="@(MeshFile->'%(FullPath)')" Outputs="@(MeshFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(FilameshExecutable)&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;" Condition="Exists('$(FilameshExecutable)')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
   <ItemGroup>
     <AssetFiles Include="$(AssetsDirectory)\**\*.*" />
@@ -149,8 +121,6 @@
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
     <Message Text="Copying assets from $(AssetsDirectory) to $(KrysalisDirectory)" Importance="high" />
-    <Copy SourceFiles="@(AssetFiles)"
-      DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(AssetFiles)" DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>
