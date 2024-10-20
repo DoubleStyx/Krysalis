@@ -44,3 +44,28 @@ jobs:
 
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"
+
+      - name: Create artifact directory structure
+        run: |
+          # Create directories
+          New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
+          # Copy KrysalisManaged.dll to root of artifact
+          Copy-Item -Path "KrysalisManaged/bin/Release/netstandard2.1/KrysalisManaged.dll" -Destination "artifact/" -Force
+          # Copy KrysalisNative.dll to Krysalis folder
+          Copy-Item -Path "KrysalisNative/x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
+          # Copy assets to Krysalis folder
+          Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
+
+      - name: List artifact directory contents (optional)
+        run: |
+          Get-ChildItem -Path "artifact" -Recurse
+
+      - name: Compress artifact directory into ZIP
+        run: |
+          Compress-Archive -Path "artifact\*" -DestinationPath "KrysalisArtifacts.zip"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: KrysalisArtifacts
+          path: KrysalisArtifacts.zip
