@@ -248,23 +248,34 @@ void createMeshComponent(filament::Engine* engine, filament::Scene* scene, const
         }
 
         utils::CString materialName(materialJson["materialName"].GetString());
-		GlobalLog("Obtained material name");
+        GlobalLog("Obtained material name");
 
         materialRegistry.registerMaterialInstance(materialName, materialInstance);
         GlobalLog("Registered material instance");
     }
 
-    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(stringToWstring(meshURI)))), materialRegistry); // this is bad
+    filamesh::MeshReader::Mesh mesh = filamesh::MeshReader::loadMeshFromFile(engine, utils::Path(wstringToString(getFullPath(stringToWstring(meshURI)))), materialRegistry);
     GlobalLog("Loaded mesh");
 
     if (mesh.renderable.isNull()) {
         throw std::runtime_error("Failed to load mesh: " + meshURI);
     }
-    GlobalLog("Loaded mesh");
 
-	scene->addEntity(mesh.renderable);
-    GlobalLog("Built renderable component");
+    // ?
+    filament::RenderableManager& rm = engine->getRenderableManager();
+    filament::RenderableManager::Instance renderableInstance = rm.getInstance(mesh.renderable);
+    Box singleBox = rm.getAxisAlignedBoundingBox(renderableInstance);
+
+    filament::RenderableManager::Builder(1)
+        .boundingBox(singleBox)
+        .geometry(0, filament::RenderableManager::PrimitiveType::TRIANGLES, mesh.vertexBuffer, mesh.indexBuffer)
+        .material(0, materialRegistry.getMaterialInstance("Lit"))
+        .build(*engine, entity);
+
+    scene->addEntity(entity);
+    GlobalLog("Added entity with renderable to scene");
 }
+
 
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
