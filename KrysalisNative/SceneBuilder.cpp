@@ -261,8 +261,6 @@ utils::Entity createMeshComponent(filament::Engine* engine, const rapidjson::Val
 }
 
 
-
-
 void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils::Entity entity) {
     filament::TransformManager& tcm = engine->getTransformManager();
     GlobalLog("Obtained TransformManager");
@@ -277,30 +275,45 @@ void applyTransform(filament::Engine* engine, const rapidjson::Value& obj, utils
     const rapidjson::Value& scale = obj["transform"]["scale"];
     GlobalLog("Obtained transform components");
 
+    // Translation matrix
     math::float3 translationVector = math::float3(position[0].GetFloat(), position[1].GetFloat(), position[2].GetFloat());
     math::mat4f translation = math::mat4f::translation(translationVector);
     GlobalLog("Created translation matrix");
 
-    float angle = rotation[0].GetFloat();
+    // Rotation matrix with angle conversion
+    float angleDegrees = rotation[0].GetFloat();
+    float angleRadians = angleDegrees * (M_PI / 180.0f); // Convert degrees to radians
     float axisX = rotation[1].GetFloat();
     float axisY = rotation[2].GetFloat();
     float axisZ = rotation[3].GetFloat();
-	GlobalLog("Obtained rotation components");
+    GlobalLog("Converted rotation angle from degrees to radians");
 
-    math::mat4f rotationMat = math::mat4f::rotation(angle, math::float3(axisX, axisY, axisZ)); // avoid axis-angle eventually
+    math::mat4f rotationMat = math::mat4f::rotation(angleRadians, math::float3(axisX, axisY, axisZ));
     GlobalLog("Created rotation matrix");
 
+    // Scale matrix
     math::float3 scaleVector = math::float3(scale[0].GetFloat(), scale[1].GetFloat(), scale[2].GetFloat());
     math::mat4f scaleMat = math::mat4f::scaling(scaleVector);
     GlobalLog("Created scale matrix");
 
+    // Combined transformation matrix
     math::mat4f transform = translation * rotationMat * scaleMat;
     GlobalLog("Created transform matrix");
 
     auto instance = tcm.getInstance(entity);
     tcm.setTransform(instance, transform);
     GlobalLog("Set transform");
+
+    // TEMPORARY
+    for (int row = 0; row < 4; ++row) {
+        std::stringstream ss;
+        for (int col = 0; col < 4; ++col) {
+            ss << transform[row][col] << " ";
+        }
+		GlobalLog(ss.str());
+    }
 }
+
 
 filament::Material* loadMaterial(filament::Engine* engine, const std::string& materialURI) {
     std::vector<uint8_t> materialData = loadFile(stringToWstring(materialURI));

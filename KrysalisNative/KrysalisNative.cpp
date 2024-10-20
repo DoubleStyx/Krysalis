@@ -183,7 +183,7 @@ void init(GLFWwindow* window) {
     GlobalLog("Set camera projection (Perspective)");
 
     camera->lookAt(
-        math::float3{ 0.0f, 0.0f, 5.0f },
+        math::float3{ 0.0f, 1.0f, 5.0f },
         math::float3{ 0.0f, 0.0f, 0.0f },
         math::float3{ 0.0f, 1.0f, 0.0f }
     );
