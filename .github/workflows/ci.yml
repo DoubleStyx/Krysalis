@@ -24,9 +24,13 @@ jobs:
       - name: Install Visual Studio C++ Build Tools
         run: |
           choco install visualstudio-installer --yes
-          vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
           $vsPath = vswhere -latest -products * -property installationPath
-          & "$vsPath\Installer\vs_installer.exe" modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
+          $installerPath = "$vsPath\Installer\vs_installer.exe"
+          if (Test-Path $installerPath) {
+            & $installerPath modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
+          } else {
+            Write-Error "Visual Studio Installer not found at $installerPath"
+          }
         shell: pwsh
 
       - name: Cache Filament Library
