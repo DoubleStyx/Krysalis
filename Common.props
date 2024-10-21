@@ -20,6 +20,7 @@
     <PropertyGroup>
         <CommonCppStandard>stdcpp20</CommonCppStandard>
         <CommonOptions>/ignore:4099</CommonOptions>
+        <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
     </PropertyGroup>
 
   <!-- Shared include directories -->
@@ -42,5 +43,13 @@
   <!-- Shared dependencies -->
     <PropertyGroup>
         <CommonDependencies>Shlwapi.lib;glfw3.lib;opengl32.lib;backend.lib;basis_transcoder.lib;bluegl.lib;bluevk.lib;camutils.lib;civetweb.lib;dracodec.lib;filabridge.lib;filaflat.lib;filamat.lib;filament-iblprefilter.lib;filament.lib;filameshio.lib;geometry.lib;gltfio.lib;gltfio_core.lib;ibl-lite.lib;ibl.lib;image.lib;ktxreader.lib;matdbg.lib;meshoptimizer.lib;mikktspace.lib;shaders.lib;smol-v.lib;stb.lib;uberarchive.lib;uberzlib.lib;utils.lib;viewer.lib;vkshaders.lib;zstd.lib;</CommonDependencies>
+    </PropertyGroup>
+
+  <!-- Shared Resonite directories -->
+    <PropertyGroup Condition="'$(ResonitePath)'==''">
+      <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite</ResonitePath>
+      <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)\Resonite</ResonitePath>
+      <ModsDirectory>$(ResonitePath)\rml_mods</ModsDirectory>
+      <KrysalisDirectory>$(ModsDirectory)\Krysalis</KrysalisDirectory>
     </PropertyGroup>
 </Project>

@@ -72,16 +72,6 @@
       <AdditionalOptions>$(CommonOptions) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-  <PropertyGroup>
-    <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(ResonitePath)'==''">
-    <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
-    <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
-    <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
-    <ModsDirectory>$(ResonitePath)\rml_mods</ModsDirectory>
-    <KrysalisDirectory>$(ModsDirectory)\Krysalis</KrysalisDirectory>
-  </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />

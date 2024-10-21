@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>KrysalisManaged</RootNamespace>
 		<AssemblyName>KrysalisManaged</AssemblyName>
@@ -7,17 +8,9 @@
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
 	</PropertyGroup>
-  	<Import Project="$(SolutionDir)\Common.props" />
-	<PropertyGroup Condition="'$(ResonitePath)'==''">
-		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
-		<ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
-		<ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)Resonite/</ResonitePath>
-		<ModsDirectory>$(ResonitePath)rml_mods</ModsDirectory>
-    	<KrysalisDirectory>$(ModsDirectory)Krysalis</KrysalisDirectory>
-	</PropertyGroup>	
+  	<Import Project="$(SolutionDir)\Common.props" />	
 	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
