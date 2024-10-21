@@ -62,6 +62,12 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
+      - name: Install C++ Build Tools
+        run: |
+          Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_BuildTools.exe -OutFile vs_BuildTools.exe
+          Start-Process vs_BuildTools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools' -NoNewWindow -Wait
+        shell: pwsh
+
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
