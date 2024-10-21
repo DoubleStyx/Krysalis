@@ -18,10 +18,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Generate version number
-        run: |
-          $patch_version = ${{ github.run_number }}
-          $version = "$patch_version"
-          echo "VERSION=$version" >> $env:GITHUB_ENV
+        run: echo "VERSION=${{ github.run_number }}" >> $env:GITHUB_ENV
         shell: pwsh
 
       - name: Cache Filament Library
@@ -59,26 +56,25 @@ jobs:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Set up NuGet
-        uses: NuGet/setup-nuget@v1
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '4.7.2'
 
       - name: Install dependencies
         run: nuget restore Krysalis.sln
 
       - name: Build the solution
-        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64 /p:AdditionalOptions="/std:c++20"
+        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64"
 
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
-          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
-          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
-          Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
-        shell: pwsh
-
-      - name: List artifact directory contents (optional)
-        run: |
-          Get-ChildItem -Path "artifact" -Recurse
+          Copy-Item -Path @(
+            "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll",
+            "x64/Release/KrysalisNative.dll",
+            "assets/*"
+          ) -Destination "artifact/Krysalis/" -Recurse -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
