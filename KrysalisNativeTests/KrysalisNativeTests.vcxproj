@@ -14,9 +14,6 @@
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Test.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\KrysalisNative\KrysalisNative.vcxproj">
       <Project>{764e4e20-0feb-4846-8841-6ddf2c70dac8}</Project>
     </ProjectReference>
