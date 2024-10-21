@@ -29,7 +29,7 @@ jobs:
           if (-not $vsPath) {
             Write-Error "Visual Studio installation not found."
           } else {
-            $installerPath = "$vsPath\Installer\vs_installer.exe"
+            $installerPath = Join-Path $vsPath "Installer\vs_installer.exe"
             if (Test-Path $installerPath) {
               & $installerPath modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
             } else {
