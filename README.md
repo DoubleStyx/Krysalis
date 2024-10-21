@@ -31,3 +31,13 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
 
 ### Testing
 Once the build is complete and the DLLs are in place, launch Resonite and verify that the mod works by checking the game logs. You should see relevant log entries from the `Krysalis` mod if everything is set up correctly. You can also view Krysalis-specific logs in `rml_mods/Krysalis/logs`.
+
+## Planned Features and Architecture
+* Multithreaded rendering
+* Asynchronous rendering
+* Forward, deferred, and forward+ rendering paths
+* PBR shader system
+* Shader graph system
+* Mesh shader emulation
+* Compute shader support
+* Cross-platform and standalone support
