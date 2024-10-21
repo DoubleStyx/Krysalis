@@ -72,12 +72,6 @@
       <AdditionalOptions>$(CommonOptions) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-  <!--
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
-    <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
-    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
-  </Target>
-  -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -106,8 +100,7 @@
     <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
       Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
-  <!--
-  <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
+  <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes">
     <ItemGroup>
       <AssetFiles Include="$(AssetsDirectory)\**\*.*; @(MaterialFile->'%(OutputFile)'); @(MeshFile->'%(OutputFile)')" />
     </ItemGroup>
@@ -118,5 +111,9 @@
       DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
       SkipUnchangedFiles="true" />
   </Target>
-  -->
+  <Target Name="CopyDllToBuildDirectory" AfterTargets="Build">
+    <Message Text="Copying KrysalisNative.dll to $(SolutionDir)build\Krysalis\" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFilename)"
+      DestinationFolder="$(SolutionDir)build\Krysalis" />
+  </Target>
 </Project>

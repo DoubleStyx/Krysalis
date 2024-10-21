@@ -10,7 +10,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
 	</PropertyGroup>
-  	<Import Project="$(SolutionDir)\Common.props" />	
+	<Import Project="$(SolutionDir)\Common.props" />	
 	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
@@ -28,10 +28,9 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-	<!-- Ignoring resonite testing for now
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
-		<Message Text="Attempting to copy $(TargetFileName) to $(ModsDirectory)" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ModsDirectory)" ContinueOnError="true" />
-	</Target>
-	-->
+  <Target Name="CopyDllToBuildDirectory" AfterTargets="Build">
+    <Message Text="Copying KrysalisNative.dll to $(SolutionDir)build\Krysalis\" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFilename)"
+      DestinationFolder="$(SolutionDir)build\" />
+  </Target>
 </Project>
