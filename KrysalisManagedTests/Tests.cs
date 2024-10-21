@@ -1,5 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// Tests.cs
+// Unit tests for KrysalisManaged
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using KrysalisManaged;
 
 namespace KrysalisManagedTests
 {

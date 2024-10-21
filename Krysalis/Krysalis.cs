@@ -3,6 +3,7 @@
 using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
+using KrysalisManaged;
 
 namespace Krysalis;
 
@@ -19,16 +20,9 @@ public class Krysalis : ResoniteMod
         Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
         Msg("Registered Harmony instance");
         harmony.PatchAll();
-        /*
         Msg("Patched all methods");
-        Utils.InitializeLogging();
-        Msg("Initialized logging");
-        Utils.startRenderingThread();
-        Msg("Started rendering thread");
-        */
     }
 
-    /*
     [HarmonyPatch(typeof(Engine), "FinishInitialization")]
     class Engine_FinishInitialization_Patch
     {
@@ -37,7 +31,4 @@ public class Krysalis : ResoniteMod
             Msg("This is a message ran from a patch.");
         }
     }
-    */
-
-    // Add more patches here
 }

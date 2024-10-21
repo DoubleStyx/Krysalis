@@ -24,8 +24,8 @@ extern std::ofstream logFile;
 extern std::wstring _dllDirectory;
 extern LogCallback logCallback;
 
-extern "C" __declspec(dllexport) void startRenderingThread();
-extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback);
+void startRenderingThread();
+void registerLogCallback(LogCallback callback);
 extern "C" __declspec(dllexport) void openLogFile();
 extern "C" __declspec(dllexport) void closeLogFile();
 

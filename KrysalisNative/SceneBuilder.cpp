@@ -51,7 +51,7 @@ void updateScene() {
 }
 
 void loadScene(filament::Engine* engine, filament::Scene* scene) {
-    rapidjson::Document document = loadSceneFromFile("scenes\\testScene.json"); // load from file since we don't have dynamic loading yet
+    rapidjson::Document document = loadSceneFromFile("..\\..\\assets\\scenes\\testScene.json"); // load from file since we don't have dynamic loading yet
     GlobalLog("Loaded scene from file");
 
     createScene(engine, scene, document);

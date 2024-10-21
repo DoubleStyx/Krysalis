@@ -51,7 +51,7 @@ std::wstring stringToWstring(const std::string& str) {
     return std::wstring(str.begin(), str.end());
 }
 
-extern "C" __declspec(dllexport) void startRenderingThread()
+void startRenderingThread()
 {
     std::thread renderThread(runWindow, false);
 	GlobalLog("Started rendering thread");
@@ -59,7 +59,7 @@ extern "C" __declspec(dllexport) void startRenderingThread()
 	GlobalLog("Detached rendering thread");
 }
 
-extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback)
+void registerLogCallback(LogCallback callback)
 {
     logCallback = callback;
 	ManagedLog("Registered log callback"); // this should work?

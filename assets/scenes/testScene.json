@@ -38,26 +38,26 @@
         "name": "litSuzanne",
         "type": "mesh",
         "component": {
-        "meshURI": "meshes\\litSuzanne.filamesh",
+        "meshURI": "..\\..\\assets\\meshes\\litSuzanne.filamesh",
         "materials": [
             {
-            "materialURI": "materials\\lit.filamat",
+            "materialURI": "..\\..\\assets\\materials\\lit.filamat",
             "materialName": "Lit",
             "parameters": [
                 {
                     "type" : "sampler2d",
                     "name" : "albedo",
-                    "value" : "textures\\litSuzanneAlbedo.png"
+                    "value" : "..\\..\\assets\\textures\\litSuzanneAlbedo.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "roughness",
-                    "value" : "textures\\litSuzanneRoughness.png"
+                    "value" : "..\\..\\assets\\textures\\litSuzanneRoughness.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "metallic",
-                    "value" : "textures\\litSuzanneMetallic.png"
+                    "value" : "..\\..\\assets\\textures\\litSuzanneMetallic.png"
                 },
                 {
                     "type" : "float",
@@ -67,12 +67,12 @@
                 {
                     "type" : "sampler2d",
                     "name" : "normal",
-                    "value" : "textures\\litSuzanneNormal.png"
+                    "value" : "..\\..\\assets\\textures\\litSuzanneNormal.png"
                 },
                 {
                     "type" : "sampler2d",
                     "name" : "ao",
-                    "value" : "textures\\litSuzanneAo.png"
+                    "value" : "..\\..\\assets\\textures\\litSuzanneAo.png"
                 }
             ]
             }
@@ -89,10 +89,10 @@
         "name": "unlitTorus",
         "type": "mesh",
         "component": {
-        "meshURI": "meshes\\unlitTorus.filamesh",
+        "meshURI": "..\\..\\assets\\meshes\\unlitTorus.filamesh",
         "materials": [
             {
-            "materialURI": "materials\\unlit.filamat",
+            "materialURI": "..\\..\\assets\\materials\\unlit.filamat",
             "materialName": "Unlit",
             "parameters": [
                 {

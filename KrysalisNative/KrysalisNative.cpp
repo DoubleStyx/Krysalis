@@ -293,7 +293,7 @@ bool runWindow(bool isUnitTest = false) {
 
         if (isUnitTest)
         {
-			closeWindow(window, "Closing application", false);
+			closeWindow(window, "Closing application to complete unit test", false);
             return true;
         }
 
