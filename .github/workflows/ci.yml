@@ -56,10 +56,8 @@ jobs:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '4.7.2'
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v1
 
       - name: Install dependencies
         run: nuget restore Krysalis.sln
