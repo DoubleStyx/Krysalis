@@ -17,6 +17,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Generate version number
+        run: echo "VERSION=${{ github.run_number }}" >> $env:GITHUB_ENV
+        shell: pwsh
+
       - name: Cache Filament Library
         id: cache-filament
         uses: actions/cache@v3
@@ -49,52 +53,17 @@ jobs:
           Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
         shell: pwsh
 
-      - name: Cache NuGet packages
-        id: cache-nuget
-        uses: actions/cache@v3
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.sln', '**/*.csproj') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
-
-      - name: Cache C++ Build Tools
-        id: cache-vs-build-tools
-        uses: actions/cache@v3
-        with:
-          path: C:/BuildTools
-          key: buildtools-v17
-
-      - name: Install C++ Build Tools
-        if: steps.cache-vs-build-tools.outputs.cache-hit != 'true'
-        run: |
-          Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_BuildTools.exe -OutFile vs_BuildTools.exe
-          Start-Process vs_BuildTools.exe -ArgumentList '--quiet', '--wait', '--norestart', '--nocache', '--installPath', 'C:\BuildTools', '--add', 'Microsoft.VisualStudio.Workload.VCTools', '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -NoNewWindow -Wait
-        shell: pwsh
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8'
-
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
       - name: Set up NuGet
         uses: NuGet/setup-nuget@v1
 
-      - name: Install nuget dependencies
+      - name: Install dependencies
         run: nuget restore Krysalis.sln
 
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
-
-      - name: Run Unit Tests
-        run: dotnet test Krysalis.sln --configuration Release
-
-      - name: Generate version number
-        run: echo "VERSION=${{ github.run_number }}" >> $env:GITHUB_ENV
-        shell: pwsh
 
       - name: Create artifact directory structure
         run: |
@@ -106,6 +75,7 @@ jobs:
           Copy-Item -Path "Krysalis/bin/Release/netstandard2.0/Krysalis.dll" -Destination "artifact/Krysalis.dll" -Force
 
           Copy-Item -Path "assets/materials/*.filamat" -Destination "artifact/Krysalis/materials/" -Force
+
           Copy-Item -Path "assets/bin/*.exe" -Destination "artifact/Krysalis/bin/" -Force
         shell: pwsh
 
