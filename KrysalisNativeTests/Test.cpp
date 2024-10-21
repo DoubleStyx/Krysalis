@@ -12,7 +12,6 @@ namespace KrysalisNativeTests
     TEST_CLASS(RendererTests)
     {
     public:
-        /*
         TEST_METHOD(TestRenderer)
         {
             openLogFile();
@@ -23,6 +22,5 @@ namespace KrysalisNativeTests
 
             Assert::IsTrue(result, L"Rendering test failed!");
         }
-        */
     };
 }
