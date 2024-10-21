@@ -25,6 +25,33 @@ if(NOT RapidJSON_POPULATED)
     FetchContent_Populate(RapidJSON)
 endif()
 
+# FetchContent for GLFW
+FetchContent_Declare(
+    GLFW
+    GIT_REPOSITORY https://github.com/glfw/glfw.git
+    GIT_TAG        3.3.4  # Example tag, change if necessary
+)
+
+FetchContent_MakeAvailable(GLFW)
+
+# FetchContent for Filament (adjust to match your Filament usage)
+FetchContent_Declare(
+    Filament
+    GIT_REPOSITORY https://github.com/google/filament.git
+    GIT_TAG        v1.9.19  # Specify version or tag
+)
+
+FetchContent_MakeAvailable(Filament)
+
+# Add include directories for the external libraries
+include_directories(
+    ${Filament_SOURCE_DIR}
+    ${Filament_SOURCE_DIR}/third_party/glm
+    ${Filament_SOURCE_DIR}/third_party/filament/include
+    ${GLFW_SOURCE_DIR}/include
+    ${RapidJSON_SOURCE_DIR}/include
+)
+
 # Specify source files
 set(SOURCES
     KrysalisNative.cpp
@@ -47,8 +74,11 @@ set_target_properties(KrysalisNative PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
-# Link the RapidJSON library (header-only)
-target_include_directories(KrysalisNative PRIVATE ${RapidJSON_SOURCE_DIR}/include)
+# Link the libraries (Filament, GLFW, etc.)
+target_link_libraries(KrysalisNative PRIVATE
+    filament
+    glfw
+)
 
 # Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

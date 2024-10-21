@@ -13,6 +13,7 @@ KrysalisDir = os.path.join("Krysalis")
 
 # Helper function to run a shell command
 def run_command(command, cwd=None):
+    print(f"Running command: {' '.join(command)}")
     try:
         result = subprocess.run(command, cwd=cwd, check=True, text=True, capture_output=True)
         print(result.stdout)
@@ -26,10 +27,14 @@ def run_command(command, cwd=None):
 def build_project(project_name, project_dir):
     print(f"Building {project_name}...")
     build_dir = os.path.join(project_dir, "build")
+    print(f"Build directory: {build_dir}")
 
     # Ensure the build directory exists
     if not os.path.exists(build_dir):
+        print("Build directory not found. Creating build directory at " + build_dir)
         os.makedirs(build_dir)
+    else:
+        print("Build directory found at " + build_dir)
 
     # Run CMake configuration and build commands
     cmake_command = ["cmake", ".."]
@@ -37,6 +42,8 @@ def build_project(project_name, project_dir):
 
     run_command(cmake_command, cwd=build_dir)
     run_command(build_command, cwd=build_dir)
+
+    print(f"Build completed for {project_name}.")
 
 # Test function for running unit tests
 def run_tests(project_name, project_dir):
@@ -64,7 +71,7 @@ def main():
     run_tests("KrysalisNativeTests", KrysalisNativeTestsDir)
     run_tests("KrysalisManagedTests", KrysalisManagedTestsDir)
 
-    print("Build and test process completed successfully!")
+    print("Build and test process completed successfully.")
 
 if __name__ == "__main__":
     main()
