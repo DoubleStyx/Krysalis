@@ -441,9 +441,6 @@ FodyWeavers.xsd
 !external/**
 !assets/**
 
-# Compiled files
+# Compiled assets
 *.filamesh
 *.filamat
-
-# Build directory
-build/

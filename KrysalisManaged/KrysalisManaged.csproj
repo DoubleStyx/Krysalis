@@ -28,9 +28,4 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
-  <Target Name="CopyDllToBuildDirectory" AfterTargets="Build">
-    <Message Text="Copying KrysalisNative.dll to $(SolutionDir)build\Krysalis\" Importance="high" />
-    <Copy SourceFiles="$(TargetDir)$(TargetFilename)"
-      DestinationFolder="$(SolutionDir)build\" />
-  </Target>
 </Project>

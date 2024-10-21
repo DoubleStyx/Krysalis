@@ -100,32 +100,4 @@
     <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
       Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
-  <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes">
-    <ItemGroup>
-      <BinFiles Include="$(BinDirectory)\**\*.*" />
-      <SceneFiles Include="$(ScenesDirectory)\**\*.*" />
-      <TextureFiles Include="$(TexturesDirectory)\**\*.*" />
-    </ItemGroup>
-    <Message Text="Copying bin, scenes, and textures folders to $(SolutionDir)build\Krysalis\" Importance="high" />
-    <Copy SourceFiles="@(BinFiles)"
-          DestinationFiles="@(BinFiles->'$(SolutionDir)build\Krysalis\bin\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(SceneFiles)"
-          DestinationFiles="@(SceneFiles->'$(SolutionDir)build\Krysalis\scenes\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(TextureFiles)"
-          DestinationFiles="@(TextureFiles->'$(SolutionDir)build\Krysalis\textures\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <ItemGroup>
-      <CompiledMaterialFiles Include="$(MaterialsDirectory)\*.filamat" />
-      <CompiledMeshFiles Include="$(MeshesDirectory)\*.filamesh" />
-    </ItemGroup>
-    <Message Text="Copying compiled .filamat and .filamesh files to $(SolutionDir)build\Krysalis\materials and \meshes" Importance="high" />
-    <Copy SourceFiles="@(CompiledMaterialFiles)"
-          DestinationFolder="$(SolutionDir)build\Krysalis\materials" />
-    <Copy SourceFiles="@(CompiledMeshFiles)"
-          DestinationFolder="$(SolutionDir)build\Krysalis\meshes" />
-  </Target>
-  <Target Name="CopyDllToBuildDirectory" AfterTargets="Build">
-    <Message Text="Copying KrysalisNative.dll to $(SolutionDir)build\Krysalis\" Importance="high" />
-    <Copy SourceFiles="$(TargetDir)$(TargetFilename)"
-      DestinationFolder="$(SolutionDir)build\Krysalis" />
-  </Target>
 </Project>
