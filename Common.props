@@ -3,13 +3,13 @@
 
   <!-- Shared project directories -->
   <PropertyGroup>
-        <KrysalisDir>$(SolutionDir)\Krysalis</KrysalisDir>
-        <KrysalisNativeDir>$(SolutionDir)\KrysalisNative</KrysalisNativeDir>
-        <KrysalisNativeTestsDir>$(SolutionDir)\KrysalisNativeTests</KrysalisNativeTestsDir>
-        <KrysalisManagedDir>$(SolutionDir)\KrysalisManaged</KrysalisManagedDir>
-        <KrysalisManagedTestsDir>$(SolutionDir)\KrysalisManagedTests</KrysalisManagedTestsDir>
-        <ExternalDir>$(SolutionDir)\external</ExternalDir>
-        <AssetsDirectory>$(SolutionDir)\assets</AssetsDirectory>
+        <KrysalisDir>Krysalis</KrysalisDir>
+        <KrysalisNativeDir>KrysalisNative</KrysalisNativeDir>
+        <KrysalisNativeTestsDir>KrysalisNativeTests</KrysalisNativeTestsDir>
+        <KrysalisManagedDir>KrysalisManaged</KrysalisManagedDir>
+        <KrysalisManagedTestsDir>KrysalisManagedTests</KrysalisManagedTestsDir>
+        <ExternalDir>external</ExternalDir>
+        <AssetsDirectory>assets</AssetsDirectory>
         <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
         <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
         <ScenesDirectory>$(AssetsDirectory)\scenes</ScenesDirectory>
