@@ -71,8 +71,9 @@ jobs:
           dotnet-version: '6.x'
 
       - name: Run Unit Tests
-        run: dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx"
-        run: dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx"
+        run: |
+          dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx"
+          dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx"
 
       - name: Create artifact directory structure
         run: |
