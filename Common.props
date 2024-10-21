@@ -12,8 +12,6 @@
         <AssetsDirectory>$(SolutionDir)\assets</AssetsDirectory>
         <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
         <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
-        <ScenesDirectory>$(AssetsDirectory)\scenes</ScenesDirectory>
-        <TexturesDirectory>$(AssetsDirectory)\textures</TexturesDirectory>
         <BinDirectory>$(AssetsDirectory)\bin</BinDirectory>
   </PropertyGroup>
 
@@ -37,8 +35,7 @@
         <FilamentLibDirDebug>C:\Libraries\filament-windows\lib\x86_64\mdd</FilamentLibDirDebug>
         <FilamentLibDirRelease>C:\Libraries\filament-windows\lib\x86_64\md</FilamentLibDirRelease>
         <GLFWLibDir>C:\Libraries\glfw-3.4.bin.WIN64\lib-vc2022</GLFWLibDir>
-        <ExternalLibDir>$(ExternalDir)\bin</ExternalLibDir>
-        <CommonLibDirs>$(GLFWLibDir);$(ExternalLibDir);</CommonLibDirs>
+        <CommonLibDirs>$(GLFWLibDir);</CommonLibDirs>
     </PropertyGroup>
 
   <!-- Shared dependencies -->

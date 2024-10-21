@@ -65,6 +65,9 @@ jobs:
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
 
+      - name: Run Unit Tests
+        run: dotnet test Krysalis.sln --configuration Release
+
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis/materials" -Force

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="..\Common.props" />
+	<Import Project="$(SolutionDir)\Common.props" />
 	<PropertyGroup>
 		<RootNamespace>Krysalis</RootNamespace>
 		<AssemblyName>Krysalis</AssemblyName>
@@ -29,10 +29,14 @@
 		</Reference>
 	</ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+    <ProjectReference Include="$(SolutionDir)\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
 		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
 		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods" ContinueOnError="true" />
 	</Target>
+  <ItemGroup>
+    <None Include="packages.config" />
+	<None Include="app.config" />
+  </ItemGroup>
 </Project>
