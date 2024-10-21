@@ -53,6 +53,27 @@ jobs:
           Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
         shell: pwsh
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Cache built DLLs and binaries
+        id: cache-build
+        uses: actions/cache@v3
+        with:
+          path: |
+            x64/Release/
+            KrysalisManaged/bin/Release/net472/
+            Krysalis/bin/Release/net472/
+            KrysalisManagedTests/bin/Release/net472/
+          key: build-${{ github.sha }}
+          restore-keys: |
+            build-
+
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
 
@@ -62,33 +83,48 @@ jobs:
       - name: Install dependencies
         run: nuget restore Krysalis.sln
 
-      - name: Build the solution
-        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
+      - name: Cache .NET SDK and tools
+        uses: actions/cache@v3
+        with:
+          path: ~/.dotnet
+          key: dotnet-sdk-${{ runner.os }}-${{ hashFiles('global.json') }}
+          restore-keys: |
+            dotnet-sdk-${{ runner.os }}-
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.x'
 
+      - name: Build the solution
+        if: steps.cache-build.outputs.cache-hit != 'true'
+        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
+
+      - name: Cache Test Results
+        id: cache-test-results
+        uses: actions/cache@v3
+        with:
+          path: test-results/
+          key: test-results-${{ github.sha }}
+          restore-keys: |
+            test-results-
+
       - name: Run Unit Tests
         run: |
-          dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx"
-          dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx"
+          dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx" --results-directory test-results
+          dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx" --results-directory test-results
 
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis/materials" -Force
           New-Item -ItemType Directory -Path "artifact/Krysalis/bin" -Force
 
-          # Copy DLLs
           Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/Krysalis/KrysalisManaged.dll" -Force
           Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/KrysalisNative.dll" -Force
           Copy-Item -Path "Krysalis/bin/Release/net472/Krysalis.dll" -Destination "artifact/Krysalis.dll" -Force
 
-          # Copy Materials
           Copy-Item -Path "assets/materials/*.filamat" -Destination "artifact/Krysalis/materials/" -Force
 
-          # Copy Binaries
           Copy-Item -Path "assets/bin/*.exe" -Destination "artifact/Krysalis/bin/" -Force
         shell: pwsh
 
