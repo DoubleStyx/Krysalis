@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14)
 # Define the project name and version
 project(KrysalisNative VERSION 1.0 LANGUAGES CXX)
 
-# Specify the C++ standard (equivalent to /std:c++20 in MSBuild)
+# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -12,17 +12,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Include FetchContent module
 include(FetchContent)
 
-# FetchContent for RapidJSON
+# FetchContent for RapidJSON without processing its CMakeLists.txt
 FetchContent_Declare(
     RapidJSON
     GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
     GIT_TAG        v1.1.0  # Specify the version or tag
 )
 
-# Make RapidJSON available
-FetchContent_MakeAvailable(RapidJSON)
+# Download RapidJSON without configuring it
+FetchContent_GetProperties(RapidJSON)
+if(NOT RapidJSON_POPULATED)
+    FetchContent_Populate(RapidJSON)
+endif()
 
-# Specify source files (equivalent to ClCompile and ClInclude in MSBuild)
+# Specify source files
 set(SOURCES
     KrysalisNative.cpp
     SceneBuilder.cpp
@@ -38,16 +41,16 @@ set(HEADERS
 # Add the library
 add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
 
-# Set target properties for the output (like DynamicLibrary in MSBuild)
+# Set target properties for the output
 set_target_properties(KrysalisNative PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
-# Link the RapidJSON library
-target_include_directories(KrysalisNative PRIVATE ${rapidjson_SOURCE_DIR}/include)
+# Link the RapidJSON library (header-only)
+target_include_directories(KrysalisNative PRIVATE ${RapidJSON_SOURCE_DIR}/include)
 
-# Define build configurations (equivalent to Debug/Release settings in MSBuild)
+# Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(KrysalisNative PRIVATE _DEBUG)
     target_compile_options(KrysalisNative PRIVATE -g)  # Debug symbols
@@ -56,13 +59,18 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(KrysalisNative PRIVATE -O3)  # Optimization
 endif()
 
-# Link directories and dependencies (equivalent to AdditionalLibraryDirectories)
+# Link directories and dependencies
+# Ensure these variables are defined in your CMakeLists.txt or passed as cache variables
+# For example:
+# set(CommonLibDirs "/path/to/common/libs")
+# set(FilamentLibDirDebug "/path/to/filament/libs/debug")
 target_link_directories(KrysalisNative PRIVATE
     ${CommonLibDirs}
-    ${FilamentLibDirDebug}  # You can adjust this for Release/Debug
+    ${FilamentLibDirDebug}  # Adjust for Release/Debug
 )
 
-# Post-build commands: Material and Mesh Compilation (Exec commands)
+# Post-build commands: Material and Mesh Compilation
+# Ensure that the variables BinDirectory, MaterialsDirectory, etc., are defined
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
 )
@@ -70,8 +78,9 @@ add_custom_command(TARGET KrysalisNative POST_BUILD
 # Compile Materials
 file(GLOB MATERIAL_FILES "${MaterialsDirectory}/*.mat")
 foreach(matfile ${MATERIAL_FILES})
+    get_filename_component(matname "${matfile}" NAME_WE)
     add_custom_command(TARGET KrysalisNative POST_BUILD
-        COMMAND "${BinDirectory}/matc.exe" -o "${MaterialsDirectory}/${matfile}.filamat" "${matfile}"
+        COMMAND "${BinDirectory}/matc.exe" -o "${MaterialsDirectory}/${matname}.filamat" "${matfile}"
         COMMENT "Compiling material: ${matfile}"
         VERBATIM
     )
@@ -80,14 +89,15 @@ endforeach()
 # Compile Meshes
 file(GLOB MESH_FILES "${MeshesDirectory}/*.obj")
 foreach(meshfile ${MESH_FILES})
+    get_filename_component(meshname "${meshfile}" NAME_WE)
     add_custom_command(TARGET KrysalisNative POST_BUILD
-        COMMAND "${BinDirectory}/filamesh.exe" "${meshfile}" "${MeshesDirectory}/${meshfile}.filamesh"
+        COMMAND "${BinDirectory}/filamesh.exe" "${meshfile}" "${MeshesDirectory}/${meshname}.filamesh"
         COMMENT "Compiling mesh: ${meshfile}"
         VERBATIM
     )
 endforeach()
 
-# Post-build copy step for the files (like PostBuild in MSBuild)
+# Post-build copy step for the files
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Copying files after build"
 )
@@ -95,13 +105,13 @@ add_custom_command(TARGET KrysalisNative POST_BUILD
 # Copy .filamat files to the destination directory
 file(GLOB COMPILED_MATERIAL_FILES "${MaterialsDirectory}/*.filamat")
 add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${MaterialsDirectory} ${ResonitePath}/rml_mods/Krysalis/materials
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${MaterialsDirectory}" "${ResonitePath}/rml_mods/Krysalis/materials"
     COMMENT "Copying .filamat files to ${ResonitePath}/rml_mods/Krysalis/materials"
 )
 
 # Copy .exe files to the bin directory
 file(GLOB EXE_FILES "${BinDirectory}/*.exe")
 add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${BinDirectory} ${ResonitePath}/rml_mods/Krysalis/bin
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${BinDirectory}" "${ResonitePath}/rml_mods/Krysalis/bin"
     COMMENT "Copying .exe files to ${ResonitePath}/rml_mods/Krysalis/bin"
 )
