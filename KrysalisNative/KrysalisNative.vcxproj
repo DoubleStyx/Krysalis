@@ -72,18 +72,20 @@
       <AdditionalOptions>$(CommonOptions) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
+  <!--
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
   </Target>
+  -->
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets'))" />
   </Target>
-  <Import Project="..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
+  <Import Project="$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
   <ItemGroup>
     <MaterialFiles Include="$(MaterialsDirectory)\*.mat" />
     <MeshFiles Include="$(MeshesDirectory)\*.obj" />
@@ -104,6 +106,7 @@
     <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
       Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
+  <!--
   <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
     <ItemGroup>
       <AssetFiles Include="$(AssetsDirectory)\**\*.*; @(MaterialFile->'%(OutputFile)'); @(MeshFile->'%(OutputFile)')" />
@@ -115,4 +118,5 @@
       DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
       SkipUnchangedFiles="true" />
   </Target>
+  -->
 </Project>

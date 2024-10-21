@@ -14,7 +14,7 @@
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KrysalisNative\KrysalisNative.vcxproj">
+    <ProjectReference Include="$(SolutionDir)\KrysalisNative\KrysalisNative.vcxproj">
       <Project>{764e4e20-0feb-4846-8841-6ddf2c70dac8}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -22,9 +22,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets'))" />
+    <Error Condition="!Exists('$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets'))" />
   </Target>
-  <Import Project="..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('..\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
+  <Import Project="$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets" Condition="Exists('$(SolutionDir)\packages\tencent.rapidjson.1.1.1\build\tencent.rapidjson.targets')" />
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <ProjectGuid>{14468EBC-F770-42C9-9C03-BE678E652AD9}</ProjectGuid>

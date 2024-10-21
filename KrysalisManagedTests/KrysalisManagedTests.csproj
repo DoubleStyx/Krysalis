@@ -13,6 +13,6 @@
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+    <ProjectReference Include="$(SolutionDir)\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
 </Project>

@@ -28,8 +28,10 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
+	<!-- Ignoring resonite testing for now
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
 		<Message Text="Attempting to copy $(TargetFileName) to $(ModsDirectory)" Importance="high" />
 		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ModsDirectory)" ContinueOnError="true" />
 	</Target>
+	-->
 </Project>

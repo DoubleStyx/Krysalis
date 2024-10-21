@@ -8,6 +8,7 @@ using HarmonyLib;
 namespace KrysalisManaged;
 internal class Utils
 {
+    /*
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void LogCallback(string message);
 
@@ -32,6 +33,7 @@ internal class Utils
         openLogFile();
         ResoniteMod.Msg("Opened log file");
     }
+    */
 }
 
 
