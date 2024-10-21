@@ -21,25 +21,6 @@ jobs:
         run: echo "VERSION=${{ github.run_number }}" >> $env:GITHUB_ENV
         shell: pwsh
 
-      - name: Install Visual Studio C++ Build Tools
-        run: |
-          choco install visualstudio-installer --yes
-          $vsPath = vswhere -latest -products * -property installationPath
-          if (-not $vsPath) {
-            Write-Error "Visual Studio installation not found."
-          } else {
-            $installerPath = Join-Path $vsPath "Installer\vs_installer.exe"
-            if (Test-Path $installerPath) {
-              & $installerPath modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
-            } else {
-              Write-Error "Visual Studio Installer not found at $installerPath"
-            }
-          }
-        shell: pwsh
-
-
-
-
       - name: Cache Filament Library
         id: cache-filament
         uses: actions/cache@v3
@@ -71,6 +52,15 @@ jobs:
           Move-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64/*" -Destination "C:/Libraries/glfw-3.4.bin.WIN64/" -Force
           Remove-Item -Path "C:/Libraries/glfw-3.4.bin.WIN64/glfw-3.4.bin.WIN64" -Recurse -Force
         shell: pwsh
+
+      - name: Cache NuGet packages
+        id: cache-nuget
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.sln', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
 
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1
