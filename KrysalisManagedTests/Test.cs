@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace KrysalisNativeTests
+namespace KrysalisManagedTests
 {
     [TestClass]
-    public class KrysalisNativeTests
+    public class KrysalisManagedTests
     {
         [TestMethod]
         public void MyTest()
