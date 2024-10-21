@@ -14,7 +14,7 @@
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\KrysalisNative\KrysalisNative.vcxproj">
+    <ProjectReference Include="$(KrysalisNativeDir)\KrysalisNative.vcxproj">
       <Project>{764e4e20-0feb-4846-8841-6ddf2c70dac8}</Project>
     </ProjectReference>
   </ItemGroup>

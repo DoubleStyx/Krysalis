@@ -14,17 +14,17 @@
 	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
-			<HintPath Condition="!Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(SolutionDir)external\bin\ResoniteModLoader.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ExternalLibDir)\ResoniteModLoader.dll</HintPath>
 			<Private>False</Private>
 		</Reference>		
 		<Reference Include="HarmonyLib">
 			<HintPath Condition="Exists('$(ResonitePath)rml_libs\0Harmony.dll')">$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
-			<HintPath Condition="!Exists('$(ResonitePath)rml_libs\0Harmony.dll')">$(SolutionDir)external\bin\0Harmony.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)rml_libs\0Harmony.dll')">$(ExternalLibDir)\0Harmony.dll</HintPath>
 			<Private>False</Private>
 		</Reference>		
 		<Reference Include="FrooxEngine">
 			<HintPath Condition="Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
-			<HintPath Condition="!Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(SolutionDir)external\bin\FrooxEngine.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(ExternalLibDir)\FrooxEngine.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
