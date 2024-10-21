@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="$(SolutionDir)\Common.props" />
 	<PropertyGroup>
 		<RootNamespace>Krysalis</RootNamespace>
 		<AssemblyName>Krysalis</AssemblyName>
@@ -9,8 +10,7 @@
 		<Deterministic>true</Deterministic>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
-	</PropertyGroup>
-	<Import Project="$(SolutionDir)\Common.props" />	
+	</PropertyGroup>	
 	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
@@ -28,4 +28,7 @@
 			<Private>False</Private>
 		</Reference>
 	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+  </ItemGroup>
 </Project>

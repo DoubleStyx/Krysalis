@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(SolutionDir)\Common.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -49,7 +50,6 @@
     <AdditionalOptions>/std:c++20 %(AdditionalOptions)</AdditionalOptions>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="$(SolutionDir)\Common.props" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(CommonIncludeDirs);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
