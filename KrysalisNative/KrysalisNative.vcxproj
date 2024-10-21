@@ -100,4 +100,18 @@
     <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
       Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
+  <Target Name="PostBuild" AfterTargets="Build" Condition="'$(CopyToMods)'=='true'">
+    <Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods\Krysalis" Importance="high" />
+    <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis" ContinueOnError="true" />
+    <ItemGroup>
+      <CompiledMaterialFiles Include="$(MaterialsDirectory)\*.filamat" />
+    </ItemGroup>
+    <Message Text="Copying .filamat files to $(ResonitePath)rml_mods\Krysalis\materials" Importance="high" />
+    <Copy SourceFiles="@(CompiledMaterialFiles)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis\materials" />
+    <ItemGroup>
+      <BinFiles Include="$(BinDirectory)\*.exe" />
+    </ItemGroup>
+    <Message Text="Copying .exe files to $(ResonitePath)rml_mods\Krysalis\bin" Importance="high" />
+    <Copy SourceFiles="@(BinFiles)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis\bin" />
+  </Target>
 </Project>

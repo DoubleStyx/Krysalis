@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KrysalisManaged
+namespace KrysalisManaged;
+
+public class KrysalisManaged
 {
-    public class KrysalisManaged
-    {
-    }
 }

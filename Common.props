@@ -48,8 +48,8 @@
 
   <!-- Shared Resonite directories -->
     <PropertyGroup Condition="'$(ResonitePath)'==''">
-      <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite</ResonitePath>
-      <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)\Resonite</ResonitePath>
+      <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+      <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)\Resonite\</ResonitePath>
       <ModsDirectory>$(ResonitePath)\rml_mods</ModsDirectory>
       <KrysalisModDirectory>$(ModsDirectory)\Krysalis</KrysalisModDirectory>
     </PropertyGroup>
