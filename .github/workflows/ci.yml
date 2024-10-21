@@ -111,8 +111,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx" --results-directory test-results
-          dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx" --results-directory test-results
+          dotnet test Krysalis.sln --configuration Release --no-build --logger "trx" --results-directory test-results
 
       - name: Create artifact directory structure
         run: |
