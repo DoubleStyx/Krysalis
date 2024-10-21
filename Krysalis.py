@@ -51,6 +51,8 @@ def run_tests(project_name, project_dir):
 
 # Main function orchestrating the build and test process
 def main():
+    print("Starting build and test process...")
+
     # Step 1: Build the projects in the correct order
     build_project("KrysalisNative", KrysalisNativeDir)
     build_project("KrysalisNativeTests", KrysalisNativeTestsDir)

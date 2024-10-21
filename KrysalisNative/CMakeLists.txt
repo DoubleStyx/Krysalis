@@ -9,11 +9,18 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR})
+# Include FetchContent module
+include(FetchContent)
 
-# RapidJSON package (you'll need to add how you retrieve this package in CMake)
-find_package(RapidJSON 1.1.1 REQUIRED)
+# FetchContent for RapidJSON
+FetchContent_Declare(
+    RapidJSON
+    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
+    GIT_TAG        v1.1.0  # Specify the version or tag
+)
+
+# Make RapidJSON available
+FetchContent_MakeAvailable(RapidJSON)
 
 # Specify source files (equivalent to ClCompile and ClInclude in MSBuild)
 set(SOURCES
@@ -37,8 +44,8 @@ set_target_properties(KrysalisNative PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
-# Link the RapidJSON library (if needed)
-target_include_directories(KrysalisNative PRIVATE ${RapidJSON_INCLUDE_DIRS})
+# Link the RapidJSON library
+target_include_directories(KrysalisNative PRIVATE ${rapidjson_SOURCE_DIR}/include)
 
 # Define build configurations (equivalent to Debug/Release settings in MSBuild)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

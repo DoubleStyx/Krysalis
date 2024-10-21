@@ -444,3 +444,6 @@ FodyWeavers.xsd
 # Compiled assets
 *.filamesh
 *.filamat
+
+# Build directories
+build/
