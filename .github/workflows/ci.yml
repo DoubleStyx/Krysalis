@@ -65,42 +65,42 @@ jobs:
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
 
-      # - name: Create artifact directory structure
-      #   run: |
-      #     New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
-      #     Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
-      #     Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
-      #     Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
-      #   shell: pwsh
+      - name: Create artifact directory structure
+        run: |
+          New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
+          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
+          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
+          Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
+        shell: pwsh
 
-      # - name: Compress artifact directory into ZIP
-      #   run: |
-      #     Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
-      #   shell: pwsh
+      - name: Compress artifact directory into ZIP
+        run: |
+          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
+        shell: pwsh
 
-      # - name: Upload artifact to GitHub Actions
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: Krysalis-${{ env.VERSION }}
-      #     path: Krysalis-${{ env.VERSION }}.zip
+      - name: Upload artifact to GitHub Actions
+        uses: actions/upload-artifact@v3
+        with:
+          name: Krysalis-${{ env.VERSION }}
+          path: Krysalis-${{ env.VERSION }}.zip
 
-      # - name: Create GitHub Release
-      #   id: create_release
-      #   uses: actions/create-release@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     tag_name: ${{ env.VERSION }}
-      #     release_name: Release ${{ env.VERSION }}
-      #     draft: false
-      #     prerelease: true
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: true
 
-      # - name: Upload Release Asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: ./Krysalis-${{ env.VERSION }}.zip
-      #     asset_name: Krysalis-${{ env.VERSION }}.zip
-      #     asset_content_type: application/zip
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Krysalis-${{ env.VERSION }}.zip
+          asset_name: Krysalis-${{ env.VERSION }}.zip
+          asset_content_type: application/zip
