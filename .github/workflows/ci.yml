@@ -24,12 +24,17 @@ jobs:
       - name: Install Visual Studio C++ Build Tools
         run: |
           choco install visualstudio-installer --yes
-          $vsPath = vswhere -latest -products * -property installationPath
-          $installerPath = "$vsPath\Installer\vs_installer.exe"
-          if (Test-Path $installerPath) {
-            & $installerPath modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
+          # Find the Visual Studio installation path using vswhere
+          $vsPath = vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) {
+            Write-Error "Visual Studio installation not found."
           } else {
-            Write-Error "Visual Studio Installer not found at $installerPath"
+            $installerPath = "$vsPath\Installer\vs_installer.exe"
+            if (Test-Path $installerPath) {
+              & $installerPath modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
+            } else {
+              Write-Error "Visual Studio Installer not found at $installerPath"
+            }
           }
         shell: pwsh
 
