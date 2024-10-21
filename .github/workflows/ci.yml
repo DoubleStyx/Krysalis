@@ -65,6 +65,15 @@ jobs:
       - name: Build the solution
         run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.x'
+
+      - name: Run Unit Tests
+        run: dotnet test KrysalisManagedTests/KrysalisManagedTests.csproj --configuration Release --no-build --logger "trx"
+        run: dotnet test KrysalisNativeTests/KrysalisNativeTests.vcxproj --configuration Release --no-build --logger "trx"
+
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis/materials" -Force
