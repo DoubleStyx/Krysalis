@@ -27,6 +27,7 @@ extern LogCallback logCallback;
 extern "C" __declspec(dllexport) void startRenderingThread();
 extern "C" __declspec(dllexport) void registerLogCallback(LogCallback callback);
 extern "C" __declspec(dllexport) void openLogFile();
+extern "C" __declspec(dllexport) void closeLogFile();
 
 void GlobalLog(const std::string& message);
 void NativeLog(const std::string& message);
@@ -38,5 +39,3 @@ std::wstring getFullPath(const std::wstring& relativePath);
 std::string wstringToString(const std::wstring& wstr);
 std::wstring stringToWstring(const std::string& str);
 std::string getFormattedTimestamp(std::time_t time);
-
-void closeLogFile();

@@ -10,7 +10,6 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
-#include "TestUtils.h"
 
 using namespace filament;
 using namespace math;
@@ -41,8 +40,9 @@ extern int g_window_size_y;
 extern int g_frame_size_x;
 extern int g_frame_size_y;
 
-void closeWindow(GLFWwindow* window, std::string reason);
-void runWindow();
+extern "C" __declspec(dllexport) bool runWindow(bool isUnitTest);
+
+void closeWindow(GLFWwindow* window, std::string reason, bool exitProgram = true);
 void display();
 void init(GLFWwindow* window);
 void key_press(GLFWwindow* window, int key, int scancode, int action, int mods);

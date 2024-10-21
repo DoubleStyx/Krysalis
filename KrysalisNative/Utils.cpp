@@ -53,7 +53,7 @@ std::wstring stringToWstring(const std::string& str) {
 
 extern "C" __declspec(dllexport) void startRenderingThread()
 {
-    std::thread renderThread(runWindow);
+    std::thread renderThread(runWindow, false);
 	GlobalLog("Started rendering thread");
     renderThread.detach();
 	GlobalLog("Detached rendering thread");

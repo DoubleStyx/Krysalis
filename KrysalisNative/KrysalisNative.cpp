@@ -48,7 +48,6 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
-#include "TestUtils.h"
 
 // other namespaces worth including? Maybe simplify namespace usage? Don't want conflicts or ambiguity though.
 using namespace filament;
@@ -226,7 +225,7 @@ void display() {
     }
 }
 
-void closeWindow(GLFWwindow* window, std::string reason)
+void closeWindow(GLFWwindow* window, std::string reason, bool exitProgram)
 {
     GlobalLog(reason);
 
@@ -260,10 +259,11 @@ void closeWindow(GLFWwindow* window, std::string reason)
     GlobalLog("GLFW terminated");
 
 	closeLogFile();
-    exit(0);
+    if (exitProgram == true)
+        exit(0);
 }
 
-void runWindow() {
+bool runWindow(bool isUnitTest = false) {
     try {
         if (!glfwInit()) {
             closeWindow(nullptr, "GLFW not initialized");
@@ -291,6 +291,12 @@ void runWindow() {
         init(window);
         GlobalLog("Initialized the renderer");
 
+        if (isUnitTest)
+        {
+			closeWindow(window, "Closing application", false);
+            return true;
+        }
+
         auto lastFrameTime = std::chrono::high_resolution_clock::now();
 		GlobalLog("Saved last frame time");
 
@@ -317,12 +323,15 @@ void runWindow() {
         }
 
         closeWindow(window, "Closing application");
+        return false;
     }
     catch (const std::exception& e) {
         closeWindow(nullptr, "Error in rendering thread: " + std::string(e.what()));
+        return false;
     }
     catch (...) {
         closeWindow(nullptr, "Error in rendering thread: Caught unknown exception");
+        return false;
     }
 }
 

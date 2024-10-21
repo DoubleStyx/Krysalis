@@ -13,13 +13,11 @@
   <ItemGroup>
     <ClInclude Include="KrysalisNative.h" />
     <ClInclude Include="SceneBuilder.h" />
-    <ClInclude Include="TestUtils.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="KrysalisNative.cpp" />
     <ClCompile Include="SceneBuilder.cpp" />
-    <ClCompile Include="TestUtils.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
