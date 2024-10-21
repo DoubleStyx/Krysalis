@@ -36,7 +36,6 @@
         <FilamentLibDirDebug>C:\Libraries\filament-windows\lib\x86_64\mdd</FilamentLibDirDebug>
         <FilamentLibDirRelease>C:\Libraries\filament-windows\lib\x86_64\md</FilamentLibDirRelease>
         <GLFWLibDir>C:\Libraries\glfw-3.4.bin.WIN64\lib-vc2022</GLFWLibDir>
-        <KrysalisNativeLibDir>$(SolutionDir)\x64\$(Configuration)</KrysalisNativeLibDir>
         <CommonLibDirs>$(GLFWLibDir);</CommonLibDirs>
     </PropertyGroup>
 
