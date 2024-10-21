@@ -68,11 +68,9 @@ jobs:
       - name: Create artifact directory structure
         run: |
           New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
-          Copy-Item -Path @(
-            "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll",
-            "x64/Release/KrysalisNative.dll",
-            "assets/*"
-          ) -Destination "artifact/Krysalis/" -Recurse -Force
+          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
+          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
+          Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
