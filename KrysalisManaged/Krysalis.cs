@@ -6,7 +6,7 @@ using ResoniteModLoader;
 
 namespace KrysalisManaged;
 
-public class KrysalisManaged : ResoniteMod
+public class Krysalis : ResoniteMod
 {
     internal const string VERSION_CONSTANT = "1.0.0";
     public override string Name => "Krysalis";
