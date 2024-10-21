@@ -67,15 +67,24 @@ jobs:
 
       - name: Create artifact directory structure
         run: |
-          New-Item -ItemType Directory -Path "artifact/Krysalis" -Force
-          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/" -Force
-          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/" -Force
-          Copy-Item -Path "assets/*" -Destination "artifact/Krysalis/" -Recurse -Force
+          New-Item -ItemType Directory -Path "artifact/Krysalis/materials" -Force
+          New-Item -ItemType Directory -Path "artifact/Krysalis/bin" -Force
+
+          # Copy DLLs
+          Copy-Item -Path "KrysalisManaged/bin/Release/net472/KrysalisManaged.dll" -Destination "artifact/Krysalis/KrysalisManaged.dll" -Force
+          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/KrysalisNative.dll" -Force
+          Copy-Item -Path "Krysalis/bin/Release/net472/Krysalis.dll" -Destination "artifact/Krysalis.dll" -Force
+
+          # Copy Materials
+          Copy-Item -Path "assets/materials/*.filamat" -Destination "artifact/Krysalis/materials/" -Force
+
+          # Copy Binaries
+          Copy-Item -Path "assets/bin/*.exe" -Destination "artifact/Krysalis/bin/" -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
+          Compress-Archive -Path "artifact/*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
         shell: pwsh
 
       - name: Upload artifact to GitHub Actions
