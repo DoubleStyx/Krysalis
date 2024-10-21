@@ -3,6 +3,7 @@
 
   <!-- Shared project directories -->
   <PropertyGroup>
+        <KrysalisDir>$(SolutionDir)\Krysalis</KrysalisDir>
         <KrysalisNativeDir>$(SolutionDir)\KrysalisNative</KrysalisNativeDir>
         <KrysalisNativeTestsDir>$(SolutionDir)\KrysalisNativeTests</KrysalisNativeTestsDir>
         <KrysalisManagedDir>$(SolutionDir)\KrysalisManaged</KrysalisManagedDir>
@@ -50,6 +51,6 @@
       <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite</ResonitePath>
       <ResonitePath Condition="'$(ResonitePath)'==''">$(MSBuildThisFileDirectory)\Resonite</ResonitePath>
       <ModsDirectory>$(ResonitePath)\rml_mods</ModsDirectory>
-      <KrysalisDirectory>$(ModsDirectory)\Krysalis</KrysalisDirectory>
+      <KrysalisModDirectory>$(ModsDirectory)\Krysalis</KrysalisModDirectory>
     </PropertyGroup>
 </Project>

@@ -1,10 +1,10 @@
-// KrysalisManaged.cs
+// Krysalis.cs
 // patches and initialization
 using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
 
-namespace KrysalisManaged;
+namespace Krysalis;
 
 public class Krysalis : ResoniteMod
 {

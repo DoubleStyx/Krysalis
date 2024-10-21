@@ -5,7 +5,7 @@ using ResoniteModLoader;
 using FrooxEngine;
 using HarmonyLib;
 
-namespace KrysalisManaged;
+namespace Krysalis;
 internal class Utils
 {
     /*
