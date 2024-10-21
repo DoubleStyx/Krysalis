@@ -24,8 +24,10 @@ jobs:
       - name: Install Visual Studio C++ Build Tools
         run: |
           choco install visualstudio-installer --yes
-          "C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe" modify --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community" --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
-        shell: cmd
+          vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $vsPath = vswhere -latest -products * -property installationPath
+          & "$vsPath\Installer\vs_installer.exe" modify --add Microsoft.VisualStudio.Workload.VCTools --quiet --wait
+        shell: pwsh
 
       - name: Cache Filament Library
         id: cache-filament
