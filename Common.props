@@ -10,9 +10,10 @@
         <AssetsDirectory>$(SolutionDir)\assets</AssetsDirectory>
         <MaterialsDirectory>$(AssetsDirectory)\materials</MaterialsDirectory>
         <MeshesDirectory>$(AssetsDirectory)\meshes</MeshesDirectory>
+        <ScenesDirectory>$(AssetsDirectory)\scenes</ScenesDirectory>
+        <SkyboxesDirectory>$(AssetsDirectory)\skyboxes</SkyboxesDirectory>
+        <TexturesDirectory>$(AssetsDirectory)\textures</TexturesDirectory>
         <BinDirectory>$(AssetsDirectory)\bin</BinDirectory>
-        <FilameshExecutable>$(BinDirectory)\filamesh.exe</FilameshExecutable>
-        <MatcExecutable>$(BinDirectory)\matc.exe</MatcExecutable>
   </PropertyGroup>
 
   <!-- Shared configurations -->

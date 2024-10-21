@@ -107,10 +107,10 @@
     </MeshFile>
   </ItemGroup>
   <Target Name="CompileMaterials" BeforeTargets="Build" Inputs="@(MaterialFile->'%(FullPath)')" Outputs="@(MaterialFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(MatcExecutable)&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;" Condition="Exists('$(MatcExecutable)')" StandardOutputImportance="High" StandardErrorImportance="High" />
+    <Exec Command="&quot;$(BinDirectory)\matc.exe&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;" Condition="Exists('$(BinDirectory)\matc.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
   <Target Name="CompileMeshes" BeforeTargets="Build" Inputs="@(MeshFile->'%(FullPath)')" Outputs="@(MeshFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(FilameshExecutable)&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;" Condition="Exists('$(FilameshExecutable)')" StandardOutputImportance="High" StandardErrorImportance="High" />
+    <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;" Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
   <ItemGroup>
     <AssetFiles Include="$(AssetsDirectory)\**\*.*" />

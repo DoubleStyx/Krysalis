@@ -24,7 +24,6 @@ jobs:
           echo "VERSION=$version" >> $env:GITHUB_ENV
         shell: pwsh
 
-      # Cache Filament Library
       - name: Cache Filament Library
         id: cache-filament
         uses: actions/cache@v3
@@ -32,7 +31,6 @@ jobs:
           path: C:/Libraries/filament-windows
           key: filament-v1.55.0
 
-      # Download Filament Library if cache is not hit
       - name: Download Filament Library
         if: steps.cache-filament.outputs.cache-hit != 'true'
         run: |
@@ -41,7 +39,6 @@ jobs:
           tar -xzf filament-windows.tgz -C C:/Libraries/filament-windows/
         shell: pwsh
 
-      # Cache GLFW Library
       - name: Cache GLFW Library
         id: cache-glfw
         uses: actions/cache@v3
@@ -49,7 +46,6 @@ jobs:
           path: C:/Libraries/glfw-3.4.bin.WIN64
           key: glfw-3.4
 
-      # Download GLFW if cache is not hit
       - name: Download GLFW
         if: steps.cache-glfw.outputs.cache-hit != 'true'
         run: |
@@ -90,26 +86,23 @@ jobs:
           Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
         shell: pwsh
 
-      # Upload artifact to GitHub Actions storage (optional, not related to GitHub releases)
       - name: Upload artifact to GitHub Actions
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-${{ env.VERSION }}
           path: Krysalis-${{ env.VERSION }}.zip
 
-      # Create a new release
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}  # Use the generated version number as the tag
+          tag_name: ${{ env.VERSION }}
           release_name: Release ${{ env.VERSION }}
           draft: false
-          prerelease: true  # Set to true if this is a pre-release
+          prerelease: true
 
-      # Upload the artifact to the created release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
