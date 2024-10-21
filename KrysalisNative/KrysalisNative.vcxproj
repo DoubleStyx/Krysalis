@@ -96,19 +96,23 @@
       <OutputFile>$(MeshesDirectory)\%(Filename).filamesh</OutputFile>
     </MeshFile>
   </ItemGroup>
-  <Target Name="CompileMaterials" BeforeTargets="Build" Inputs="@(MaterialFile->'%(FullPath)')" Outputs="@(MaterialFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(BinDirectory)\matc.exe&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;" Condition="Exists('$(BinDirectory)\matc.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
+  <Target Name="CompileMaterials" BeforeTargets="Link" Inputs="@(MaterialFile->'%(FullPath)')" Outputs="@(MaterialFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(BinDirectory)\matc.exe&quot; -o &quot;%(MaterialFile.OutputFile)&quot; &quot;%(MaterialFile.FullPath)&quot;"
+      Condition="Exists('$(BinDirectory)\matc.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
-  <Target Name="CompileMeshes" BeforeTargets="Build" Inputs="@(MeshFile->'%(FullPath)')" Outputs="@(MeshFile->'%(OutputFile)')">
-    <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;" Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
+  <Target Name="CompileMeshes" BeforeTargets="Link" Inputs="@(MeshFile->'%(FullPath)')" Outputs="@(MeshFile->'%(OutputFile)')">
+    <Exec Command="&quot;$(BinDirectory)\filamesh.exe&quot; &quot;%(MeshFile.FullPath)&quot; &quot;%(MeshFile.OutputFile)&quot;"
+      Condition="Exists('$(BinDirectory)\filamesh.exe')" StandardOutputImportance="High" StandardErrorImportance="High" />
   </Target>
-  <ItemGroup>
-    <AssetFiles Include="$(AssetsDirectory)\**\*.*" />
-  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="Build" DependsOnTargets="CompileMaterials;CompileMeshes" Condition="'$(CopyToMods)'=='true'">
+    <ItemGroup>
+      <AssetFiles Include="$(AssetsDirectory)\**\*.*; @(MaterialFile->'%(OutputFile)'); @(MeshFile->'%(OutputFile)')" />
+    </ItemGroup>
     <Message Text="Attempting to copy $(TargetFileName) to $(KrysalisDirectory)" Importance="high" />
     <Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(KrysalisDirectory)" ContinueOnError="true" />
     <Message Text="Copying assets from $(AssetsDirectory) to $(KrysalisDirectory)" Importance="high" />
-    <Copy SourceFiles="@(AssetFiles)" DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(AssetFiles)"
+      DestinationFiles="@(AssetFiles->'$(KrysalisDirectory)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
   </Target>
 </Project>
