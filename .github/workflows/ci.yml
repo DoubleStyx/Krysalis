@@ -63,7 +63,7 @@ jobs:
         run: nuget restore Krysalis.sln
 
       - name: Build the solution
-        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64"
+        run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Create artifact directory structure
         run: |
