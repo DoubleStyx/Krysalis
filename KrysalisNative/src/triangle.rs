@@ -23,6 +23,7 @@ pub extern "C" fn main_ffi() -> bool {
 }
 
 pub fn main() -> bool {
+    print!("Triangle test main entry.");
     unsafe {
         let base = ExampleBase::new(1920, 1080).unwrap();
         let renderpass_attachments = [
@@ -357,6 +358,8 @@ pub fn main() -> bool {
 
         let mut frame_count = 0;
 
+        print!("Triangle test started");
+
         let _ = base.render_loop(|| {
             let (present_index, _) = base
                 .swapchain_loader
@@ -446,6 +449,8 @@ pub fn main() -> bool {
                 .unwrap();
         
             frame_count += 1;
+
+            print!("Triangle test frame count: {}", frame_count);
         
             // Break out of the loop when frame count exceeds 100
             if frame_count > 100 {
@@ -473,6 +478,7 @@ pub fn main() -> bool {
         }
         base.device.destroy_render_pass(renderpass, None);
     }
+    print!("Triangle test passed");
 
     return true;
 }

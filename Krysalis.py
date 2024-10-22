@@ -38,7 +38,7 @@ def build_project(project_name):
         sys.exit(1)
     print(f"Build completed for {project_name}.")
 
-def get_dotnet_output_path(project_name):
+def get_output_path(project_name):
     if get_project_type(project_name) == "dotnet":
         csproj_path = os.path.join(current_directory, project_name, f"{project_name}.csproj")
         tree = ET.parse(csproj_path)
@@ -53,6 +53,7 @@ def get_dotnet_output_path(project_name):
         if target_framework:
             return os.path.join(current_directory, project_name, "bin", "Release", target_framework)
         else:
+            print(f"Error: Could not determine the target framework for {project_name}.")
             return os.path.join(current_directory, project_name, "bin", "Release")
     elif get_project_type(project_name) == "cargo":
         return os.path.join(current_directory, project_name, "target", "release")
@@ -61,11 +62,21 @@ def get_dotnet_output_path(project_name):
         sys.exit(1)
 
 def copy_dll(source, destination):
+    # Determine the source DLL path
     dll_path = os.path.join(get_output_path(source), f"{source}.dll")
-    target_path = os.path.join(get_output_path(destination), f"{source}.dll")
+    print(f"Source DLL path: {dll_path}")
 
-    if not os.path.exists(target_path):
-        os.makedirs(target_path)
+    # Determine the destination path
+    destination_dir = get_output_path(destination)
+    print(f"Destination directory: {destination_dir}")
+
+    # Ensure the destination directory exists
+    if not os.path.exists(destination_dir):
+        os.makedirs(destination_dir)
+        print(f"Created directory: {destination_dir}")
+
+    target_path = os.path.join(destination_dir, f"{source}.dll")
+    print(f"Target path: {target_path}")
 
     print(f"Copying {dll_path} to {target_path}")
     try:
@@ -74,6 +85,7 @@ def copy_dll(source, destination):
     except Exception as e:
         print(f"Error copying DLL: {e}")
         sys.exit(1)
+
 
 def run_tests(project_name):
     print(f"Running tests for {project_name}...")
@@ -95,6 +107,7 @@ def get_project_type(project_name):
     elif os.path.exists(os.path.join(current_directory, project_name, "Cargo.toml")):
         return "cargo"
     else:
+        print(f"Error: Could not determine the project type for {project_name}.")
         return "unknown"
 
 def main():
@@ -106,11 +119,17 @@ def main():
     build_project("KrysalisManagedTests")
     build_project("Krysalis")
 
+    print("Building completed.")
+
+    print("Copying DLLs...")
     copy_dll("KrysalisNative", "KrysalisManaged")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
+    print("DLLs copied.")
 
+    print("Running tests...")
     run_tests("KrysalisNativeTests")
     run_tests("KrysalisManagedTests")
+    print("Tests completed.")
 
     print("Build and test process completed successfully.")
 
