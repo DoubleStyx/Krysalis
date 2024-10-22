@@ -4,7 +4,6 @@ project(KrysalisNativeTests VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (WIN32)
     set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
@@ -52,9 +51,6 @@ endif()
 
 set(FILAMENT_DIR ${EXTERNAL_DIR}/filament)
 set(GLFW_DIR ${EXTERNAL_DIR}/glfw)
-set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
-set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
-set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../KrysalisNative ${CMAKE_BIN_DIR}/KrysalisNative)
 

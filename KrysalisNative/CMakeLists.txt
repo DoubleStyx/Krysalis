@@ -4,7 +4,6 @@ project(KrysalisNative VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (WIN32)
     set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
@@ -52,9 +51,6 @@ endif()
 
 set(FILAMENT_DIR ${EXTERNAL_DIR}/filament)
 set(GLFW_DIR ${EXTERNAL_DIR}/glfw)
-set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
-set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
-set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
 include_directories(
     ${FILAMENT_DIR}/include       
@@ -130,43 +126,3 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(KrysalisNative PRIVATE NDEBUG)
     target_compile_options(KrysalisNative PRIVATE /O2) 
 endif()
-
-add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
-)
-
-file(GLOB MATERIAL_FILES "${MaterialsDirectory}/*.mat")
-foreach(matfile ${MATERIAL_FILES})
-    get_filename_component(matname "${matfile}" NAME_WE)
-    add_custom_command(TARGET KrysalisNative POST_BUILD
-        COMMAND "${BinDirectory}/matc.exe" -o "${MaterialsDirectory}/${matname}.filamat" "${matfile}"
-        COMMENT "Compiling material: ${matfile}"
-        VERBATIM
-    )
-endforeach()
-
-file(GLOB MESH_FILES "${MeshesDirectory}/*.obj")
-foreach(meshfile ${MESH_FILES})
-    get_filename_component(meshname "${meshfile}" NAME_WE)
-    add_custom_command(TARGET KrysalisNative POST_BUILD
-        COMMAND "${BinDirectory}/filamesh.exe" "${meshfile}" "${MeshesDirectory}/${meshname}.filamesh"
-        COMMENT "Compiling mesh: ${meshfile}"
-        VERBATIM
-    )
-endforeach()
-
-add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying asset files after compile"
-)
-
-file(GLOB COMPILED_MATERIAL_FILES "${MaterialsDirectory}/*.filamat")
-add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${MaterialsDirectory}" "${ResonitePath}/rml_mods/Krysalis/materials"
-    COMMENT "Copying .filamat files to ${ResonitePath}/rml_mods/Krysalis/materials"
-)
-
-file(GLOB EXE_FILES "${BinDirectory}/*.exe")
-add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${BinDirectory}" "${ResonitePath}/rml_mods/Krysalis/bin"
-    COMMENT "Copying .exe files to ${ResonitePath}/rml_mods/Krysalis/bin"
-)
