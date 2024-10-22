@@ -1,58 +1,62 @@
-name: Build DLLs
+name: Build, Test, and Release
 
 on:
   push:
     branches:
       - main
+      - cpp
   pull_request:
     branches:
       - main
+      - cpp
 
 jobs:
   build:
-    name: Build Solution
+    name: Build, Test, and Release
     runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Cache project dependencies
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
-      # - name: Build the solution
-      #   run: msbuild Krysalis.sln /p:Configuration=Release /p:Platform=x64
+      - name: Setup .NET Core 8.x SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.x'
 
-      # - name: Run tests
-      #   run: dotnet test Krysalis.Tests/Krysalis.Tests.csproj
+      - name: Run Python build script
+        run: python Krysalis.py
 
-      - name: Generate version number
-        run: echo "VERSION=${{ github.run_number }}" >> $env:GITHUB_ENV
-        shell: pwsh
-
-      # needs to be updated
       - name: Create artifact directory structure
         run: |
-          New-Item -ItemType Directory -Path "artifact/Krysalis/materials" -Force
-          New-Item -ItemType Directory -Path "artifact/Krysalis/bin" -Force
+          $krysalisManagedPath = "KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
+          $krysalisNativePath = "KrysalisNative\build\KrysalisNative.dll"
+          $krysalisPath = "Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
+          $artifactDir = "artifact"
 
-          Copy-Item -Path "KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll" -Destination "artifact/Krysalis/KrysalisManaged.dll" -Force
-          Copy-Item -Path "x64/Release/KrysalisNative.dll" -Destination "artifact/Krysalis/KrysalisNative.dll" -Force
-          Copy-Item -Path "Krysalis/bin/Release/netstandard2.0/Krysalis.dll" -Destination "artifact/Krysalis.dll" -Force
+          New-Item -ItemType Directory -Path "$artifactDir" -Force
+          New-Item -ItemType Directory -Path "$artifactDir\Krysalis" -Force
 
-          Copy-Item -Path "assets/materials/*.filamat" -Destination "artifact/Krysalis/materials/" -Force
-          Copy-Item -Path "assets/bin/*.exe" -Destination "artifact/Krysalis/bin/" -Force
+          Copy-Item -Path $krysalisManagedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
+          Copy-Item -Path $krysalisNativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
+          Copy-Item -Path $krysalisPath -Destination "$artifactDir\Krysalis.dll" -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact/*" -DestinationPath "Krysalis-${{ env.VERSION }}.zip"
+          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ github.run_number }}.zip"
         shell: pwsh
 
       - name: Upload artifact to GitHub Actions
         uses: actions/upload-artifact@v3
         with:
-          name: Krysalis-${{ env.VERSION }}
-          path: Krysalis-${{ env.VERSION }}.zip
+          name: Krysalis-${{ github.run_number }}
+          path: Krysalis-${{ github.run_number }}.zip
 
       - name: Create GitHub Release
         id: create_release
@@ -60,8 +64,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: Release ${{ env.VERSION }}
+          tag_name: ${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
           draft: false
           prerelease: true
 
@@ -71,6 +75,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Krysalis-${{ env.VERSION }}.zip
-          asset_name: Krysalis-${{ env.VERSION }}.zip
-          asset_content_type: application/zip
+          asset_path: .\Krysalis-${{ github.run_number }}.zip
+          asset_name: Krysalis-${{ github.run_number }}.zip
+          asset_content_type: application\zip

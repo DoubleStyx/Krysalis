@@ -76,45 +76,45 @@ set(HEADERS
     Utils.h
 )
 
-add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
+add_library(KrysalisNative STATIC ${SOURCES} ${HEADERS})
 set_property(TARGET KrysalisNative PROPERTY CXX_STANDARD 20)
 
 target_link_libraries(KrysalisNative PRIVATE
     opengl32
     Shlwapi
     kernel32
-    ${FILAMENT_DIR}/lib/x86_64/md/filament.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/filameshio.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/utils.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/backend.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/bluegl.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/bluevk.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/filaflat.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/filamat.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/ibl.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/meshoptimizer.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/ktxreader.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/basis_transcoder.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/dracodec.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/camutils.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/stb.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/filament-iblprefilter.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/gltfio.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/gltfio_core.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/filabridge.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/mikktspace.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/shaders.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/viewer.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/geometry.lib        
-    ${FILAMENT_DIR}/lib/x86_64/md/ibl-lite.lib        
-    ${FILAMENT_DIR}/lib/x86_64/md/image.lib         
-    ${FILAMENT_DIR}/lib/x86_64/md/matdbg.lib        
-    ${FILAMENT_DIR}/lib/x86_64/md/uberarchive.lib     
-    ${FILAMENT_DIR}/lib/x86_64/md/uberzlib.lib        
-    ${FILAMENT_DIR}/lib/x86_64/md/vkshaders.lib     
-    ${FILAMENT_DIR}/lib/x86_64/md/zstd.lib         
-    ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib         
-    ${GLFW_DIR}/lib-vc2022/glfw3.lib
+    filament.lib
+    filameshio.lib
+    utils.lib
+    backend.lib
+    bluegl.lib
+    bluevk.lib
+    filaflat.lib
+    filamat.lib
+    ibl.lib
+    meshoptimizer.lib
+    ktxreader.lib
+    basis_transcoder.lib
+    dracodec.lib
+    camutils.lib
+    stb.lib
+    filament-iblprefilter.lib
+    gltfio.lib
+    gltfio_core.lib
+    filabridge.lib
+    mikktspace.lib
+    shaders.lib
+    viewer.lib
+    geometry.lib        
+    ibl-lite.lib        
+    image.lib         
+    matdbg.lib        
+    uberarchive.lib     
+    uberzlib.lib        
+    vkshaders.lib     
+    zstd.lib         
+    smol-v.lib         
+    glfw3.lib
 )
 
 target_compile_definitions(KrysalisNative PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)

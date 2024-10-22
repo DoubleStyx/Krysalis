@@ -3,25 +3,15 @@
 #include "KrysalisNative.h"
 #include "Utils.h"
 #include "SceneBuilder.h"
-#include "CppUnitTest.h"
+#include <gtest/gtest.h>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+// Unit test for the Add function
+TEST(AddTest, Add) {
+    openLogFile();
 
-namespace KrysalisNativeTests
-{
+    bool result = runWindow(true);
 
-    TEST_CLASS(RendererTests)
-    {
-    public:
-        TEST_METHOD(TestRenderer)
-        {
-            openLogFile();
+    closeLogFile();
 
-            bool result = runWindow(true);
-
-            closeLogFile();
-
-            Assert::IsTrue(result, L"Rendering test failed!");
-        }
-    };
+    EXPECT_EQ(result, true);
 }
