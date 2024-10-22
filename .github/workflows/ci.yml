@@ -38,21 +38,21 @@ jobs:
 
       - name: Create artifact directory structure
         run: |
-          $managedPath = "$KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
-          $nativePath = "$KrysalisNative\target\release\KrysalisNative.dll"
-          $krysalisPath = "$Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
+          $krysalisManagedPath = "KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
+          $krysalisNativePath = "KrysalisNative\target\release\KrysalisNative.dll"
+          $krysalisPath = "Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
           $artifactDir = "$artifact\Krysalis"
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
 
-          Copy-Item -Path $managedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
-          Copy-Item -Path $nativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
+          Copy-Item -Path $krysalisManagedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
+          Copy-Item -Path $krysalisNativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
           Copy-Item -Path $krysalisPath -Destination "$artifactDir\Krysalis.dll" -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
         run: |
-          Compress-Archive -Path "artifact/*" -DestinationPath "Krysalis-${{ github.run_number }}.zip"
+          Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ github.run_number }}.zip"
         shell: pwsh
 
       - name: Upload artifact to GitHub Actions
@@ -78,6 +78,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Krysalis-${{ github.run_number }}.zip
+          asset_path: .\Krysalis-${{ github.run_number }}.zip
           asset_name: Krysalis-${{ github.run_number }}.zip
-          asset_content_type: application/zip
+          asset_content_type: application\zip
