@@ -7,6 +7,9 @@
     unused_qualifications
 )]
 
+pub mod texture;
+pub mod triangle;
+
 use std::{
     borrow::Cow, cell::RefCell, default::Default, error::Error, ffi, ops::Drop, os::raw::c_char,
 };
