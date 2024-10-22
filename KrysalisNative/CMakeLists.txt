@@ -62,7 +62,7 @@ set(FILAMENT_DIR ${EXTERNAL_DIR}/filament)
 set(GLFW_DIR ${EXTERNAL_DIR}/glfw)
 set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
 set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
-set(ResonitePath "${CMAKE_SOURCE_DIR}/../assets/Resonite")
+set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
 # Add include directories for the pre-built libraries
 include_directories(
@@ -145,6 +145,9 @@ target_link_libraries(KrysalisNative PRIVATE
     ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib           # Added filament-utils.lib
     ${GLFW_DIR}/lib-vc2022/glfw3.lib
 )
+
+target_compile_definitions(KrysalisNative PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
+
 
 # Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

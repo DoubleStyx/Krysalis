@@ -9,6 +9,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace KrysalisNativeTests
 {
+
     TEST_CLASS(RendererTests)
     {
     public:
@@ -23,4 +24,8 @@ namespace KrysalisNativeTests
             Assert::IsTrue(result, L"Rendering test failed!");
         }
     };
+}
+
+int main() {
+    return 0;
 }
