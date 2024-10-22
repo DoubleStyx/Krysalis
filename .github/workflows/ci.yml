@@ -33,7 +33,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Run Python build script
+      - name: Run Python build and test script
         run: python Krysalis.py
 
       - name: Create artifact directory structure
@@ -80,5 +80,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: .\Krysalis-${{ github.run_number }}.zip
-          asset_name: Krysalis-${{ github.run_number }}.zip
+          asset_name: Krysalis-Rust-v${{ github.run_number }}.zip
           asset_content_type: application\zip
