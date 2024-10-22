@@ -44,9 +44,8 @@ def get_output_path(project_name):
         tree = ET.parse(csproj_path)
         root = tree.getroot()
 
-        namespace = {'msbuild': 'http://schemas.microsoft.com/developer/msbuild/2003'}
         target_framework = None
-        for element in root.findall("msbuild:PropertyGroup/msbuild:TargetFramework", namespace):
+        for element in root.findall(".//TargetFramework"):
             target_framework = element.text
             break
 
