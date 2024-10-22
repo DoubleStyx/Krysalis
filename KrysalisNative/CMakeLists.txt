@@ -93,6 +93,9 @@ set(HEADERS
 
 # Add the library (single instance)
 add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET KrysalisNative PROPERTY CXX_STANDARD 20)
+endif()
 
 # Set target properties for the output
 set_target_properties(KrysalisNative PROPERTIES

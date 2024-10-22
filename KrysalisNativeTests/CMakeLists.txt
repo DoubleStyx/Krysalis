@@ -1,4 +1,3 @@
-# Set the minimum CMake version
 cmake_minimum_required(VERSION 3.18)
 
 # Define the project name and version
@@ -7,7 +6,12 @@ project(KrysalisNativeTests VERSION 1.0 LANGUAGES CXX)
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Enable testing
+enable_testing()
+
+# Add the test executable to the tests
+add_test(NAME KrysalisNativeTests COMMAND KrysalisNativeTests)
 
 # Paths to pre-built libraries
 if (WIN32)
@@ -81,9 +85,12 @@ link_directories(
     ${CMAKE_SOURCE_DIR}/../KrysalisNative/build/Release
 )
 
-add_executable(KrysalisNativeTests
+add_library(KrysalisNativeTests SHARED
     Tests.cpp
 )
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET KrysalisNativeTests PROPERTY CXX_STANDARD 20)
+endif()
 
 # Set target properties for the output
 set_target_properties(KrysalisNativeTests PROPERTIES
