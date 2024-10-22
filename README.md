@@ -1,5 +1,5 @@
 # Krysalis
-A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [Resonite](https://resonite.com/) that replaces the Unity renderer in Resonite with a separate rendering pipeline based on the [Filament framework](https://github.com/google/filament). It is also a prerequisite to a butterfly.
+A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [Resonite](https://resonite.com/) that replaces the Unity renderer in Resonite with a custom-written renderer. It is also a prerequisite to a butterfly.
 
 ## Installation
 1. Install [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader).
@@ -9,10 +9,7 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
 3. Start the game. If you want to verify that the mod is working, you can check your Resonite logs for relevant entries from the `Krysalis` mod.
 
 ## Building
-Python
-CMake
-C++ (strawberry or MSVC?)
-C#
+Build details will be added once the project is in a stable configuration.
 
 ## Planned Features and Architecture
 * Multithreaded rendering

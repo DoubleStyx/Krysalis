@@ -28,18 +28,9 @@ def build_project(project_name):
             "Release"
         ]
         run_command(dotnet_build_command, cwd=project_name)
-    elif os.path.exists(os.path.join(project_name, "CMakeLists.txt")):
-        cmake_command = [
-            "cmake", 
-            "-S", project_name, 
-            "-B", os.path.join(project_name, "build", "Release"), 
-            "-G", "Visual Studio 17 2022", 
-            "-A", "x64", 
-            f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE={os.path.join(project_name, 'Release')}"
-        ]
-        build_command = ["cmake", "--build", os.path.join(project_name, "build", "Release"), "--config", "Release"]
-        run_command(cmake_command)
-        run_command(build_command)
+    elif os.path.exists(os.path.join(project_name, "Cargo.toml")):
+        cargo_build_command = ["cargo", "build", "--release"]
+        run_command(cargo_build_command)
     else:
         print(f"Error: Could not determine the build system for {project_name}.")
         sys.exit(1)
@@ -51,8 +42,8 @@ def run_tests(project_name):
     if os.path.exists(os.path.join(project_name, f"{project_name}.csproj")):
         dotnet_test_command = ["dotnet", "test", project_name, "--configuration", "Release"]
         run_command(dotnet_test_command, cwd=project_name)
-    elif os.path.exists(os.path.join(project_name, "CMakeLists.txt")):
-        test_command = [os.path.join(project_name, "Release", f"{project_name}.exe")]
+    elif os.path.exists(os.path.join(project_name, "Cargo.toml")):
+        test_command = ["cargo", "test", "--release"]
         run_command(test_command)
     else:
         print(f"Error: Could not determine how to run tests for {project_name}.")
