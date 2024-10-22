@@ -38,10 +38,10 @@ jobs:
 
       - name: Create artifact directory structure
         run: |
-          $managedPath = "${{ github.workspace }}\KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
-          $nativePath = "${{ github.workspace }}\KrysalisNative\target\release\KrysalisNative.dll"
-          $krysalisPath = "${{ github.workspace }}\Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
-          $artifactDir = "${{ github.workspace }}\artifact\Krysalis"
+          $managedPath = "$KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
+          $nativePath = "$KrysalisNative\target\release\KrysalisNative.dll"
+          $krysalisPath = "$Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
+          $artifactDir = "$artifact\Krysalis"
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
 
