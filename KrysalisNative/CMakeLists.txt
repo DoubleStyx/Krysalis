@@ -1,5 +1,5 @@
 # Set the minimum CMake version
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.18)
 
 # Define the project name and version
 project(KrysalisNative VERSION 1.0 LANGUAGES CXX)
@@ -10,41 +10,49 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Paths to pre-built libraries
-set(FILAMENT_WINDOWS_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
-set(FILAMENT_MAC_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-mac.tgz")
-set(FILAMENT_LINUX_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-linux.tgz")
-
-set(GLFW_WINDOWS_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip")
-set(GLFW_MAC_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.MACOS.zip")
-
-set(BUILD_DIR ${CMAKE_BINARY_DIR}/external) # Store binaries in the build/external directory
-
-# Detect platform and download the appropriate binaries if not already present
 if (WIN32)
-    set(FILAMENT_TGZ ${BUILD_DIR}/filament-windows.tgz)
-    set(GLFW_ZIP ${BUILD_DIR}/glfw-3.4.bin.WIN64.zip)
+    set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
+    set(GLFW_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip")
 elseif(APPLE)
-    set(FILAMENT_TGZ ${BUILD_DIR}/filament-v1.55.0-mac.tgz)
-    set(GLFW_ZIP ${BUILD_DIR}/glfw-3.4.bin.MACOS.zip)
+    set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-mac.tgz")
+    set(GLFW_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.MACOS.zip")
 elseif(UNIX)
-    set(FILAMENT_TGZ ${BUILD_DIR}/filament-v1.55.0-linux.tgz)
+    set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-linux.tgz")
     find_package(GLFW 3.4 REQUIRED) # Use system package manager for GLFW on Linux
 endif()
 
+# Store binaries in the build/external directory
+set(BUILD_DIR ${CMAKE_BINARY_DIR}/external)
+
+# Ensure the external build directory exists
+file(MAKE_DIRECTORY ${BUILD_DIR})
+
 # Download and extract Filament if not present
 if (NOT EXISTS ${BUILD_DIR}/filament)
-    file(DOWNLOAD ${FILAMENT_TGZ} ${FILAMENT_TGZ})
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${FILAMENT_TGZ} WORKING_DIRECTORY ${BUILD_DIR})
+    message(STATUS "Downloading Filament...")
+    set(FILAMENT_ARCHIVE ${BUILD_DIR}/filament.tgz)
+    file(DOWNLOAD ${FILAMENT_URL} ${FILAMENT_ARCHIVE} SHOW_PROGRESS)
+
+    message(STATUS "Extracting Filament...")
+    file(ARCHIVE_EXTRACT
+        INPUT ${FILAMENT_ARCHIVE}
+        DESTINATION ${BUILD_DIR}
+    )
+    message(STATUS "Filament extracted successfully.")
 endif()
 
 # Download and extract GLFW if not present (for Windows/macOS)
 if ((WIN32 OR APPLE) AND NOT EXISTS ${BUILD_DIR}/glfw)
-    file(DOWNLOAD ${GLFW_ZIP} ${GLFW_ZIP})
-    if (WIN32)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${GLFW_ZIP} WORKING_DIRECTORY ${BUILD_DIR})
-    elseif(APPLE)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${GLFW_ZIP} WORKING_DIRECTORY ${BUILD_DIR})
-    endif()
+    message(STATUS "Downloading GLFW...")
+    set(GLFW_ARCHIVE ${BUILD_DIR}/glfw.zip)
+    file(DOWNLOAD ${GLFW_URL} ${GLFW_ARCHIVE} SHOW_PROGRESS)
+
+    message(STATUS "Extracting GLFW...")
+    file(ARCHIVE_EXTRACT
+        INPUT ${GLFW_ARCHIVE}
+        DESTINATION ${BUILD_DIR}/glfw
+    )
+    message(STATUS "GLFW extracted successfully.")
 endif()
 
 # Paths to the extracted pre-built binaries
@@ -62,8 +70,9 @@ include_directories(
 
 # Add include directories for the pre-built libraries
 include_directories(
-    ${FILAMENT_DIR}/include
-    ${GLFW_DIR}/include
+    ${FILAMENT_DIR}/include           # Filament's main include directory
+    ${FILAMENT_DIR}/third_party       # Filament's third-party dependencies (e.g., math)
+    ${GLFW_DIR}/include               # GLFW's include directory
 )
 
 # Link libraries for Filament and GLFW
@@ -103,13 +112,14 @@ target_link_libraries(KrysalisNative PRIVATE
 # Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(KrysalisNative PRIVATE _DEBUG)
-    target_compile_options(KrysalisNative PRIVATE -g)  # Debug symbols
+    target_compile_options(KrysalisNative PRIVATE /Zi)  # Debug symbols for MSVC
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(KrysalisNative PRIVATE NDEBUG)
-    target_compile_options(KrysalisNative PRIVATE -O3)  # Optimization
+    target_compile_options(KrysalisNative PRIVATE /O2)  # Optimization for MSVC
 endif()
 
 # Post-build commands: Material and Mesh Compilation
+# (Assuming MaterialsDirectory and ResonitePath are defined elsewhere)
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
 )
