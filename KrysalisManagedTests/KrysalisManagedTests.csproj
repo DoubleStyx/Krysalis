@@ -42,7 +42,4 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>

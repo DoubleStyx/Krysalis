@@ -1,60 +1,41 @@
-cmake_minimum_required(VERSION 3.14)  # Specify a minimum CMake version
-project(KrysalisNativeTests)
+cmake_minimum_required(VERSION 3.14)
+project(KrysalisNativeTests LANGUAGES CXX)
 
-# Set the C++ standard (equivalent to LanguageStandard in vcxproj)
-set(CMAKE_CXX_STANDARD 17)
+# Set the C++ standard
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Define the Debug/Release configurations (equivalent to MSBuild configurations)
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+# Paths for KrysalisNative and other dependencies
+set(KrysalisNative_DIR ${CMAKE_SOURCE_DIR}/../KrysalisNative)
+set(Filament_DIR ${CMAKE_SOURCE_DIR}/../external/filament)  # Adjust this if needed
 
-# Add the source files (equivalent to ClCompile)
+# Include the KrysalisNative headers
+include_directories(
+    ${KrysalisNative_DIR}  # Path to KrysalisNative headers
+    ${Filament_DIR}/include
+)
+
+# Add the source files for tests
 add_executable(KrysalisNativeTests
-    Tests.cpp  # You can add more source files here if needed
+    Tests.cpp  # Add any additional test files here
 )
 
-# Include directories (equivalent to AdditionalIncludeDirectories)
-target_include_directories(KrysalisNativeTests PRIVATE
-    ${VCInstallDir}/UnitTest/include
-    ${CommonIncludeDirs}
-    ${KrysalisNativeDir}
+# Link KrysalisNative and its dependencies
+target_link_libraries(KrysalisNativeTests PRIVATE
+    KrysalisNative  # Link the KrysalisNative library
+    ${Filament_DIR}/lib/x86_64/md/filament.lib
+    ${Filament_DIR}/lib/x86_64/md/utils.lib
+    ${Filament_DIR}/lib/x86_64/md/backend.lib
+    ${Filament_DIR}/lib/x86_64/md/bluegl.lib
+    ${Filament_DIR}/lib/x86_64/md/bluevk.lib
+    # Add other dependencies as necessary
 )
 
-# Define Debug/Release specific settings
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(KrysalisNativeTests PRIVATE
-        _DEBUG
-        _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
-    )
-    target_link_directories(KrysalisNativeTests PRIVATE
-        ${VCInstallDir}/UnitTest/lib
-        ${CommonLibDirs}
-        ${FilamentLibDirDebug}
-        ${CMAKE_BINARY_DIR}/x64/Debug
-    )
-    target_link_libraries(KrysalisNativeTests PRIVATE
-        ${CommonDependencies}
-        KrysalisNative  # Link to the KrysalisNative library
-    )
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(KrysalisNativeTests PRIVATE
-        NDEBUG
-        _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
-    )
-    target_link_directories(KrysalisNativeTests PRIVATE
-        ${VCInstallDir}/UnitTest/lib
-        ${CommonLibDirs}
-        ${FilamentLibDirRelease}
-        ${CMAKE_BINARY_DIR}/x64/Release
-    )
-    target_link_libraries(KrysalisNativeTests PRIVATE
-        ${CommonDependencies}
-        KrysalisNative
-    )
-endif()
-
-# Set the properties specific to each build type
+# Set build directories for debug and release
 set_target_properties(KrysalisNativeTests PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release
 )
 
+# Ensure KrysalisNative is built before KrysalisNativeTests
+add_dependencies(KrysalisNativeTests KrysalisNative)

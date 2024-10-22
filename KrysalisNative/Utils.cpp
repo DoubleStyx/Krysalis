@@ -125,13 +125,13 @@ std::wstring getDllDirectory() {
     WCHAR path[MAX_PATH];
     HMODULE hModule = NULL;
 
-    if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
         (LPCWSTR)getDllDirectory,
         &hModule)) {
-        GetModuleFileName(hModule, path, sizeof(path) / sizeof(WCHAR));
+        GetModuleFileNameW(hModule, path, sizeof(path) / sizeof(WCHAR));
 		GlobalLog("Found DLL path: " + wstringToString(std::wstring(path)));
 
-        PathRemoveFileSpec(path);
+        PathRemoveFileSpecW(path);
 		GlobalLog("Found DLL directory: " + wstringToString(std::wstring(path)));
 
         return std::wstring(path);

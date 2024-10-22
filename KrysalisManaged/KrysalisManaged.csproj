@@ -18,7 +18,4 @@
 		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
 		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis" ContinueOnError="true" />
 	</Target>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
 </Project>
