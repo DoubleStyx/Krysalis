@@ -7,7 +7,8 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
     try:
-        result = subprocess.run(command, cwd=cwd, check=True, text=True, capture_output=True)
+        # Remove capture_output to allow real-time output
+        result = subprocess.run(command, cwd=cwd, check=True)
         print(result.stdout)
         print(result.stderr)
     except subprocess.CalledProcessError as e:
