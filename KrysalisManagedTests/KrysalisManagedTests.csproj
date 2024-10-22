@@ -1,24 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)\Common.props" />
-  <packages>
-    <package id="Microsoft.ApplicationInsights" version="2.22.0" targetFramework="net472" />
-    <package id="Microsoft.Testing.Extensions.Telemetry" version="1.4.1" targetFramework="net472" />
-    <package id="Microsoft.Testing.Extensions.TrxReport.Abstractions" version="1.4.1" targetFramework="net472" />
-    <package id="Microsoft.Testing.Extensions.VSTestBridge" version="1.4.1" targetFramework="net472" />
-    <package id="Microsoft.Testing.Platform" version="1.4.1" targetFramework="net472" />
-    <package id="Microsoft.Testing.Platform.MSBuild" version="1.4.1" targetFramework="net472" />
-    <package id="Microsoft.TestPlatform.ObjectModel" version="17.11.1" targetFramework="net472" />
-    <package id="MSTest.TestAdapter" version="3.6.1" targetFramework="net472" />
-    <package id="MSTest.TestFramework" version="3.6.1" targetFramework="net472" />
-    <package id="System.Buffers" version="4.5.1" targetFramework="net472" />
-    <package id="System.Collections.Immutable" version="8.0.0" targetFramework="net472" />
-    <package id="System.Diagnostics.DiagnosticSource" version="8.0.1" targetFramework="net472" />
-    <package id="System.Memory" version="4.5.5" targetFramework="net472" />
-    <package id="System.Numerics.Vectors" version="4.5.0" targetFramework="net472" />
-    <package id="System.Reflection.Metadata" version="8.0.1" targetFramework="net472" />
-    <package id="System.Runtime.CompilerServices.Unsafe" version="6.0.0" targetFramework="net472" />
-  </packages>
+  <Import Project="..\Common.props" />
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter" Version="3.6.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.6.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Testing.Platform" Version="1.4.1" />
+    <PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="1.4.1" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.11.1" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.1" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Reflection.Metadata" Version="8.0.1" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+  </ItemGroup>
   <PropertyGroup>
     <RootNamespace>KrysalisManagedTests</RootNamespace>
     <AssemblyName>KrysalisManagedTests</AssemblyName>
@@ -40,6 +42,6 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\KrysalisManaged\KrysalisManaged.csproj" />
+    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
 </Project>

@@ -2,12 +2,15 @@ import os
 import subprocess
 import sys
 
-# Paths to your project directories
-KrysalisNativeDir = os.path.join("KrysalisNative")
-KrysalisNativeTestsDir = os.path.join("KrysalisNativeTests")
-KrysalisManagedDir = os.path.join("KrysalisManaged")
-KrysalisManagedTestsDir = os.path.join("KrysalisManagedTests")
-KrysalisDir = os.path.join("Krysalis")
+# Get the absolute path of the script directory
+script_dir = os.path.abspath(os.path.dirname(__file__))
+
+# Paths to your project directories using absolute paths
+KrysalisNativeDir = os.path.join(script_dir, "KrysalisNative")
+KrysalisNativeTestsDir = os.path.join(script_dir, "KrysalisNativeTests")
+KrysalisManagedDir = os.path.join(script_dir, "KrysalisManaged")
+KrysalisManagedTestsDir = os.path.join(script_dir, "KrysalisManagedTests")
+KrysalisDir = os.path.join(script_dir, "Krysalis")
 
 # Helper function to run a shell command
 def run_command(command, cwd=None):
@@ -31,7 +34,7 @@ def build_project(project_name, project_dir):
 
     if os.path.exists(os.path.join(project_dir, f"{project_name}.csproj")):
         # Use dotnet build for C# projects
-        dotnet_build_command = ["dotnet", "build", project_dir + f"/{project_name}.csproj", "--configuration", "Release"]
+        dotnet_build_command = ["dotnet", "build", os.path.join(project_dir, f"{project_name}.csproj"), "--configuration", "Release"]
         run_command(dotnet_build_command, cwd=project_dir)
 
     elif os.path.exists(os.path.join(project_dir, "CMakeLists.txt")):
@@ -53,7 +56,6 @@ def build_project(project_name, project_dir):
         sys.exit(1)
 
     print(f"Build completed for {project_name}.")
-
 
 # Test function for running unit tests
 def run_tests(project_name, project_dir):
@@ -80,7 +82,6 @@ def run_tests(project_name, project_dir):
 
     print(f"Tests completed for {project_name}.")
 
-
 # Main function orchestrating the build and test process
 def main():
     print("Starting build and test process...")
@@ -97,7 +98,6 @@ def main():
     run_tests("KrysalisManagedTests", KrysalisManagedTestsDir)
 
     print("Build and test process completed successfully.")
-
 
 if __name__ == "__main__":
     main()
