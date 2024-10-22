@@ -1,8 +1,15 @@
-#[cfg(test)] 
+use KrysalisNative;
+
+#[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn test_addition() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+    fn test_init() {
+        // Call the init() function from KrysalisNative
+        let result = KrysalisNative::init();
+
+        // Optionally, assert something about the result (assuming init returns something)
+        assert!(result, "Initialization failed");
     }
 }

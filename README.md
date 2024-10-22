@@ -9,7 +9,7 @@ A [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod for [
 3. Start the game. If you want to verify that the mod is working, you can check your Resonite logs for relevant entries from the `Krysalis` mod.
 
 ## Building
-Build details will be added once the project is in a stable configuration.
+Build details will be added once the project is in a stable configuration. For now, note that it uses .NET, Rust, and Python.
 
 ## Planned Features and Architecture
 * Multithreaded rendering

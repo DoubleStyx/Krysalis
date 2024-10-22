@@ -1,3 +1,7 @@
-fn main() {
-    println!("Hello, world!");
+extern crate ash;
+
+use ash::vk;
+
+pub fn init() -> bool {
+    return true;
 }
