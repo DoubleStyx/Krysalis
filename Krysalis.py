@@ -23,21 +23,28 @@ def run_command(command, cwd=None):
         print(e.stderr)
         sys.exit(1)
 
+# Clean build directory if it exists
+def clean_build_directory(build_dir):
+    if os.path.exists(build_dir):
+        print(f"Cleaning existing build directory at {build_dir}")
+        shutil.rmtree(build_dir)
+    else:
+        print(f"No existing build directory to clean at {build_dir}")
+
 # Build function for a project
 def build_project(project_name, project_dir):
     print(f"Building {project_name}...")
     build_dir = os.path.join(project_dir, "build")
     print(f"Build directory: {build_dir}")
 
-    # Ensure the build directory exists
-    if not os.path.exists(build_dir):
-        print("Build directory not found. Creating build directory at " + build_dir)
-        os.makedirs(build_dir)
-    else:
-        print("Build directory found at " + build_dir)
+    # Clean the build directory to avoid conflicting configurations
+    clean_build_directory(build_dir)
 
-    # Run CMake configuration and build commands
-    cmake_command = ["cmake", ".."]
+    # Create the build directory
+    os.makedirs(build_dir)
+
+    # Run CMake configuration and build commands using MSVC generator
+    cmake_command = ["cmake", "-G", "Visual Studio 17 2022", "-A", "x64", ".."]
     build_command = ["cmake", "--build", ".", "--config", "Release"]
 
     run_command(cmake_command, cwd=build_dir)
@@ -48,6 +55,7 @@ def build_project(project_name, project_dir):
 # Test function for running unit tests
 def run_tests(project_name, project_dir):
     print(f"Running tests for {project_name}...")
+    # Adjust the path for the MSVC build output
     test_executable = os.path.join(project_dir, "build", "Release", f"{project_name}.exe")
 
     if not os.path.exists(test_executable):

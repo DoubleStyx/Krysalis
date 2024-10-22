@@ -9,47 +9,67 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include FetchContent module
-include(FetchContent)
+# Paths to pre-built libraries
+set(FILAMENT_WINDOWS_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
+set(FILAMENT_MAC_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-mac.tgz")
+set(FILAMENT_LINUX_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-v1.55.0-linux.tgz")
 
-# FetchContent for RapidJSON without processing its CMakeLists.txt
-FetchContent_Declare(
-    RapidJSON
-    GIT_REPOSITORY https://github.com/Tencent/rapidjson.git
-    GIT_TAG        v1.1.0  # Specify the version or tag
-)
+set(GLFW_WINDOWS_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip")
+set(GLFW_MAC_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.MACOS.zip")
 
-# Download RapidJSON without configuring it
-FetchContent_GetProperties(RapidJSON)
-if(NOT RapidJSON_POPULATED)
-    FetchContent_Populate(RapidJSON)
+set(BUILD_DIR ${CMAKE_BINARY_DIR}/external) # Store binaries in the build/external directory
+
+# Detect platform and download the appropriate binaries if not already present
+if (WIN32)
+    set(FILAMENT_TGZ ${BUILD_DIR}/filament-windows.tgz)
+    set(GLFW_ZIP ${BUILD_DIR}/glfw-3.4.bin.WIN64.zip)
+elseif(APPLE)
+    set(FILAMENT_TGZ ${BUILD_DIR}/filament-v1.55.0-mac.tgz)
+    set(GLFW_ZIP ${BUILD_DIR}/glfw-3.4.bin.MACOS.zip)
+elseif(UNIX)
+    set(FILAMENT_TGZ ${BUILD_DIR}/filament-v1.55.0-linux.tgz)
+    find_package(GLFW 3.4 REQUIRED) # Use system package manager for GLFW on Linux
 endif()
 
-# FetchContent for GLFW
-FetchContent_Declare(
-    GLFW
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG        3.3.4  # Example tag, change if necessary
-)
+# Download and extract Filament if not present
+if (NOT EXISTS ${BUILD_DIR}/filament)
+    file(DOWNLOAD ${FILAMENT_TGZ} ${FILAMENT_TGZ})
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${FILAMENT_TGZ} WORKING_DIRECTORY ${BUILD_DIR})
+endif()
 
-FetchContent_MakeAvailable(GLFW)
+# Download and extract GLFW if not present (for Windows/macOS)
+if ((WIN32 OR APPLE) AND NOT EXISTS ${BUILD_DIR}/glfw)
+    file(DOWNLOAD ${GLFW_ZIP} ${GLFW_ZIP})
+    if (WIN32)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${GLFW_ZIP} WORKING_DIRECTORY ${BUILD_DIR})
+    elseif(APPLE)
+        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${GLFW_ZIP} WORKING_DIRECTORY ${BUILD_DIR})
+    endif()
+endif()
 
-# FetchContent for Filament (adjust to match your Filament usage)
-FetchContent_Declare(
-    Filament
-    GIT_REPOSITORY https://github.com/google/filament.git
-    GIT_TAG        v1.9.19  # Specify version or tag
-)
+# Paths to the extracted pre-built binaries
+if (WIN32 OR APPLE)
+    set(FILAMENT_DIR ${BUILD_DIR}/filament)
+    set(GLFW_DIR ${BUILD_DIR}/glfw)
+elseif(UNIX)
+    set(FILAMENT_DIR ${BUILD_DIR}/filament)
+endif()
 
-FetchContent_MakeAvailable(Filament)
-
-# Add include directories for the external libraries
+# Include RapidJSON manually since it's header-only
 include_directories(
-    ${Filament_SOURCE_DIR}
-    ${Filament_SOURCE_DIR}/third_party/glm
-    ${Filament_SOURCE_DIR}/third_party/filament/include
-    ${GLFW_SOURCE_DIR}/include
-    ${RapidJSON_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/external/include/rapidjson
+)
+
+# Add include directories for the pre-built libraries
+include_directories(
+    ${FILAMENT_DIR}/include
+    ${GLFW_DIR}/include
+)
+
+# Link libraries for Filament and GLFW
+link_directories(
+    ${FILAMENT_DIR}/lib
+    ${GLFW_DIR}/lib
 )
 
 # Specify source files
@@ -89,18 +109,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(KrysalisNative PRIVATE -O3)  # Optimization
 endif()
 
-# Link directories and dependencies
-# Ensure these variables are defined in your CMakeLists.txt or passed as cache variables
-# For example:
-# set(CommonLibDirs "/path/to/common/libs")
-# set(FilamentLibDirDebug "/path/to/filament/libs/debug")
-target_link_directories(KrysalisNative PRIVATE
-    ${CommonLibDirs}
-    ${FilamentLibDirDebug}  # Adjust for Release/Debug
-)
-
 # Post-build commands: Material and Mesh Compilation
-# Ensure that the variables BinDirectory, MaterialsDirectory, etc., are defined
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
 )
