@@ -177,7 +177,7 @@ pub struct ExampleBase {
 }
 
 impl ExampleBase {
-    pub fn render_loop<F: Fn()>(&self, f: F) -> Result<(), impl Error> {
+    pub fn render_loop<F: FnMut() -> Option<()>>(&self, mut f: F) -> Result<(), impl Error> {
         self.event_loop.borrow_mut().run_on_demand(|event, elwp| {
             elwp.set_control_flow(ControlFlow::Poll);
             match event {
@@ -197,11 +197,17 @@ impl ExampleBase {
                 } => {
                     elwp.exit();
                 }
-                Event::AboutToWait => f(),
+                Event::AboutToWait => {
+                    // Call the closure and check for termination signal
+                    if f().is_none() {
+                        elwp.exit();
+                    }
+                }
                 _ => (),
             }
         })
     }
+    
 
     pub fn new(window_width: u32, window_height: u32) -> Result<Self, Box<dyn Error>> {
         unsafe {

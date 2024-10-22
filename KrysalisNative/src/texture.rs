@@ -689,6 +689,8 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
         let graphic_pipeline = graphics_pipelines[0];
 
+        let mut frame_count = 0;
+
         let _ = base.render_loop(|| {
             let (present_index, _) = base
                 .swapchain_loader
@@ -784,7 +786,20 @@ pub fn main() -> Result<(), Box<dyn Error>> {
             base.swapchain_loader
                 .queue_present(base.present_queue, &present_info)
                 .unwrap();
+
+
+            // Break out of the loop when frame count exceeds 100
+            if frame_count > 100 {
+                return None;
+            }
+        
+            Some(())
+
         });
+
+
+
+
         base.device.device_wait_idle().unwrap();
 
         for pipeline in graphics_pipelines {

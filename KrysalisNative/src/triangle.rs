@@ -17,7 +17,8 @@ struct Vertex {
     color: [f32; 4],
 }
 
-pub fn main() -> Result<(), Box<dyn Error>> {
+#[no_mangle]
+pub extern "C" fn main() -> Result<(), Box<dyn Error>> {
     unsafe {
         let base = ExampleBase::new(1920, 1080)?;
         let renderpass_attachments = [
@@ -350,9 +351,9 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
         let graphic_pipeline = graphics_pipelines[0];
 
-        let frame_count = 0;
+        let mut frame_count = 0;
 
-        let _ = base.render_loop(|| -> Result<(), ()> {
+        let _ = base.render_loop(|| {
             let (present_index, _) = base
                 .swapchain_loader
                 .acquire_next_image(
@@ -362,6 +363,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                     vk::Fence::null(),
                 )
                 .unwrap();
+        
             let clear_values = [
                 vk::ClearValue {
                     color: vk::ClearColorValue {
@@ -375,13 +377,13 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                     },
                 },
             ];
-
+        
             let render_pass_begin_info = vk::RenderPassBeginInfo::default()
                 .render_pass(renderpass)
                 .framebuffer(framebuffers[present_index as usize])
                 .render_area(base.surface_resolution.into())
                 .clear_values(&clear_values);
-
+        
             record_submit_commandbuffer(
                 &base.device,
                 base.draw_command_buffer,
@@ -423,32 +425,32 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                         0,
                         1,
                     );
-                    // Or draw without the index buffer
-                    // device.cmd_draw(draw_command_buffer, 3, 1, 0, 0);
                     device.cmd_end_render_pass(draw_command_buffer);
                 },
             );
-            let wait_semaphors = [base.rendering_complete_semaphore];
+        
+            let wait_semaphores = [base.rendering_complete_semaphore];
             let swapchains = [base.swapchain];
             let image_indices = [present_index];
             let present_info = vk::PresentInfoKHR::default()
-                .wait_semaphores(&wait_semaphors) // &base.rendering_complete_semaphore)
+                .wait_semaphores(&wait_semaphores)
                 .swapchains(&swapchains)
                 .image_indices(&image_indices);
-
+        
             base.swapchain_loader
                 .queue_present(base.present_queue, &present_info)
                 .unwrap();
+        
             frame_count += 1;
-            if frame_count < 100 {
-                Ok(())
-            } else {
-                Ok(())
+        
+            // Break out of the loop when frame count exceeds 100
+            if frame_count > 100 {
+                return None;
             }
-            .map(|_| ()) // Convert Result<bool, _> to ()
-            .unwrap();
+        
+            Some(())
         });
-
+        
         base.device.device_wait_idle().unwrap();
         for pipeline in graphics_pipelines {
             base.device.destroy_pipeline(pipeline, None);
