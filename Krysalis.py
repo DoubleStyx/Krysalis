@@ -2,21 +2,20 @@ import os
 import subprocess
 import sys
 import shutil
+import xml.etree.ElementTree as ET
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
     try:
-        result = subprocess.run(command, cwd=cwd, check=True)
+        result = subprocess.run(command, cwd=cwd, check=True, capture_output=True, text=True)
         print(result.stdout)
-        print(result.stderr)
+        return result.stdout
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {' '.join(command)}")
-        print("Standard Output:")
-        print(e.stdout)
-        print("Standard Error:")
-        print(e.stderr)
+        print(f"Standard Output: {e.stdout}")
+        print(f"Standard Error: {e.stderr}")
         sys.exit(1)
 
 def build_project(project_name):
@@ -39,29 +38,39 @@ def build_project(project_name):
         sys.exit(1)
     print(f"Build completed for {project_name}.")
 
+def get_dotnet_output_path(project_name):
+    if get_project_type(project_name) == "dotnet":
+        csproj_path = os.path.join(current_directory, project_name, f"{project_name}.csproj")
+        tree = ET.parse(csproj_path)
+        root = tree.getroot()
+
+        namespace = {'msbuild': 'http://schemas.microsoft.com/developer/msbuild/2003'}
+        target_framework = None
+        for element in root.findall("msbuild:PropertyGroup/msbuild:TargetFramework", namespace):
+            target_framework = element.text
+            break
+
+        if target_framework:
+            return os.path.join(current_directory, project_name, "bin", "Release", target_framework)
+        else:
+            return os.path.join(current_directory, project_name, "bin", "Release")
+    elif get_project_type(project_name) == "cargo":
+        return os.path.join(current_directory, project_name, "target", "release")
+    else:
+        print(f"Error: Could not determine the output path for {project_name}.")
+        sys.exit(1)
+
 def copy_dll(source, destination):
-    dll_path = None
-    if get_project_type(source) == "cargo":
-        dll_path = os.path.join(current_directory, source, "target", "release", f"{source}.dll")
-    elif get_project_type(source) == "dotnet":
-        dll_path = os.path.join(current_directory, source, "bin", "Release", f"{source}.dll")
-    else:
-        print(f"Error: DLL not found at {dll_path}")
-        sys.exit(1)
+    dll_path = os.path.join(get_output_path(source), f"{source}.dll")
+    target_path = os.path.join(get_output_path(destination), f"{source}.dll")
 
-    target_dir = None
-    if get_project_type(destination) == "dotnet":
-        target_dir = os.path.join(current_directory, destination, "bin", "Release", "net8.0")
-    elif get_project_type(destination) == "cargo":
-        target_dir = os.path.join(current_directory, destination, "target", "release")
-    else:
-        print(f"Error: Could not determine the target directory for {destination}.")
-        sys.exit(1)
+    if not os.path.exists(target_path):
+        os.makedirs(target_path)
 
-    print(f"Copying {dll_path} to {target_dir}")
+    print(f"Copying {dll_path} to {target_path}")
     try:
-        shutil.copy2(dll_path, target_dir)
-        print(f"Copied {dll_path} to {target_dir}")
+        shutil.copy2(dll_path, target_path)
+        print(f"Copied {dll_path} to {target_path}")
     except Exception as e:
         print(f"Error copying DLL: {e}")
         sys.exit(1)
