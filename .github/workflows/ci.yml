@@ -44,6 +44,7 @@ jobs:
           $artifactDir = "artifact\Krysalis"
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
+          New-Item -ItemType Directory -Path "$artifactDir\Krysalis" -Force
 
           Copy-Item -Path $krysalisManagedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
           Copy-Item -Path $krysalisNativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
