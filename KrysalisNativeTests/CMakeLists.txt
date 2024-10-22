@@ -56,6 +56,8 @@ set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
 set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
 set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/../KrysalisNative ${CMAKE_BIN_DIR}/KrysalisNative)
+
 include_directories(
     ${FILAMENT_DIR}/include       
     ${GLFW_DIR}/include           

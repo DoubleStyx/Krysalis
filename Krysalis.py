@@ -32,12 +32,12 @@ def build_project(project_name):
         cmake_command = [
             "cmake", 
             "-S", project_name, 
-            "-B", project_name, 
+            "-B", os.path.join(project_name, "build", "Release"), 
             "-G", "Visual Studio 17 2022", 
             "-A", "x64", 
             f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE={os.path.join(project_name, 'Release')}"
         ]
-        build_command = ["cmake", "--build", project_name, "--config", "Release"]
+        build_command = ["cmake", "--build", os.path.join(project_name, "build", "Release"), "--config", "Release"]
         run_command(cmake_command)
         run_command(build_command)
     else:
