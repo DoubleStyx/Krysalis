@@ -21,24 +21,6 @@ elseif(UNIX)
     find_package(GLFW 3.4 REQUIRED) # Use system package manager for GLFW on Linux
 endif()
 
-# Add the library
-add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
-
-# Set target properties for the output
-set_target_properties(KrysalisNative PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-)
-
-
-set_target_properties(KrysalisNative PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY}/Debug
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY}/Release
-    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIBRARY_OUTPUT_DIRECTORY}/Debug
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIBRARY_OUTPUT_DIRECTORY}/Release
-)
-
-
 # Store binaries in the build/external directory
 set(EXTERNAL_DIR ${CMAKE_BINARY_DIR}/external)
 
@@ -76,13 +58,11 @@ if (NOT EXISTS ${EXTERNAL_DIR}/glfw)
     file(RENAME ${EXTERNAL_DIR}/glfw-3.4.bin.WIN64 ${EXTERNAL_DIR}/glfw)
 endif()
 
-
 set(FILAMENT_DIR ${EXTERNAL_DIR}/filament)
 set(GLFW_DIR ${EXTERNAL_DIR}/glfw)
 set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
 set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
-set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
-
+set(ResonitePath "${CMAKE_SOURCE_DIR}/../assets/Resonite")
 
 # Add include directories for the pre-built libraries
 include_directories(
@@ -111,13 +91,20 @@ set(HEADERS
     Utils.h
 )
 
-# Add the library
+# Add the library (single instance)
 add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
 
 # Set target properties for the output
 set_target_properties(KrysalisNative PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+)
+
+set_target_properties(KrysalisNative PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY}/Debug
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY}/Release
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIBRARY_OUTPUT_DIRECTORY}/Debug
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIBRARY_OUTPUT_DIRECTORY}/Release
 )
 
 # Link the libraries (Filament, GLFW, etc.)
@@ -155,11 +142,9 @@ target_link_libraries(KrysalisNative PRIVATE
     ${FILAMENT_DIR}/lib/x86_64/md/uberzlib.lib         # Added uberzlib.lib
     ${FILAMENT_DIR}/lib/x86_64/md/vkshaders.lib        # Added vkshaders.lib
     ${FILAMENT_DIR}/lib/x86_64/md/zstd.lib             # Added zstd.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib   # Added filament-utils.lib
+    ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib           # Added filament-utils.lib
     ${GLFW_DIR}/lib-vc2022/glfw3.lib
 )
-
-
 
 # Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -171,7 +156,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 # Post-build commands: Material and Mesh Compilation
-# (Assuming MaterialsDirectory and ResonitePath are defined elsewhere)
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
 )
