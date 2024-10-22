@@ -1,15 +1,11 @@
-# Set the minimum CMake version
 cmake_minimum_required(VERSION 3.18)
 
-# Define the project name and version
 project(KrysalisNative VERSION 1.0 LANGUAGES CXX)
 
-# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Paths to pre-built libraries
 if (WIN32)
     set(FILAMENT_URL "https://github.com/google/filament/releases/download/v1.55.0/filament-windows.tgz")
     set(GLFW_URL "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.bin.WIN64.zip")
@@ -21,13 +17,10 @@ elseif(UNIX)
     find_package(GLFW 3.4 REQUIRED) # Use system package manager for GLFW on Linux
 endif()
 
-# Store binaries in the build/external directory
 set(EXTERNAL_DIR ${CMAKE_BINARY_DIR}/external)
 
-# Ensure the external build directory exists
 file(MAKE_DIRECTORY ${EXTERNAL_DIR})
 
-# Download and extract Filament if not present
 if (NOT EXISTS ${EXTERNAL_DIR}/filament)
     message(STATUS "Downloading Filament...")
     set(FILAMENT_ARCHIVE ${EXTERNAL_DIR}/filament.tgz)
@@ -41,7 +34,6 @@ if (NOT EXISTS ${EXTERNAL_DIR}/filament)
     message(STATUS "Filament extracted successfully.")
 endif()
 
-# Download and extract GLFW if not present
 if (NOT EXISTS ${EXTERNAL_DIR}/glfw)
     message(STATUS "Downloading GLFW...")
     set(GLFW_ARCHIVE ${EXTERNAL_DIR}/glfw.zip)
@@ -64,24 +56,17 @@ set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
 set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
 set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
-# Define output directories for binaries and libraries
-set(BIN_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin)
-set(LIB_OUTPUT_DIR ${CMAKE_BINARY_DIR}/lib)
-
-# Add include directories for the pre-built libraries
 include_directories(
-    ${FILAMENT_DIR}/include           # Filament's include directory
-    ${GLFW_DIR}/include               # GLFW's include directory
+    ${FILAMENT_DIR}/include       
+    ${GLFW_DIR}/include           
     ${CMAKE_SOURCE_DIR}/../external/include/
 )
 
-# Link libraries for Filament and GLFW
 link_directories(
-    ${FILAMENT_DIR}/lib/x86_64/md       # Filament's lib directory
-    ${GLFW_DIR}/lib-vc2022              # GLFW's lib directory
+    ${FILAMENT_DIR}/lib/x86_64/md    
+    ${GLFW_DIR}/lib-vc2022        
 )
 
-# Specify source files
 set(SOURCES
     KrysalisNative.cpp
     SceneBuilder.cpp
@@ -95,21 +80,9 @@ set(HEADERS
     Utils.h
 )
 
-# Add the library (single instance)
 add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
 set_property(TARGET KrysalisNative PROPERTY CXX_STANDARD 20)
 
-# Set target properties for the output
-set_target_properties(KrysalisNative PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${BIN_OUTPUT_DIR}
-    LIBRARY_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BIN_OUTPUT_DIR}/Debug
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_OUTPUT_DIR}/Release
-    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIB_OUTPUT_DIR}/Debug
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_OUTPUT_DIR}/Release
-)
-
-# Link the libraries (Filament, GLFW, etc.)
 target_link_libraries(KrysalisNative PRIVATE
     opengl32
     Shlwapi
@@ -136,35 +109,32 @@ target_link_libraries(KrysalisNative PRIVATE
     ${FILAMENT_DIR}/lib/x86_64/md/mikktspace.lib
     ${FILAMENT_DIR}/lib/x86_64/md/shaders.lib
     ${FILAMENT_DIR}/lib/x86_64/md/viewer.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/geometry.lib         # Added geometry.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/ibl-lite.lib         # Added ibl-lite.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/image.lib            # Added image.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/matdbg.lib           # Added matdbg.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/uberarchive.lib      # Added uberarchive.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/uberzlib.lib         # Added uberzlib.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/vkshaders.lib        # Added vkshaders.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/zstd.lib             # Added zstd.lib
-    ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib           # Added filament-utils.lib
+    ${FILAMENT_DIR}/lib/x86_64/md/geometry.lib        
+    ${FILAMENT_DIR}/lib/x86_64/md/ibl-lite.lib        
+    ${FILAMENT_DIR}/lib/x86_64/md/image.lib         
+    ${FILAMENT_DIR}/lib/x86_64/md/matdbg.lib        
+    ${FILAMENT_DIR}/lib/x86_64/md/uberarchive.lib     
+    ${FILAMENT_DIR}/lib/x86_64/md/uberzlib.lib        
+    ${FILAMENT_DIR}/lib/x86_64/md/vkshaders.lib     
+    ${FILAMENT_DIR}/lib/x86_64/md/zstd.lib         
+    ${FILAMENT_DIR}/lib/x86_64/md/smol-v.lib         
     ${GLFW_DIR}/lib-vc2022/glfw3.lib
 )
 
 target_compile_definitions(KrysalisNative PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
 
-# Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(KrysalisNative PRIVATE _DEBUG)
-    target_compile_options(KrysalisNative PRIVATE /Zi)  # Debug symbols for MSVC
+    target_compile_options(KrysalisNative PRIVATE /Zi)  
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(KrysalisNative PRIVATE NDEBUG)
-    target_compile_options(KrysalisNative PRIVATE /O2)  # Optimization for MSVC
+    target_compile_options(KrysalisNative PRIVATE /O2) 
 endif()
 
-# Post-build commands: Material and Mesh Compilation
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E echo "Compiling materials and meshes"
 )
 
-# Compile Materials
 file(GLOB MATERIAL_FILES "${MaterialsDirectory}/*.mat")
 foreach(matfile ${MATERIAL_FILES})
     get_filename_component(matname "${matfile}" NAME_WE)
@@ -175,7 +145,6 @@ foreach(matfile ${MATERIAL_FILES})
     )
 endforeach()
 
-# Compile Meshes
 file(GLOB MESH_FILES "${MeshesDirectory}/*.obj")
 foreach(meshfile ${MESH_FILES})
     get_filename_component(meshname "${meshfile}" NAME_WE)
@@ -186,19 +155,16 @@ foreach(meshfile ${MESH_FILES})
     )
 endforeach()
 
-# Post-build copy step for the files
 add_custom_command(TARGET KrysalisNative POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Copying files after build"
+    COMMAND ${CMAKE_COMMAND} -E echo "Copying asset files after compile"
 )
 
-# Copy .filamat files to the destination directory
 file(GLOB COMPILED_MATERIAL_FILES "${MaterialsDirectory}/*.filamat")
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${MaterialsDirectory}" "${ResonitePath}/rml_mods/Krysalis/materials"
     COMMENT "Copying .filamat files to ${ResonitePath}/rml_mods/Krysalis/materials"
 )
 
-# Copy .exe files to the bin directory
 file(GLOB EXE_FILES "${BinDirectory}/*.exe")
 add_custom_command(TARGET KrysalisNative POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${BinDirectory}" "${ResonitePath}/rml_mods/Krysalis/bin"
