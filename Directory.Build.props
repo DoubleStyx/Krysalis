@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup Condition="'$(ResonitePath)'==''">
+      <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+      <ResonitePath Condition="'$(ResonitePath)'==''">build\Resonite\</ResonitePath>
+      <CopyToMods Condition="'$(CopyToMods)'==''">true</CopyToMods>
+    </PropertyGroup>
+</Project>

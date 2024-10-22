@@ -437,10 +437,6 @@ FodyWeavers.xsd
 *.app
 ################## End of C++ gitignore template ##################
 
-# External libs and assets
-!external/**
-!assets/**
-
 # Compiled assets
 *.filamesh
 *.filamat

@@ -25,7 +25,3 @@ namespace KrysalisNativeTests
         }
     };
 }
-
-int main() {
-    return 0;
-}

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Common.props" />
+  <Import Project="..\Directory.Build.props" />
   <ItemGroup>
     <PackageReference Include="MSTest.TestAdapter" Version="3.6.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.6.1" />
@@ -20,6 +20,7 @@
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="8.0.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
   <PropertyGroup>
     <RootNamespace>KrysalisManagedTests</RootNamespace>
@@ -33,14 +34,6 @@
     <IsPackable>false</IsPackable>
     <LangVersion>10.0</LangVersion>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="MSTest.TestAdapter" Version="3.6.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.6.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.0" />
-    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>

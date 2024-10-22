@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Common.props" />
+  <Import Project="..\Directory.Build.props" />
 	<PropertyGroup>
 		<RootNamespace>KrysalisManaged</RootNamespace>
 		<AssemblyName>KrysalisManaged</AssemblyName>
 		<TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
+    	<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<Deterministic>true</Deterministic>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
 	</PropertyGroup>	
   <ItemGroup>
     <NativeProjectReference Include="..\KrysalisNative\KrysalisNative.vcxproj" />
