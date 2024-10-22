@@ -25,9 +25,8 @@ def run_command(command, cwd=None):
     try:
         result = subprocess.run(command, cwd=cwd, check=True, text=True, capture_output=True)
         print(result.stdout)
-        print(result.stderr)  # Also print the stderr in case there are any warnings or errors
+        print(result.stderr)
     except subprocess.CalledProcessError as e:
-        # Log both stdout and stderr for debugging
         print(f"Error running command: {' '.join(command)}")
         print("Standard Output:")
         print(e.stdout)
@@ -49,8 +48,16 @@ def build_project(project_name, project_dir, build_dir):
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
 
-        cmake_command = ["cmake", "-S", project_dir, "-B", build_dir, "-G", "Visual Studio 17 2022", "-A", "x64"]
-        build_command = ["cmake", "--build", build_dir, "--config", build_dir + "\Release"]
+        # Specify the output directory to the Release folder under the build directory
+        cmake_command = [
+            "cmake", 
+            "-S", project_dir, 
+            "-B", build_dir, 
+            "-G", "Visual Studio 17 2022", 
+            "-A", "x64", 
+            f"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE={os.path.join(build_dir, 'Release')}"
+        ]
+        build_command = ["cmake", "--build", build_dir, "--config", "Release"]
 
         run_command(cmake_command)
         run_command(build_command)

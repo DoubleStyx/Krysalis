@@ -64,17 +64,21 @@ set(MaterialsDirectory "${CMAKE_SOURCE_DIR}/../assets/materials")
 set(BinDirectory "${CMAKE_SOURCE_DIR}/../assets/bin")
 set(ResonitePath "${CMAKE_BIN_DIR}/Resonite")
 
+# Define output directories for binaries and libraries
+set(BIN_OUTPUT_DIR ${CMAKE_BINARY_DIR}/bin)
+set(LIB_OUTPUT_DIR ${CMAKE_BINARY_DIR}/lib)
+
 # Add include directories for the pre-built libraries
 include_directories(
-    ${FILAMENT_DIR}/include           # Filament's include directory (already adjusted)
-    ${GLFW_DIR}/include       # GLFW's include directory
+    ${FILAMENT_DIR}/include           # Filament's include directory
+    ${GLFW_DIR}/include               # GLFW's include directory
     ${CMAKE_SOURCE_DIR}/../external/include/
 )
 
 # Link libraries for Filament and GLFW
 link_directories(
     ${FILAMENT_DIR}/lib/x86_64/md       # Filament's lib directory
-    ${GLFW_DIR}/lib-vc2022           # GLFW's lib directory
+    ${GLFW_DIR}/lib-vc2022              # GLFW's lib directory
 )
 
 # Specify source files
@@ -93,21 +97,16 @@ set(HEADERS
 
 # Add the library (single instance)
 add_library(KrysalisNative SHARED ${SOURCES} ${HEADERS})
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET KrysalisNative PROPERTY CXX_STANDARD 20)
-endif()
+set_property(TARGET KrysalisNative PROPERTY CXX_STANDARD 20)
 
 # Set target properties for the output
 set_target_properties(KrysalisNative PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-)
-
-set_target_properties(KrysalisNative PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${RUNTIME_OUTPUT_DIRECTORY}/Debug
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${RUNTIME_OUTPUT_DIRECTORY}/Release
-    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIBRARY_OUTPUT_DIRECTORY}/Debug
-    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIBRARY_OUTPUT_DIRECTORY}/Release
+    RUNTIME_OUTPUT_DIRECTORY ${BIN_OUTPUT_DIR}
+    LIBRARY_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BIN_OUTPUT_DIR}/Debug
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_OUTPUT_DIR}/Release
+    LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIB_OUTPUT_DIR}/Debug
+    LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_OUTPUT_DIR}/Release
 )
 
 # Link the libraries (Filament, GLFW, etc.)
@@ -150,7 +149,6 @@ target_link_libraries(KrysalisNative PRIVATE
 )
 
 target_compile_definitions(KrysalisNative PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING)
-
 
 # Define build configurations
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
