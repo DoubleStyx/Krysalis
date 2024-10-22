@@ -12,17 +12,9 @@ namespace KrysalisManagedTests
         [TestMethod]
         public void MyTest()
         {
-            /*
-            KrysalisManaged.KrysalisManaged.openLogFile();
+            bool result = 5 + 3 > 7;
 
-            bool result = KrysalisManaged.KrysalisManaged.runWindow(false); // set to true; TEMPORARY flag
-
-            KrysalisManaged.KrysalisManaged.closeLogFile();
-            */
-
-            bool result = true; // TEMPORARY
-
-            Assert.IsTrue(result, "Add method should return the sum of two integers.");
+            Assert.IsTrue(result);
         }
     }
 }

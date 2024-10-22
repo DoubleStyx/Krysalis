@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
     try:
@@ -19,17 +21,17 @@ def run_command(command, cwd=None):
 def build_project(project_name):
     print(f"Building {project_name}...")
 
-    if os.path.exists(os.path.join(project_name, f"{project_name}.csproj")):
+    if os.path.exists(os.path.join(current_directory, project_name, f"{project_name}.csproj")):
         dotnet_build_command = [
             "dotnet", 
             "build", 
-            os.path.join(project_name, f"{project_name}.csproj"),
+            os.path.join(current_directory, project_name, f"{project_name}.csproj"),
             "--configuration",
             "Release"
         ]
         run_command(dotnet_build_command, cwd=project_name)
-    elif os.path.exists(os.path.join(project_name, "Cargo.toml")):
-        cargo_build_command = ["cargo", "build", "--release"]
+    elif os.path.exists(os.path.join(current_directory, project_name, "Cargo.toml")):
+        cargo_build_command = ["cargo", "build", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
         run_command(cargo_build_command)
     else:
         print(f"Error: Could not determine the build system for {project_name}.")
@@ -39,11 +41,11 @@ def build_project(project_name):
 def run_tests(project_name):
     print(f"Running tests for {project_name}...")
 
-    if os.path.exists(os.path.join(project_name, f"{project_name}.csproj")):
-        dotnet_test_command = ["dotnet", "test", project_name, "--configuration", "Release"]
+    if os.path.exists(os.path.join(current_directory, project_name, f"{project_name}.csproj")):
+        dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name), "--configuration", "Release"]
         run_command(dotnet_test_command, cwd=project_name)
-    elif os.path.exists(os.path.join(project_name, "Cargo.toml")):
-        test_command = ["cargo", "test", "--release"]
+    elif os.path.exists(os.path.join(current_directory, project_name, "Cargo.toml")):
+        test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
         run_command(test_command)
     else:
         print(f"Error: Could not determine how to run tests for {project_name}.")
