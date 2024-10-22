@@ -45,8 +45,8 @@ jobs:
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
 
-          Copy-Item -Path $managedPath -Destination "$artifactDir/KrysalisManaged.dll" -Force
-          Copy-Item -Path $nativePath -Destination "$artifactDir/KrysalisNative.dll" -Force
+          Copy-Item -Path $managedPath -Destination "$artifactDir/Krysalis/KrysalisManaged.dll" -Force
+          Copy-Item -Path $nativePath -Destination "$artifactDir/Krysalis/KrysalisNative.dll" -Force
           Copy-Item -Path $krysalisPath -Destination "$artifactDir/Krysalis.dll" -Force
         shell: pwsh
 
