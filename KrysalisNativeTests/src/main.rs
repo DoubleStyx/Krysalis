@@ -1,9 +1,9 @@
 use KrysalisNative;
 
 fn main() {
-    let result = KrysalisNative::triangle::main();
+    let result = KrysalisNative::triangle::main_ffi();
 
-    println!("Tests passed: {:?}", result.is_ok());
-    assert!(result.is_ok());
+    println!("Tests passed: {:?}", result);
+    assert!(result);
 }
  

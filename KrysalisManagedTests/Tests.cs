@@ -10,9 +10,9 @@ namespace KrysalisManagedTests
     public class KrysalisManagedTests
     {
         [TestMethod]
-        public void MyTest()
+        public void Tests()
         {
-            bool result = 5 + 3 > 7;
+            bool result = KrysalisManaged.main_ffi();
 
             Assert.IsTrue(result);
         }

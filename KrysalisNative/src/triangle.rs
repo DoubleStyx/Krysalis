@@ -18,9 +18,13 @@ struct Vertex {
 }
 
 #[no_mangle]
-pub extern "C" fn main() -> Result<(), Box<dyn Error>> {
+pub extern "C" fn main_ffi() -> bool {
+    return main();
+}
+
+pub fn main() -> bool {
     unsafe {
-        let base = ExampleBase::new(1920, 1080)?;
+        let base = ExampleBase::new(1920, 1080).unwrap();
         let renderpass_attachments = [
             vk::AttachmentDescription {
                 format: base.surface_format.format,
@@ -470,5 +474,5 @@ pub extern "C" fn main() -> Result<(), Box<dyn Error>> {
         base.device.destroy_render_pass(renderpass, None);
     }
 
-    Ok(())
+    return true;
 }
