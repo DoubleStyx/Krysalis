@@ -38,16 +38,16 @@ jobs:
 
       - name: Create artifact directory structure
         run: |
-          $managedPath = "${{ github.workspace }}/KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll"
-          $nativePath = "${{ github.workspace }}/KrysalisNative/target/release/KrysalisNative.dll"
-          $krysalisPath = "${{ github.workspace }}/Krysalis/bin/Release/netstandard2.0/Krysalis.dll"
-          $artifactDir = "${{ github.workspace }}/artifact/Krysalis"
+          $managedPath = "${{ github.workspace }}\KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
+          $nativePath = "${{ github.workspace }}\KrysalisNative\target\release\KrysalisNative.dll"
+          $krysalisPath = "${{ github.workspace }}\Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
+          $artifactDir = "${{ github.workspace }}\artifact\Krysalis"
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
 
-          Copy-Item -Path $managedPath -Destination "$artifactDir/Krysalis/KrysalisManaged.dll" -Force
-          Copy-Item -Path $nativePath -Destination "$artifactDir/Krysalis/KrysalisNative.dll" -Force
-          Copy-Item -Path $krysalisPath -Destination "$artifactDir/Krysalis.dll" -Force
+          Copy-Item -Path $managedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
+          Copy-Item -Path $nativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
+          Copy-Item -Path $krysalisPath -Destination "$artifactDir\Krysalis.dll" -Force
         shell: pwsh
 
       - name: Compress artifact directory into ZIP
