@@ -41,7 +41,7 @@ jobs:
           $krysalisManagedPath = "KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
           $krysalisNativePath = "KrysalisNative\target\release\KrysalisNative.dll"
           $krysalisPath = "Krysalis\bin\Release\netstandard2.0\Krysalis.dll"
-          $artifactDir = "artifact\Krysalis"
+          $artifactDir = "artifact"
 
           New-Item -ItemType Directory -Path "$artifactDir" -Force
           New-Item -ItemType Directory -Path "$artifactDir\Krysalis" -Force
