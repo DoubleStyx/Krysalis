@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build, Test, and Release
@@ -36,7 +40,7 @@ jobs:
       - name: Run Python build and test script
         run: python Krysalis.py
 
-      - name: Create artifact directory structure
+      - name: Create artifact zip
         run: |
           $krysalisManagedPath = "KrysalisManaged\bin\Release\netstandard2.0\KrysalisManaged.dll"
           $krysalisNativePath = "KrysalisNative\target\release\KrysalisNative.dll"
@@ -49,10 +53,7 @@ jobs:
           Copy-Item -Path $krysalisManagedPath -Destination "$artifactDir\Krysalis\KrysalisManaged.dll" -Force
           Copy-Item -Path $krysalisNativePath -Destination "$artifactDir\Krysalis\KrysalisNative.dll" -Force
           Copy-Item -Path $krysalisPath -Destination "$artifactDir\Krysalis.dll" -Force
-        shell: pwsh
 
-      - name: Compress artifact directory into ZIP
-        run: |
           Compress-Archive -Path "artifact\*" -DestinationPath "Krysalis-${{ github.run_number }}.zip"
         shell: pwsh
 
