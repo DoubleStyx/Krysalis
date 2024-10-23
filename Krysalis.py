@@ -2,8 +2,8 @@ import os
 import subprocess
 import sys
 import shutil
-import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import xml.etree.ElementTree as ET
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
@@ -21,57 +21,45 @@ def run_command(command, cwd=None):
         print(f"Standard Error: {e.stderr}")
         sys.exit(1)
 
-def build_solution():
-    # Build the .NET solution
-    dotnet_sln_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
-    run_command(dotnet_sln_command)
+def build_dotnet_project(project_name):
+    dotnet_build_command = ["dotnet", "build", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
+    run_command(dotnet_build_command)
 
-def build_workspace():
-    # Build the Cargo workspace
-    cargo_workspace_command = ["cargo", "build", "--release"]
-    run_command(cargo_workspace_command)
+def build_cargo_project(project_name):
+    cargo_build_command = ["cargo", "build", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
+    run_command(cargo_build_command)
 
-def run_dotnet_tests():
-    # Run .NET tests
-    dotnet_test_command = ["dotnet", "test", "Krysalis.sln", "--configuration", "Release"]
+def run_dotnet_tests(project_name):
+    dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
     run_command(dotnet_test_command)
 
-def run_cargo_tests():
-    # Run Rust tests
-    cargo_test_command = ["cargo", "test", "--release"]
+def run_cargo_tests(project_name):
+    cargo_test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
     run_command(cargo_test_command)
 
-def parallel_build():
-    # Run Rust and .NET builds in parallel
+def parallel_build(projects):
     with ThreadPoolExecutor() as executor:
-        future_to_build = {
-            executor.submit(build_solution): "dotnet",
-            executor.submit(build_workspace): "cargo"
-        }
+        future_to_build = {executor.submit(build_dotnet_project if get_project_type(project) == "dotnet" else build_cargo_project, project): project for project in projects}
         for future in as_completed(future_to_build):
-            build_system = future_to_build[future]
+            project = future_to_build[future]
             try:
                 future.result()
             except Exception as exc:
-                print(f"Build for {build_system} generated an exception: {exc}")
+                print(f"Build for {project} generated an exception: {exc}")
             else:
-                print(f"{build_system.capitalize()} build completed successfully.")
+                print(f"Build for {project} completed successfully.")
 
-def parallel_tests():
-    # Run Rust and .NET tests in parallel
+def parallel_tests(test_projects):
     with ThreadPoolExecutor() as executor:
-        future_to_test = {
-            executor.submit(run_dotnet_tests): "dotnet",
-            executor.submit(run_cargo_tests): "cargo"
-        }
+        future_to_test = {executor.submit(run_dotnet_tests if get_project_type(project) == "dotnet" else run_cargo_tests, project): project for project in test_projects}
         for future in as_completed(future_to_test):
-            test_system = future_to_test[future]
+            project = future_to_test[future]
             try:
                 future.result()
             except Exception as exc:
-                print(f"Tests for {test_system} generated an exception: {exc}")
+                print(f"Tests for {project} generated an exception: {exc}")
             else:
-                print(f"{test_system.capitalize()} tests completed successfully.")
+                print(f"Tests for {project} completed successfully.")
 
 def get_output_path(project_name):
     if get_project_type(project_name) == "dotnet":
@@ -95,25 +83,15 @@ def get_output_path(project_name):
         print(f"Error: Could not determine the output path for {project_name}.")
         sys.exit(1)
 
-def copy_dll(source, destination, absolute_destination_path=False, condition=False):
+def copy_dll(source, destination, absolute_destination_path=False):
     dll_path = os.path.join(get_output_path(source), f"{source}.dll")
-    print(f"Source DLL path: {dll_path}")
-
-    destination_dir = None
-
-    if absolute_destination_path:
-        destination_dir = destination
-    else:
-        destination_dir = get_output_path(destination)
-    print(f"Destination directory: {destination_dir}")
+    destination_dir = destination if absolute_destination_path else get_output_path(destination)
 
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
         print(f"Created directory: {destination_dir}")
 
     target_path = os.path.join(destination_dir, f"{source}.dll")
-    print(f"Target path: {target_path}")
-
     print(f"Copying {dll_path} to {target_path}")
     try:
         shutil.copy2(dll_path, target_path)
@@ -129,33 +107,22 @@ def get_project_type(project_name):
         return "cargo"
     else:
         print(f"Error: Could not determine the project type for {project_name}.")
-        return "unknown"
+        sys.exit(1)
 
 def main():
-    print("Starting build...")
-    parallel_build()
-    print("Building completed.")
+    projects = ["KrysalisManaged", "KrysalisNative", "KrysalisManagedTests", "KrysalisNativeTests", "Krysalis"] 
+    parallel_build(projects)
 
-    print("Copying DLLs...")
-    copy_dll("KrysalisNative", "KrysalisManaged")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
+    copy_dll("KrysalisNative", "KrysalisNativeTests")
+    copy_dll("KrysalisManaged", "KrysalisManagedTests")
     if should_copy_to_resonite:
-        copy_dll("KrysalisNative", mods_path, True, should_copy_to_resonite)
-        copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
-        copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
-    print("DLLs copied.")
-
-    # Run tests in parallel
-    print("Running tests...")
-    #parallel_tests()
-    #run_cargo_tests()
-    #run_dotnet_tests()
-    dotnet_test_command = ["dotnet", "test", "KrysalisManagedTests/KrysalisManagedTests.csproj", "--configuration", "Release"]
-    run_command(dotnet_test_command)
-
-    cargo_test_command = ["cargo", "test", "KrysalisNativeTest/Cargo.toml", "--release"]
-    run_command(cargo_test_command)
-    print("Tests completed.")
+        copy_dll("KrysalisNative", mods_path, True)
+        copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
+        copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
+ 
+    test_projects = ["KrysalisManagedTests", "KrysalisNativeTests"]
+    parallel_tests(test_projects)
 
 if __name__ == "__main__":
     main()
