@@ -128,15 +128,15 @@ def get_project_type(project_dir):
 def main():
     build_repo()
 
-    copy_dll("KrysalisNative", "KrysalisManagedTests")
-    copy_dll("KrysalisNative", "KrysalisNativeTests")
-    copy_dll("KrysalisManaged", "KrysalisManagedTests")
-    if should_copy_to_resonite:
-        copy_dll("KrysalisNative", mods_path, True)
-        copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
-        copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
+    # copy_dll("KrysalisNative", "KrysalisManagedTests")
+    # copy_dll("KrysalisNative", "KrysalisNativeTests")
+    # copy_dll("KrysalisManaged", "KrysalisManagedTests")
+    # if should_copy_to_resonite:
+    #     copy_dll("KrysalisNative", mods_path, True)
+    #     copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
+    #     copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    test_repo()
+    # test_repo()
 
 if __name__ == "__main__":
     main()
