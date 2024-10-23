@@ -23,7 +23,7 @@ use winit::{
     event::{ElementState, Event, KeyEvent, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
     keyboard::{Key, NamedKey},
-    platform::run_on_demand::EventLoopExtRunOnDemand,
+    platform::{run_on_demand::EventLoopExtRunOnDemand, windows::WindowBuilderExtWindows},
     raw_window_handle::{HasDisplayHandle, HasWindowHandle},
     window::WindowBuilder,
 };

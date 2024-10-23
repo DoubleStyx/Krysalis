@@ -1,45 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="xunit.stafact" Version="1.1.11" />
-    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
-    <!-- By default, the project builds as a library for testing -->
-    <IsTestProject>true</IsTestProject>
-    <OutputType>Library</OutputType>
+    <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
   </PropertyGroup>
-
-  <!-- Define a configuration for the helper executable -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Helper'">
-    <OutputType>Exe</OutputType>
-    <IsTestProject>false</IsTestProject>
-    <StartupObject>KrysalisManagedTests.KrysalisManagedTestsHelper</StartupObject> <!-- Define the main entry point -->
-  </PropertyGroup>
-
-  <!-- Separate output directories for the helper executable and the test project -->
-  <PropertyGroup Condition="'$(Configuration)' == 'Helper'">
-    <OutputPath>bin\Helper\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Test'">
-    <OutputPath>bin\Test\</OutputPath>
-  </PropertyGroup>
-
-  <!-- Conditionally include the same KrysalisManagedTests.cs file for both helper and test -->
-  <ItemGroup Condition="'$(Configuration)' == 'Helper'">
-    <Compile Include="KrysalisManagedTests.cs" />
+  <ItemGroup>
+    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(Configuration)' == 'Test'">
-    <Compile Include="KrysalisManagedTests.cs" />
-  </ItemGroup>
-
+  <PropertyGroup Condition="'$(IsWindows)'=='true'">
+    <DefineConstants>Windows</DefineConstants>
+</PropertyGroup>
 </Project>

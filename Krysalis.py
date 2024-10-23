@@ -44,29 +44,6 @@ def build_repo():
             else:
                 print(f"Build for {build_type} completed successfully.")
 
-def test_solution(project_dir):
-    dotnet_test_command = ["dotnet", "test", "--configuration", "Release"]
-    run_command(dotnet_test_command, cwd=project_dir)
-
-def test_workspace(project_dir):
-    cargo_test_command = ["cargo", "test", "--release"]
-    run_command(cargo_test_command, cwd=project_dir)
-
-def test_repo():
-    with ThreadPoolExecutor() as executor:
-        future_to_build = {
-            executor.submit(test_solution): "dotnet",
-            executor.submit(test_workspace): "cargo"
-        }
-        for future in as_completed(future_to_build):
-            build_type = future_to_build[future]
-            try:
-                future.result()
-            except Exception as exc:
-                print(f"Test for {build_type} generated an exception: {exc}")
-            else:
-                print(f"Test for {build_type} completed successfully.")
-
 def get_output_path(project_name):
     project_path = os.path.join(current_directory, project_name)
     project_type = get_project_type(project_path)
@@ -143,6 +120,21 @@ def get_project_type(project_dir):
         return "cargo"
     else:
         return None
+    
+def run_test():
+    krysalis_tests_path = get_output_path("KrysalisManagedTests")
+    
+    exe_path = os.path.join(krysalis_tests_path, "KrysalisManagedTests.exe")
+    
+    print(f"Running {exe_path}...")
+    try:
+        result = subprocess.run([exe_path], check=True, capture_output=True, text=True)
+        print(result.stdout)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running KrysalisManagedTests.exe")
+        print(f"Standard Output: {e.stdout}")
+        print(f"Standard Error: {e.stderr}")
+        sys.exit(1)
 
 def main():
     build_repo()
@@ -154,7 +146,7 @@ def main():
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    test_repo()
-
+    run_test()
+        
 if __name__ == "__main__":
     main()

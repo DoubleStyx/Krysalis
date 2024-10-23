@@ -68,9 +68,10 @@ Once all dependencies are installed and configured, follow these steps to build 
 This script will:
 - Build both the Rust and C# components.
 - Handle necessary DLL copying between project directories.
-- Run unit tests for both native (Rust) and managed (C#) components.
 
 A successful build will output confirmation that all steps were completed successfully.
+
+To run tests, 
 
 ## Planned Features and Architecture
 
