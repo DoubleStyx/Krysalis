@@ -4,6 +4,7 @@ import sys
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import xml.etree.ElementTree as ET
+import platform  # To check the current platform
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
@@ -44,6 +45,19 @@ def build_repo():
             else:
                 print(f"Build for {build_type} completed successfully.")
 
+def get_platform_specific_extension():
+    """ Return the correct library extension for the current platform. """
+    current_platform = platform.system().lower()
+    if current_platform == "windows":
+        return "dll"
+    elif current_platform == "linux":
+        return "so"
+    elif current_platform == "darwin":  # macOS
+        return "dylib"
+    else:
+        print(f"Unsupported platform: {current_platform}")
+        sys.exit(1)
+
 def get_output_path(project_name):
     project_path = os.path.join(current_directory, project_name)
     project_type = get_project_type(project_path)
@@ -78,23 +92,22 @@ def copy_dll(source, destination, absolute_destination_path=False):
     source_output_path = get_output_path(source)
     project_type = get_project_type(os.path.join(current_directory, source))
 
+    # Get platform-specific extension
+    extension = get_platform_specific_extension()
+
+    # Handle DLL naming for different platforms
     if project_type == "cargo":
-        dll_filename = f"{source}.dll"
-        lib_filename = f"lib{source}.dll"
-
-        possible_filenames = [dll_filename, lib_filename]
+        dll_filename = f"lib{source}.{extension}" if extension != "dll" else f"{source}.dll"
     else:
         dll_filename = f"{source}.dll"
-        possible_filenames = [dll_filename]
 
-    for filename in possible_filenames:
-        dll_path = os.path.join(source_output_path, filename)
-        if os.path.exists(dll_path):
-            break
-    else:
-        print(f"Error: DLL for {source} not found in {source_output_path}")
+    # Check if the DLL exists
+    dll_path = os.path.join(source_output_path, dll_filename)
+    if not os.path.exists(dll_path):
+        print(f"Error: {dll_filename} for {source} not found in {source_output_path}")
         sys.exit(1)
 
+    # Determine the destination directory
     if absolute_destination_path:
         destination_dir = destination
     else:
@@ -104,6 +117,7 @@ def copy_dll(source, destination, absolute_destination_path=False):
         os.makedirs(destination_dir)
         print(f"Created directory: {destination_dir}")
 
+    # Copy the DLL/Shared Library to the destination
     target_path = os.path.join(destination_dir, os.path.basename(dll_path))
     print(f"Copying {dll_path} to {target_path}")
     try:
@@ -124,14 +138,15 @@ def get_project_type(project_dir):
 def run_test():
     krysalis_tests_path = get_output_path("KrysalisManagedTests")
     
-    exe_path = os.path.join(krysalis_tests_path, "KrysalisManagedTests.exe")
+    exe_filename = "KrysalisManagedTests.exe" if platform.system().lower() == "windows" else "KrysalisManagedTests"
+    exe_path = os.path.join(krysalis_tests_path, exe_filename)
     
     print(f"Running {exe_path}...")
     try:
         result = subprocess.run([exe_path], check=True, capture_output=True, text=True)
         print(result.stdout)
     except subprocess.CalledProcessError as e:
-        print(f"Error running KrysalisManagedTests.exe")
+        print(f"Error running {exe_filename}")
         print(f"Standard Output: {e.stdout}")
         print(f"Standard Error: {e.stderr}")
         sys.exit(1)
