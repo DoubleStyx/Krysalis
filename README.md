@@ -70,11 +70,86 @@ Once all prerequisites are installed and configured, you can build and test the 
 If all steps succeed, the build and tests will complete successfully, and a message will confirm that the process was successful.
 
 ## Planned Features and Architecture
-* Multithreaded rendering
-* Asynchronous rendering
-* Forward, deferred, and forward+ rendering paths
-* PBR shader system
-* Shader graph system
-* Mesh shader emulation
-* Compute shader support
-* Cross-platform and standalone support
+
+- **Multithreaded Rendering**  
+  Efficient use of modern CPUs by parallelizing rendering tasks across multiple threads to improve performance.
+
+- **Asynchronous Rendering**  
+  Offloading tasks like texture streaming, resource loading, and GPU commands to improve overall rendering performance without stalling the main rendering loop.
+
+- **Forward, Deferred, and Forward+ Rendering Paths**  
+  Supporting multiple rendering pipelines to accommodate different needs, including Forward for simple scenes, Deferred for complex lighting, and Forward+ for optimized light culling.
+
+- **Physically Based Rendering (PBR) Shader System**  
+  High-quality materials and lighting models based on real-world physical properties to achieve photorealistic rendering.
+
+- **Shader Graph System**  
+  A node-based visual shader editor allowing artists and developers to create complex shaders without manually writing code.
+
+- **Mesh Shader Emulation**  
+  Simulating next-gen GPU mesh shading pipelines for higher geometric complexity by replacing traditional vertex and geometry shaders.
+
+- **Compute Shader Support**  
+  Utilizing compute shaders for tasks like particle systems, global illumination, post-processing effects, and more general-purpose GPU (GPGPU) computing.
+
+- **Cross-Platform and Standalone Support**  
+  Ensuring the renderer works across different platforms (Windows, macOS, Linux) and can function standalone from any specific engine dependencies.
+
+- **Ray Tracing Support**  
+  Integrating real-time ray tracing (RT) for global illumination, reflections, and refractions using modern APIs like DXR and Vulkan Ray Tracing.
+
+- **Real-Time Denoising**  
+  Real-time denoising techniques like temporal or spatial denoising to improve ray tracing and overall image quality, reducing noise in reflections and shadows.
+
+- **Variable Rate Shading (VRS)**  
+  Using variable shading rates to dynamically adjust shading complexity based on screen regions, improving performance without sacrificing noticeable visual quality.
+
+- **Temporal Anti-Aliasing (TAA)**  
+  High-quality anti-aliasing method that uses data from multiple frames to smooth out edges and eliminate aliasing artifacts.
+
+- **Screen Space Reflections (SSR)**  
+  Real-time reflections computed by sampling the screen buffer, providing more dynamic and accurate reflections without requiring additional ray tracing.
+
+- **Volumetric Rendering**  
+  Support for rendering volumetric effects like fog, smoke, and clouds with physically accurate scattering and absorption for realistic atmospheres.
+
+- **Global Illumination (GI)**  
+  Techniques like voxel-based or probe-based global illumination to simulate indirect lighting, improving overall scene realism by bouncing light between surfaces.
+
+- **Subsurface Scattering (SSS)**  
+  Rendering materials like skin, wax, and marble with physically accurate light diffusion beneath the surface, simulating organic translucency.
+
+- **Tiled and Clustered Shading**  
+  Advanced light culling techniques that divide the screen into tiles or clusters to optimize lighting computations for scenes with large numbers of dynamic lights.
+
+- **Hybrid Rendering Pipeline (Rasterization + Ray Tracing)**  
+  A hybrid approach combining traditional rasterization for basic geometry and real-time ray tracing for effects like reflections and global illumination.
+
+- **Adaptive Level of Detail (LOD)**  
+  Dynamically adjusting the complexity of models and textures based on distance from the camera to balance performance and quality.
+
+- **Virtual Texturing**  
+  Efficient texture streaming technique that allows extremely high-resolution textures by only loading visible portions into memory, reducing texture memory usage.
+
+- **Decoupled Shading (Shading at a Reduced Rate)**  
+  Separate shading computations from geometric detail, allowing more efficient shading without impacting the geometric detail of the scene.
+
+- **Post-Processing Effects**  
+  Support for advanced effects like bloom, depth of field, lens flares, motion blur, and chromatic aberration to enhance visual quality.
+
+- **Dynamic Resolution Scaling (DRS)**  
+  Dynamically adjusting the rendering resolution based on performance metrics, allowing for smoother frame rates without sacrificing too much visual fidelity.
+
+- **AI-Assisted Upscaling (DLSS/XeSS/FSR)**  
+  Integration with AI-based upscaling technologies (like NVIDIA DLSS, Intel XeSS, or AMD FSR) to render at lower resolutions while upscaling the final output to a higher resolution, maintaining performance and image quality.
+
+- **Procedural Generation Support**  
+  Compute-based generation of textures, landscapes, and models procedurally at runtime, enabling more dynamic and scalable content creation.
+
+- **Virtual Reality (VR) Optimizations**  
+  Specific optimizations for VR rendering like foveated rendering, stereo rendering paths, and low-latency frame reprojection to meet the demands of immersive experiences.
+
+- **GPU-Driven Rendering**  
+  Offloading rendering pipeline control to the GPU for better scalability and performance, especially on modern hardware with complex scenes.
+
+These features collectively ensure the Krysalis project will be at the cutting edge of modern rendering techniques, supporting high-performance real-time graphics across multiple platforms.
