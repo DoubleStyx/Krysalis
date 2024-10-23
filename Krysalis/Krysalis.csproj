@@ -1,35 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>Krysalis</RootNamespace>
-		<AssemblyName>Krysalis</AssemblyName>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>10.0</LangVersion>
-		<Nullable>enable</Nullable>
-		<Deterministic>true</Deterministic>
 	</PropertyGroup>	
 	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
 			<HintPath Condition="!Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">..\external\bin\ResoniteModLoader.dll</HintPath>
-			<Private>False</Private>
 		</Reference>		
 		<Reference Include="HarmonyLib">
 			<HintPath Condition="Exists('$(ResonitePath)rml_libs\0Harmony.dll')">$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
 			<HintPath Condition="!Exists('$(ResonitePath)rml_libs\0Harmony.dll')">..\external\bin\0Harmony.dll</HintPath>
-			<Private>False</Private>
 		</Reference>		
 		<Reference Include="FrooxEngine">
 			<HintPath Condition="Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<HintPath Condition="!Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">..\external\bin\FrooxEngine.dll</HintPath>
-			<Private>False</Private>
 		</Reference>
-	</ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+		<ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
-		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods" ContinueOnError="true" />
-	</Target>
 </Project>

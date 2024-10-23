@@ -15,6 +15,7 @@ concurrency:
 jobs:
   build:
     name: Build, Test, and Release
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository

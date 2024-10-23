@@ -1,16 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>KrysalisManaged</RootNamespace>
-		<AssemblyName>KrysalisManaged</AssemblyName>
 		<TargetFramework>netstandard2.0</TargetFramework>
-    	<LangVersion>10.0</LangVersion>
-		<Nullable>enable</Nullable>
-		<Deterministic>true</Deterministic>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>	
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(CopyToMods)'=='true'">
-		<Message Text="Attempting to copy $(TargetFileName) to $(ResonitePath)rml_mods" Importance="high" />
-		<Copy SourceFiles="$(TargetDir)$(TargetFileName)" DestinationFolder="$(ResonitePath)rml_mods\Krysalis" ContinueOnError="true" />
-	</Target>
+		<LangVersion>10.0</LangVersion>
+	</PropertyGroup>
 </Project>

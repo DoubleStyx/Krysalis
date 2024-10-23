@@ -1,5 +1,3 @@
-// Krysalis.cs
-// patches and initialization
 using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
