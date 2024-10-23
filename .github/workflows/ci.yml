@@ -77,7 +77,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir -p artifact/Krysalis
-          cp KrysalisManaged/bin/Release/netstandard2.0/libKrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
+          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
 
