@@ -17,7 +17,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest] #, macos-latest]
+        os: [windows-latest, ubuntu-latest] # Add macOS if necessary
 
     runs-on: ${{ matrix.os }}
 
@@ -56,7 +56,6 @@ jobs:
       #       vulkan-sdk-
 
       - name: Setup Vulkan SDK
-        if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
         uses: NcStudios/VulkanCI@v1.0
         with:
           sdkVersion: 1.3.283.0
@@ -73,16 +72,38 @@ jobs:
           cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
 
-      - name: Prepare artifact structure (Linux/macOS)
-        if: matrix.os != 'windows-latest'
+      - name: Prepare artifact structure (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
 
-      - name: Upload .NET and Rust artifacts
-        uses: actions/upload-artifact@v3
+      - name: Tag the commit
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git tag v1.0.${{ github.run_number }}
+          git push origin v1.0.${{ github.run_number }}
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Krysalis
-          path: artifact/*
+          tag_name: v1.0.${{ github.run_number }}
+          release_name: Release v1.0.${{ github.run_number }}
+          draft: false
+          prerelease: false
+          body: |
+            This release includes the following builds:
+            - Windows and Linux builds of KrysalisManaged and KrysalisNative.
+
+      - name: Upload release artifacts
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifact/*
+          asset_name: KrysalisAssets
+          asset_content_type: application/zip
