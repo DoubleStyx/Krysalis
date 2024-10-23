@@ -9,6 +9,17 @@ namespace KrysalisManaged;
 
 public class KrysalisManaged
 {
-    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+        private const string LibraryName =
+#if WINDOWS
+            "KrysalisNative.dll";
+#elif LINUX
+            "libKrysalisNative.so";
+#elif OSX
+            "libKrysalisNative.dylib";
+#else
+            "KrysalisNative";
+#endif
+
+    [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
     public static extern bool main_ffi();
 }
