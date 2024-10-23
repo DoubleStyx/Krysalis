@@ -42,11 +42,12 @@ def build_repo():
                 future.result()
             except Exception as exc:
                 print(f"Build for {build_type} generated an exception: {exc}")
+                sys.exit(1)
             else:
                 print(f"Build for {build_type} completed successfully.")
 
 def get_platform_specific_extension():
-    """ Return the correct library extension for the current platform. """
+    """Return the correct library extension for the current platform."""
     current_platform = platform.system().lower()
     if current_platform == "windows":
         return "dll"
@@ -92,11 +93,22 @@ def copy_dll(source, destination, absolute_destination_path=False):
     source_output_path = get_output_path(source)
     project_type = get_project_type(os.path.join(current_directory, source))
 
+    current_platform = platform.system().lower()
     extension = get_platform_specific_extension()
 
     if project_type == "cargo":
-        dll_filename = f"lib{source}.{extension}" if extension != "dll" else f"{source}.dll"
+        # For cargo projects
+        if current_platform == "windows":
+            dll_filename = f"{source}.dll"
+        elif current_platform == "linux":
+            dll_filename = f"lib{source}.so"
+        elif current_platform == "darwin":
+            dll_filename = f"lib{source}.dylib"
+        else:
+            print(f"Unsupported platform for cargo project: {current_platform}")
+            sys.exit(1)
     else:
+        # For dotnet projects, always use "{source}.dll" regardless of platform
         dll_filename = f"{source}.dll"
 
     dll_path = os.path.join(source_output_path, dll_filename)
@@ -129,7 +141,7 @@ def get_project_type(project_dir):
         return "cargo"
     else:
         return None
-    
+
 def main():
     build_repo()
 
@@ -139,6 +151,6 @@ def main():
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
-        
+
 if __name__ == "__main__":
     main()

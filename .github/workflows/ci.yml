@@ -77,9 +77,9 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           mkdir -p artifact/Krysalis
-          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.so artifact/Krysalis/KrysalisManaged.so
+          cp KrysalisManaged/bin/Release/netstandard2.0/libKrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
-          cp Krysalis/bin/Release/netstandard2.0/libKrysalis.so artifact/libKrysalis.so
+          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
 
       - name: Upload .NET and Rust artifacts
         uses: actions/upload-artifact@v3
