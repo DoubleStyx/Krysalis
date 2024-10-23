@@ -22,30 +22,40 @@ def run_command(command, cwd=None):
         sys.exit(1)
 
 def build_solution():
-    # Build the .NET solution (parallelized by the solution itself)
     dotnet_build_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
     run_command(dotnet_build_command)
 
 def build_workspace():
-    # Build the Cargo workspace (parallelized by the workspace itself)
     cargo_workspace_command = ["cargo", "build", "--release"]
     run_command(cargo_workspace_command)
 
-def run_dotnet_tests_in_subprocess(project_name):
-    # Run .NET tests in a separate subprocess
+def build_repo():
+    with ThreadPoolExecutor() as executor:
+        future_to_build = {
+            executor.submit(build_solution): "dotnet",
+            executor.submit(build_workspace): "cargo"
+        }
+        for future in as_completed(future_to_build):
+            build_type = future_to_build[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"Build for {build_type} generated an exception: {exc}")
+            else:
+                print(f"Build for {build_type} completed successfully.")
+
+def run_dotnet_test(project_name):
     dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
     run_command(dotnet_test_command)
 
-def run_cargo_tests_in_subprocess(project_name):
-    # Run Rust tests in a separate subprocess
+def run_cargo_test(project_name):
     cargo_test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
     run_command(cargo_test_command)
 
-def run_tests_in_subprocess(test_projects):
-    # Run tests for each project in separate subprocesses
+def test_repo(test_projects):
     with ThreadPoolExecutor() as executor:
         future_to_test = {
-            executor.submit(run_dotnet_tests_in_subprocess if get_project_type(project) == "dotnet" else run_cargo_tests_in_subprocess, project): project for project in test_projects
+            executor.submit(run_dotnet_test if get_project_type(project) == "dotnet" else run_cargo_test, project): project for project in test_projects
         }
         for future in as_completed(future_to_test):
             project = future_to_test[future]
@@ -105,15 +115,8 @@ def get_project_type(project_name):
         sys.exit(1)
 
 def main():
-    print("Starting builds using workspace files...")
+    build_repo()
 
-    # Use workspace files to parallelize the builds
-    build_solution()  # .NET builds
-    build_workspace()  # Rust builds
-
-    print("Builds completed.")
-
-    print("Copying DLLs...")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
     copy_dll("KrysalisNative", "KrysalisNativeTests")
     copy_dll("KrysalisManaged", "KrysalisManagedTests")
@@ -122,11 +125,8 @@ def main():
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    # Run tests for each project in separate subprocesses
     test_projects = ["KrysalisManagedTests", "KrysalisNativeTests"]
-    run_tests_in_subprocess(test_projects)
-
-    print("Tests completed.")
+    test_repo(test_projects)
 
 if __name__ == "__main__":
     main()
