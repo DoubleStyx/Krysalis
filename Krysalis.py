@@ -22,7 +22,7 @@ def run_command(command, cwd=None):
         sys.exit(1)
 
 def build_solution():
-    dotnet_build_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
+    dotnet_build_command = ["dotnet", "build", "--configuration", "Release"]
     run_command(dotnet_build_command)
 
 def build_workspace():
@@ -44,36 +44,28 @@ def build_repo():
             else:
                 print(f"Build for {build_type} completed successfully.")
 
-def run_dotnet_test(project_dir):
+def test_solution(project_dir):
     dotnet_test_command = ["dotnet", "test", "--configuration", "Release"]
     run_command(dotnet_test_command, cwd=project_dir)
 
-def run_cargo_test(project_dir):
+def test_workspace(project_dir):
     cargo_test_command = ["cargo", "test", "--release"]
     run_command(cargo_test_command, cwd=project_dir)
 
 def test_repo():
-    project_dirs = find_projects()
     with ThreadPoolExecutor() as executor:
-        future_to_test = {
-            executor.submit(run_dotnet_test if get_project_type(project_dir) == "dotnet" else run_cargo_test, project_dir): project_dir for project_dir in project_dirs
+        future_to_build = {
+            executor.submit(test_solution): "dotnet",
+            executor.submit(test_workspace): "cargo"
         }
-        for future in as_completed(future_to_test):
-            project_dir = future_to_test[future]
+        for future in as_completed(future_to_build):
+            build_type = future_to_build[future]
             try:
                 future.result()
             except Exception as exc:
-                print(f"Tests for {project_dir} generated an exception: {exc}")
+                print(f"Test for {build_type} generated an exception: {exc}")
             else:
-                print(f"Tests for {project_dir} completed successfully.")
-
-def find_projects():
-    project_dirs = []
-    for entry in os.listdir(current_directory):
-        project_dir = os.path.join(current_directory, entry)
-        if os.path.isdir(project_dir) and (os.path.exists(os.path.join(project_dir, 'Cargo.toml')) or os.path.exists(os.path.join(project_dir, f"{entry}.csproj"))):
-            project_dirs.append(entry)
-    return project_dirs
+                print(f"Test for {build_type} completed successfully.")
 
 def get_output_path(project_name):
     project_path = os.path.join(current_directory, project_name)
@@ -84,12 +76,8 @@ def get_output_path(project_name):
         tree = ET.parse(csproj_path)
         root = tree.getroot()
 
-        # Namespace handling for XML parsing
-        namespace = {'msbuild': 'http://schemas.microsoft.com/developer/msbuild/2003'}
-        ET.register_namespace('', 'http://schemas.microsoft.com/developer/msbuild/2003')
-
         target_framework = None
-        for element in root.findall(".//msbuild:TargetFramework", namespace):
+        for element in root.findall(".//TargetFramework"):
             target_framework = element.text
             break
 
@@ -99,7 +87,6 @@ def get_output_path(project_name):
             print(f"Error: Could not determine the target framework for {project_name}.")
             return os.path.join(project_path, "bin", "Release")
     elif project_type == "cargo":
-        # In a workspace, Cargo builds to the root 'target' directory
         root_target_dir = os.path.join(current_directory, "target", "release")
         if os.path.exists(root_target_dir):
             return root_target_dir
@@ -115,23 +102,14 @@ def copy_dll(source, destination, absolute_destination_path=False):
     project_type = get_project_type(os.path.join(current_directory, source))
 
     if project_type == "cargo":
-        # Handle Rust DLL naming conventions
-        if os.name == 'nt':
-            # Windows
-            dll_filename = f"{source}.dll"
-            lib_filename = f"lib{source}.dll"
-        else:
-            # Unix-like systems
-            dll_filename = f"lib{source}.so"
-            lib_filename = dll_filename  # On Unix, it's typically 'lib<name>.so'
+        dll_filename = f"{source}.dll"
+        lib_filename = f"lib{source}.dll"
 
         possible_filenames = [dll_filename, lib_filename]
     else:
-        # .NET projects
         dll_filename = f"{source}.dll"
         possible_filenames = [dll_filename]
 
-    # Find the correct DLL file
     for filename in possible_filenames:
         dll_path = os.path.join(source_output_path, filename)
         if os.path.exists(dll_path):
@@ -140,7 +118,6 @@ def copy_dll(source, destination, absolute_destination_path=False):
         print(f"Error: DLL for {source} not found in {source_output_path}")
         sys.exit(1)
 
-    # Determine destination directory
     if absolute_destination_path:
         destination_dir = destination
     else:
@@ -170,16 +147,13 @@ def get_project_type(project_dir):
 def main():
     build_repo()
 
-    # Uncomment the copy_dll calls as needed
     copy_dll("KrysalisNative", "KrysalisManagedTests")
-    copy_dll("KrysalisNative", "KrysalisNativeTests")
     copy_dll("KrysalisManaged", "KrysalisManagedTests")
     if should_copy_to_resonite:
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    # Uncomment if you want to run tests after building and copying
     test_repo()
 
 if __name__ == "__main__":

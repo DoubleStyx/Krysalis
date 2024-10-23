@@ -5,8 +5,3 @@ edition = "2021"
 
 [dependencies]
 KrysalisNative = { path = "../KrysalisNative" }
-
-[[test]]
-name = "KrysalisNativeTests"
-path = "src/main.rs"
-harness = false
