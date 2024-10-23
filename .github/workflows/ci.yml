@@ -36,7 +36,6 @@ jobs:
         uses: NcStudios/VulkanCI@v1.0
         with:
           sdkVersion: 1.3.283.0
-          installPath: ${{ github.workspace }}/VulkanSDK
 
       - name: Run Python build and test script
         run: python -u Krysalis.py
