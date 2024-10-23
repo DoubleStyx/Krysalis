@@ -6,7 +6,6 @@
 		<LangVersion>10.0</LangVersion>
 		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
 		<RuntimeIdentifiers>linux-x64;osx-x64</RuntimeIdentifiers>
-		<PublishAot>true</PublishAot>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(IsWindows)'=='true'">
     	<DefineConstants>Windows</DefineConstants>
