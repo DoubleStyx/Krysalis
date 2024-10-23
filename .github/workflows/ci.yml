@@ -15,7 +15,11 @@ concurrency:
 jobs:
   build:
     name: Build, Test, and Release
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
@@ -32,6 +36,7 @@ jobs:
             cargo-${{ runner.os }}-
 
       - name: Cache .NET dependencies and intermediate files
+        if: runner.os == 'windows-latest' || runner.os == 'ubuntu-latest'
         uses: actions/cache@v3
         with:
           path: |
@@ -57,15 +62,25 @@ jobs:
           sdkVersion: 1.3.283.0
 
       - name: Run Python build and test script
-        run: python -u Krysalis.py
+        run: python3 -u Krysalis.py
+        shell: bash
 
-      - name: Prepare artifact structure
+      - name: Prepare artifact structure (Windows)
+        if: matrix.os == 'windows-latest'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp KrysalisNative/target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
-      
+
+      - name: Prepare artifact structure (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p artifact/Krysalis
+          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.so artifact/Krysalis/KrysalisManaged.so
+          cp KrysalisNative/target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
+          cp Krysalis/bin/Release/netstandard2.0/libKrysalis.so artifact/libKrysalis.so
+
       - name: Upload .NET and Rust artifacts
         uses: actions/upload-artifact@v3
         with:
