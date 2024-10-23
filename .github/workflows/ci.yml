@@ -72,8 +72,8 @@ jobs:
           cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
-          Compress-Archive -Path @("Krysalis.dll", "Krysalis\*") -DestinationPath "../Krysalis-Windows-v${{ github.run_number }}.zip"
-        shell: pwsh      
+          Compress-Archive -Path @("Krysalis.dll", "Krysalis/KrysalisNative.dll", "Krysalis/KrysalisManaged.dll") -DestinationPath "../Krysalis-Windows-v${{ github.run_number }}.zip"
+        shell: pwsh       
 
       - name: Prepare artifact structure (Linux)
         if: matrix.os == 'ubuntu-latest'
