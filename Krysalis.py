@@ -53,7 +53,7 @@ def run_cargo_test(project_dir):
     run_command(cargo_test_command, cwd=project_dir)
 
 def test_repo():
-    project_dirs = find_projects()  # Automatically detect all projects
+    project_dirs = find_projects()
     with ThreadPoolExecutor() as executor:
         future_to_test = {
             executor.submit(run_dotnet_test if get_project_type(project_dir) == "dotnet" else run_cargo_test, project_dir): project_dir for project_dir in project_dirs
@@ -76,8 +76,10 @@ def find_projects():
     return project_dirs
 
 def get_output_path(project_name):
-    if get_project_type(project_name) == "dotnet":
-        csproj_path = os.path.join(current_directory, project_name, f"{project_name}.csproj")
+    project_path = os.path.join(current_directory, project_name)
+
+    if get_project_type(project_path) == "dotnet":
+        csproj_path = os.path.join(project_path, f"{project_name}.csproj")
         tree = ET.parse(csproj_path)
         root = tree.getroot()
 
@@ -87,18 +89,19 @@ def get_output_path(project_name):
             break
 
         if target_framework:
-            return os.path.join(current_directory, project_name, "bin", "Release", target_framework)
+            return os.path.join(project_path, "bin", "Release", target_framework)
         else:
             print(f"Error: Could not determine the target framework for {project_name}.")
-            return os.path.join(current_directory, project_name, "bin", "Release")
-    elif get_project_type(project_name) == "cargo":
-        return os.path.join(current_directory, project_name, "target", "release")
+            return os.path.join(project_path, "bin", "Release")
+    elif get_project_type(project_path) == "cargo":
+        return os.path.join(project_path, "target", "release")
     else:
         print(f"Error: Could not determine the output path for {project_name}.")
         sys.exit(1)
 
 def copy_dll(source, destination, absolute_destination_path=False):
     dll_path = os.path.join(get_output_path(source), f"{source}.dll")
+
     destination_dir = destination if absolute_destination_path else get_output_path(destination)
 
     if not os.path.exists(destination_dir):
@@ -133,7 +136,7 @@ def main():
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    test_repo()  # Automatically find and run tests for all project directories
+    test_repo()
 
 if __name__ == "__main__":
     main()
