@@ -17,7 +17,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest] # Add macOS if necessary
+        os: [windows-latest, ubuntu-latest] # Add macOS later
 
     runs-on: ${{ matrix.os }}
 
@@ -87,6 +87,7 @@ jobs:
           git push origin v1.0.${{ github.run_number }}
 
       - name: Create GitHub Release
+        id: create_release
         if: github.ref == 'refs/heads/main'
         uses: actions/create-release@v1
         env:
@@ -107,3 +108,4 @@ jobs:
           asset_path: artifact/*
           asset_name: KrysalisAssets
           asset_content_type: application/zip
+          
