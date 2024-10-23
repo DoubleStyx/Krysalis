@@ -430,4 +430,5 @@ Cargo.lock
 build/
 
 # Keep external dlls
-!extern/
+!external/
+!assets/
