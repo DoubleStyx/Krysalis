@@ -27,6 +27,7 @@ use winit::{
     raw_window_handle::{HasDisplayHandle, HasWindowHandle},
     window::WindowBuilder,
 };
+use nalgebra;
 
 // Simple offset_of macro akin to C++ offsetof
 #[macro_export]
