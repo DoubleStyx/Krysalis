@@ -80,7 +80,7 @@ jobs:
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
-          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
+          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           zip -r "Krysalis-Linux-v${{ github.run_number }}.zip" artifact/*
         shell: bash
 
@@ -119,35 +119,15 @@ jobs:
           path: artifacts/linux
 
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
+          files: |
+            artifacts/windows/Krysalis-Windows-v${{ github.run_number }}.zip
+            artifacts/linux/Krysalis-Linux-v${{ github.run_number }}.zip
           tag_name: v1.0.${{ github.run_number }}
-          release_name: Release v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
           draft: false
           prerelease: true
-          body: |
-            This release includes the following builds:
-            - Windows and Linux builds of KrysalisManaged and KrysalisNative.
-
-      - name: Upload Windows release asset
-        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/windows/Krysalis-Windows-v${{ github.run_number }}.zip
-          asset_name: Krysalis-Windows-v${{ github.run_number }}.zip
-          asset_content_type: application/zip
-
-      - name: Upload Linux release asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/linux/Krysalis-Linux-v${{ github.run_number }}.zip
-          asset_name: Krysalis-Linux-v${{ github.run_number }}.zip
-          asset_content_type: application/zip
+      
