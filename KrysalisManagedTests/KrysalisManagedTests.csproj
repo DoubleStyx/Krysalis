@@ -5,14 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
 		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-		<IsMacos Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Macos)))' == 'true'">true</IsMacos>
+		<IsOsx Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOsx>
 		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(IsWindows)'=='true'">
     	<DefineConstants>Windows</DefineConstants> 
 	</PropertyGroup>
-		<PropertyGroup Condition="'$(IsMacos)'=='true'">
-    	<DefineConstants>Macos</DefineConstants> 
+		<PropertyGroup Condition="'$(IsOsx)'=='true'">
+    	<DefineConstants>Osx</DefineConstants> 
 	</PropertyGroup>
 		<PropertyGroup Condition="'$(IsLinux)'=='true'">
     	<DefineConstants>Linux</DefineConstants> 
