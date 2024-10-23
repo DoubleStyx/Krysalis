@@ -1,7 +1,3 @@
-Here's the refined `README.md` for your project with enhanced clarity, formatting, and added details:
-
----
-
 # Krysalis
 
 Krysalis is a high-performance VR renderer for [Resonite](https://resonite.com/), built as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod. It replaces the default Unity renderer in Resonite, adding support for modern rendering techniques tailored for VR applications. Krysalis is also a key prerequisite for a butterfly.
