@@ -127,10 +127,15 @@ jobs:
             This release includes the following builds:
             - Windows and Linux builds of KrysalisManaged and KrysalisNative.
 
+      - name: Create release assets archive
+        run: |
+          zip -r KrysalisAssets-${{ github.run_number }}.zip artifacts/
+
       - name: Upload release artifacts
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/**/*
+          asset_path: KrysalisAssets-${{ github.run_number }}.zip
           asset_name: KrysalisAssets-${{ github.run_number }}.zip
           asset_content_type: application/zip
+  

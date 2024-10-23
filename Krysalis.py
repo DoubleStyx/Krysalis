@@ -152,5 +152,7 @@ def main():
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
+    # add unit tests here
+
 if __name__ == "__main__":
     main()
