@@ -44,27 +44,36 @@ def build_repo():
             else:
                 print(f"Build for {build_type} completed successfully.")
 
-def run_dotnet_test(project_name):
-    dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
-    run_command(dotnet_test_command)
+def run_dotnet_test(project_dir):
+    dotnet_test_command = ["dotnet", "test", "--configuration", "Release"]
+    run_command(dotnet_test_command, cwd=project_dir)
 
-def run_cargo_test(project_name):
-    cargo_test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
-    run_command(cargo_test_command)
+def run_cargo_test(project_dir):
+    cargo_test_command = ["cargo", "test", "--release"]
+    run_command(cargo_test_command, cwd=project_dir)
 
-def test_repo(test_projects):
+def test_repo():
+    project_dirs = find_projects()  # Automatically detect all projects
     with ThreadPoolExecutor() as executor:
         future_to_test = {
-            executor.submit(run_dotnet_test if get_project_type(project) == "dotnet" else run_cargo_test, project): project for project in test_projects
+            executor.submit(run_dotnet_test if get_project_type(project_dir) == "dotnet" else run_cargo_test, project_dir): project_dir for project_dir in project_dirs
         }
         for future in as_completed(future_to_test):
-            project = future_to_test[future]
+            project_dir = future_to_test[future]
             try:
                 future.result()
             except Exception as exc:
-                print(f"Tests for {project} generated an exception: {exc}")
+                print(f"Tests for {project_dir} generated an exception: {exc}")
             else:
-                print(f"Tests for {project} completed successfully.")
+                print(f"Tests for {project_dir} completed successfully.")
+
+def find_projects():
+    project_dirs = []
+    for entry in os.listdir(current_directory):
+        project_dir = os.path.join(current_directory, entry)
+        if os.path.isdir(project_dir) and (os.path.exists(os.path.join(project_dir, 'Cargo.toml')) or os.path.exists(os.path.join(project_dir, f"{entry}.csproj"))):
+            project_dirs.append(entry)
+    return project_dirs
 
 def get_output_path(project_name):
     if get_project_type(project_name) == "dotnet":
@@ -105,14 +114,13 @@ def copy_dll(source, destination, absolute_destination_path=False):
         print(f"Error copying DLL: {e}")
         sys.exit(1)
 
-def get_project_type(project_name):
-    if os.path.exists(os.path.join(current_directory, project_name, f"{project_name}.csproj")):
+def get_project_type(project_dir):
+    if os.path.exists(os.path.join(project_dir, f"{os.path.basename(project_dir)}.csproj")):
         return "dotnet"
-    elif os.path.exists(os.path.join(current_directory, project_name, "Cargo.toml")):
+    elif os.path.exists(os.path.join(project_dir, "Cargo.toml")):
         return "cargo"
     else:
-        print(f"Error: Could not determine the project type for {project_name}.")
-        sys.exit(1)
+        return None
 
 def main():
     build_repo()
@@ -125,8 +133,7 @@ def main():
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    test_projects = ["KrysalisManagedTests", "KrysalisNativeTests"]
-    test_repo(test_projects)
+    test_repo()  # Automatically find and run tests for all project directories
 
 if __name__ == "__main__":
     main()
