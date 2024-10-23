@@ -5,7 +5,7 @@ import shutil
 import xml.etree.ElementTree as ET
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
-mods_path = os.getenv("C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/")
+mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
 should_copy_to_resonite = True
 
 def run_command(command, cwd=None):
