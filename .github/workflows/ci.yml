@@ -26,7 +26,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/VulkanSDK
-          key: vulkan-sdk-${{ runner.os }}-1.3.296.0-cache
+          key: vulkan-sdk-${{ runner.os }}-1.3.283.0-cache
           restore-keys: |
             vulkan-sdk-${{ runner.os }}-
 
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Vulkan
         uses: NcStudios/VulkanCI@v1.0
         with:
-          sdkVersion: 1.3.296.0
+          sdkVersion: 1.3.283.0
 
       - name: Run Python build and test script
         run: python -u Krysalis.py
