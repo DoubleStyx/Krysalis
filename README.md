@@ -194,18 +194,6 @@ Once all dependencies are installed and configured, follow these steps to build 
 
    A successful test run will output confirmation that all steps were completed successfully.
 
-### Additional Notes
-
-- **Environment Variables**:
-
-  - Ensure that any environment variables required by the graphics SDKs are correctly set.
-  - On Windows, you may need to restart your command prompt or IDE after setting environment variables.
-
-- **Platform-Specific Considerations**:
-
-  - On **macOS**, remember that Vulkan functions are implemented via MoltenVK on top of Metal.
-  - On **Linux**, make sure your GPU drivers support Vulkan.
-
 ## Planned Features and Architecture
 
 The Krysalis renderer will feature a growing list of advanced rendering techniques as the project matures:

@@ -12,7 +12,9 @@ public class KrysalisManaged
         private const string LibraryName =
 #if Windows
             "KrysalisNative.dll";
-#else
+#elif Macos
+            "libKrysalisNative.dylib";
+#elif Linux
             "libKrysalisNative.so";
 #endif
 

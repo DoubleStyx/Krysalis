@@ -5,7 +5,7 @@ use std::error::Error;
 use std::ffi;
 use std::io::Cursor;
 use std::mem::{self};
-use std::mem::{align_of, size_of, size_of_val}; // TODO: Remove when bumping MSRV to 1.80
+use std::mem::{align_of, size_of, size_of_val};
 use std::os::raw::c_void;
 
 use ash::util::*;
@@ -594,7 +594,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                 location: 0,
                 binding: 0,
                 format: vk::Format::R32G32B32A32_SFLOAT,
-                offset: offset_of!(Vertex, pos) as u32, // TODO
+                offset: offset_of!(Vertex, pos) as u32,
             },
             vk::VertexInputAttributeDescription {
                 location: 1,
@@ -770,8 +770,6 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                         0,
                         1,
                     );
-                    // Or draw without the index buffer
-                    // device.cmd_draw(draw_command_buffer, 3, 1, 0, 0);
                     device.cmd_end_render_pass(draw_command_buffer);
                 },
             );
@@ -788,7 +786,6 @@ pub fn main() -> Result<(), Box<dyn Error>> {
                 .unwrap();
 
 
-            // Break out of the loop when frame count exceeds 100
             if frame_count > 100 {
                 return None;
             }

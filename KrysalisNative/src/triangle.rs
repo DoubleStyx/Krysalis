@@ -4,7 +4,7 @@ use std::default::Default;
 use std::ffi;
 use std::io::Cursor;
 use std::mem;
-use std::mem::{align_of, size_of, size_of_val}; // TODO: Remove when bumping MSRV to 1.80
+use std::mem::{align_of, size_of, size_of_val};
 
 use ash::util::*;
 use ash::vk;
@@ -451,7 +451,6 @@ pub fn main() -> bool {
 
             print!("Triangle test frame count: {}", frame_count);
         
-            // Break out of the loop when frame count exceeds 100
             if frame_count > 100 {
                 return None;
             }

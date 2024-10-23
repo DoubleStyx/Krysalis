@@ -97,7 +97,6 @@ def copy_dll(source, destination, absolute_destination_path=False):
     extension = get_platform_specific_extension()
 
     if project_type == "cargo":
-        # For cargo projects
         if current_platform == "windows":
             dll_filename = f"{source}.dll"
         elif current_platform == "linux":
@@ -108,7 +107,6 @@ def copy_dll(source, destination, absolute_destination_path=False):
             print(f"Unsupported platform for cargo project: {current_platform}")
             sys.exit(1)
     else:
-        # For dotnet projects, always use "{source}.dll" regardless of platform
         dll_filename = f"{source}.dll"
 
     dll_path = os.path.join(source_output_path, dll_filename)
@@ -151,8 +149,6 @@ def main():
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
-
-    # add unit tests here
 
 if __name__ == "__main__":
     main()

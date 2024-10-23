@@ -5,9 +5,16 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>10.0</LangVersion>
 		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-		<RuntimeIdentifiers>linux-x64;osx-x64</RuntimeIdentifiers>
+		<IsMacos Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Macos)))' == 'true'">true</IsMacos>
+		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(IsWindows)'=='true'">
-    	<DefineConstants>Windows</DefineConstants>
+    	<DefineConstants>Windows</DefineConstants> 
+	</PropertyGroup>
+		<PropertyGroup Condition="'$(IsMacos)'=='true'">
+    	<DefineConstants>Macos</DefineConstants> 
+	</PropertyGroup>
+		<PropertyGroup Condition="'$(IsLinux)'=='true'">
+    	<DefineConstants>Linux</DefineConstants> 
 	</PropertyGroup>
 </Project>

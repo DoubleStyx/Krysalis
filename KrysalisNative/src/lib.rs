@@ -59,7 +59,6 @@ static VERTICES: LazyLock<Vec<Vertex>> = LazyLock::new(|| {
     ]
 });
 
-// Simple offset_of macro akin to C++ offsetof
 #[macro_export]
 macro_rules! offset_of {
     ($base:path, $field:ident) => {{
@@ -70,9 +69,7 @@ macro_rules! offset_of {
         }
     }};
 }
-/// Helper function for submitting command buffers. Immediately waits for the fence before the command buffer
-/// is executed. That way we can delay the waiting for the fences by 1 frame which is good for performance.
-/// Make sure to create the fence in a signaled state on the first use.
+
 #[allow(clippy::too_many_arguments)]
 pub fn record_submit_commandbuffer<F: FnOnce(&Device, vk::CommandBuffer)>(
     device: &Device,
@@ -229,7 +226,6 @@ impl ExampleBase {
                     elwp.exit();
                 }
                 Event::AboutToWait => {
-                    // Call the closure and check for termination signal
                     if f().is_none() {
                         elwp.exit();
                     }
@@ -271,7 +267,6 @@ impl ExampleBase {
             #[cfg(any(target_os = "macos", target_os = "ios"))]
             {
                 extension_names.push(ash::khr::portability_enumeration::NAME.as_ptr());
-                // Enabling this extension is a requirement when using `VK_KHR_portability_subset`
                 extension_names.push(ash::khr::get_physical_device_properties2::NAME.as_ptr());
             }
 
