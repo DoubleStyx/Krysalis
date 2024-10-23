@@ -3,6 +3,7 @@ import subprocess
 import sys
 import shutil
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
@@ -112,20 +113,38 @@ def get_project_type(project_name):
         print(f"Error: Could not determine the project type for {project_name}.")
         return "unknown"
 
+def parallel_build(project_names):
+    with ThreadPoolExecutor() as executor:
+        future_to_project = {executor.submit(build_project, project): project for project in project_names}
+        for future in as_completed(future_to_project):
+            project = future_to_project[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"Project {project} generated an exception: {exc}")
+            else:
+                print(f"Project {project} built successfully.")
+
+def parallel_tests(test_projects):
+    with ThreadPoolExecutor() as executor:
+        future_to_project = {executor.submit(run_tests, project): project for project in test_projects}
+        for future in as_completed(future_to_project):
+            project = future_to_project[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"Tests for {project} generated an exception: {exc}")
+            else:
+                print(f"Tests for {project} completed successfully.")
+
 def main():
     print("Starting build and test process...")
 
-    build_project("KrysalisNative")
-    build_project("KrysalisNativeTests")
-    build_project("KrysalisManaged")
-    build_project("KrysalisManagedTests")
-    build_project("Krysalis")
+    parallel_build(["KrysalisNative", "KrysalisNativeTests", "KrysalisManaged", "KrysalisManagedTests", "Krysalis"])
 
     print("Building completed.")
 
-
     print("Copying DLLs...")
-
     copy_dll("KrysalisNative", "KrysalisManaged")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
     if should_copy_to_resonite:
@@ -135,12 +154,11 @@ def main():
 
     print("DLLs copied.")
 
-
+    # Parallel test execution for Rust and .NET projects
     print("Running tests...")
-    run_tests("KrysalisNativeTests")
-    run_tests("KrysalisManagedTests")
-    print("Tests completed.")
+    parallel_tests(["KrysalisNativeTests", "KrysalisManagedTests"])
 
+    print("Tests completed.")
     print("Build and test process completed successfully.")
 
 if __name__ == "__main__":

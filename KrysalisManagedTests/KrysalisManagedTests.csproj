@@ -4,7 +4,7 @@
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="xunit.stafact" Version="1.0.49" />
+    <PackageReference Include="xunit.stafact" Version="1.1.11" />
     <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
   </ItemGroup>
   <PropertyGroup>
