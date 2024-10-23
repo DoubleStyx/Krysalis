@@ -17,7 +17,7 @@ jobs:
     name: Build and Release
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-20.04, macOS-12]
+        os: [windows-2022, ubuntu-20.04, macos-12]
 
     runs-on: ${{ matrix.os }}
 
@@ -65,7 +65,7 @@ jobs:
         shell: bash
 
       - name: Prepare artifact structure (Windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
@@ -73,10 +73,10 @@ jobs:
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
           Compress-Archive -Path @("Krysalis.dll", "Krysalis/") -DestinationPath "../Krysalis-Windows-v${{ github.run_number }}.zip"
-        shell: pwsh       
+        shell: pwsh
 
       - name: Prepare artifact structure (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
@@ -84,21 +84,39 @@ jobs:
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
           zip -r "../Krysalis-Linux-v${{ github.run_number }}.zip" ./*
-        shell: bash      
+        shell: bash
+
+      - name: Prepare artifact structure (macOS)
+        if: matrix.os == 'macos-12'
+        run: |
+          mkdir -p artifact/Krysalis
+          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
+          cp target/release/libKrysalisNative.dylib artifact/Krysalis/libKrysalisNative.dylib
+          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
+          cd artifact
+          zip -r "../Krysalis-macOS-v${{ github.run_number }}.zip" ./*
+        shell: bash
 
       - name: Upload artifact (Windows)
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-2022'
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-Windows
           path: Krysalis-Windows-v${{ github.run_number }}.zip
 
       - name: Upload artifact (Linux)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-20.04'
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-Linux
           path: Krysalis-Linux-v${{ github.run_number }}.zip
+
+      - name: Upload artifact (macOS)
+        if: matrix.os == 'macos-12'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Krysalis-macOS
+          path: Krysalis-macOS-v${{ github.run_number }}.zip
 
   release:
     name: Create Release
@@ -120,16 +138,22 @@ jobs:
           name: Krysalis-Linux
           path: artifacts/linux
 
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Krysalis-macOS
+          path: artifacts/macos
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             artifacts/windows/Krysalis-Windows-v${{ github.run_number }}.zip
             artifacts/linux/Krysalis-Linux-v${{ github.run_number }}.zip
+            artifacts/macos/Krysalis-macOS-v${{ github.run_number }}.zip
           tag_name: v1.0.${{ github.run_number }}
           name: Release v1.0.${{ github.run_number }}
           draft: false
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
