@@ -60,7 +60,9 @@ jobs:
           echo "VULKAN_SDK=${{ github.workspace }}/VulkanSDK/1.3.283.0" >> $GITHUB_ENV
           echo "${{ github.workspace }}/VulkanSDK/1.3.283.0/Bin" >> $GITHUB_PATH
           echo "${{ github.workspace }}/VulkanSDK/1.3.283.0/Lib" >> $GITHUB_PATH
-          echo "${{ github.workspace }}/VulkanSDK/1.3.283.0/Include" >> $GITHUB_PATH
+          echo "LIB=${{ github.workspace }}/VulkanSDK/1.3.283.0/Lib" >> $GITHUB_ENV
+          echo "INCLUDE=${{ github.workspace }}/VulkanSDK/1.3.283.0/Include" >> $GITHUB_ENV
+      
 
       - name: Setup Vulkan SDK
         if: steps.cache-vulkan-sdk.outputs.cache-hit != 'true'
