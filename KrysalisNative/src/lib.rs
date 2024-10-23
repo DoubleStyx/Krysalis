@@ -11,7 +11,7 @@ pub mod texture;
 pub mod triangle;
 
 use std::{
-    borrow::Cow, cell::RefCell, default::Default, error::Error, ffi, ops::Drop, os::raw::c_char,
+    borrow::Cow, cell::RefCell, default::Default, error::Error, ffi, ops::Drop, os::raw::c_char, sync::LazyLock,
 };
 
 use ash::{
@@ -27,7 +27,37 @@ use winit::{
     raw_window_handle::{HasDisplayHandle, HasWindowHandle},
     window::WindowBuilder,
 };
-use nalgebra;
+use nalgebra::{Vector2, Vector3};
+
+struct Vertex {
+    pos: Vector2<f32>,
+    color: Vector3<f32>,
+}
+
+// impl Vertex {
+//     fn VkVertexInputBindingDescription getBindingDescription() {
+//         VkVertexInputBindingDescription bindingDescription{};
+    
+//         return bindingDescription;
+//     }
+// }
+
+static VERTICES: LazyLock<Vec<Vertex>> = LazyLock::new(|| {
+    vec![
+        Vertex {
+            pos: Vector2::new(0.0, -0.5),
+            color: Vector3::new(1.0, 0.0, 0.0),
+        },
+        Vertex {
+            pos: Vector2::new(0.5, 0.5),
+            color: Vector3::new(0.0, 1.0, 0.0),
+        },
+        Vertex {
+            pos: Vector2::new(-0.5, 0.5),
+            color: Vector3::new(0.0, 0.0, 1.0),
+        },
+    ]
+});
 
 // Simple offset_of macro akin to C++ offsetof
 #[macro_export]

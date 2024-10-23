@@ -130,8 +130,8 @@ def main():
     copy_dll("KrysalisNative", "KrysalisManagedTests")
     if should_copy_to_resonite:
         copy_dll("KrysalisNative", mods_path, True, should_copy_to_resonite)
-        copy_dll("KrysalisManaged", True, os.path.join(mods_path, "Krysalis"), should_copy_to_resonite)
-        copy_dll("KrysalisNative", True, os.path.join(mods_path, "Krysalis"), should_copy_to_resonite)
+        copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
+        copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
 
     print("DLLs copied.")
 
