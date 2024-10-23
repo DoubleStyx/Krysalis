@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManaged", "KrysalisManaged\KrysalisManaged.csproj", "{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedTests", "KrysalisManagedTests\KrysalisManagedTests.csproj", "{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krysalis", "Krysalis\Krysalis.csproj", "{ED6DDBE1-1495-41A0-BE95-17013D308570}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

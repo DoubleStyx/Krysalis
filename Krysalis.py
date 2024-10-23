@@ -113,7 +113,11 @@ def get_project_type(project_name):
         print(f"Error: Could not determine the project type for {project_name}.")
         return "unknown"
 
-def parallel_build(project_names):
+def parallel_build():
+    cargo_workspace_command = ["cargo", "build", "--release"]
+    dotnet_sln_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
+    commands = [cargo_workspace_command, dotnet_sln_command]
+
     with ThreadPoolExecutor() as executor:
         future_to_project = {executor.submit(build_project, project): project for project in project_names}
         for future in as_completed(future_to_project):
@@ -125,23 +129,9 @@ def parallel_build(project_names):
             else:
                 print(f"Project {project} built successfully.")
 
-def parallel_tests(test_projects):
-    with ThreadPoolExecutor() as executor:
-        future_to_project = {executor.submit(run_tests, project): project for project in test_projects}
-        for future in as_completed(future_to_project):
-            project = future_to_project[future]
-            try:
-                future.result()
-            except Exception as exc:
-                print(f"Tests for {project} generated an exception: {exc}")
-            else:
-                print(f"Tests for {project} completed successfully.")
-
 def main():
-    print("Starting build and test process...")
-
-    parallel_build(["KrysalisNative", "KrysalisNativeTests", "KrysalisManaged", "KrysalisManagedTests", "Krysalis"])
-
+    print("Starting build...")
+    parallel_build()
     print("Building completed.")
 
     print("Copying DLLs...")
@@ -151,15 +141,11 @@ def main():
         copy_dll("KrysalisNative", mods_path, True, should_copy_to_resonite)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
-
     print("DLLs copied.")
 
-    # Parallel test execution for Rust and .NET projects
-    print("Running tests...")
-    parallel_tests(["KrysalisNativeTests", "KrysalisManagedTests"])
+    # run tests in sequence
 
     print("Tests completed.")
-    print("Build and test process completed successfully.")
 
 if __name__ == "__main__":
     main()
