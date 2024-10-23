@@ -72,7 +72,7 @@ jobs:
           cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           Compress-Archive -Path "artifact\\*" -DestinationPath "Krysalis-Windows-v${{ github.run_number }}.zip"
-
+        shell: pwsh
 
       - name: Prepare artifact structure (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -81,13 +81,22 @@ jobs:
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
-          Compress-Archive -Path "artifact\\*" -DestinationPath "Krysalis-Linux-v${{ github.run_number }}.zip"
+          zip -r "Krysalis-Linux-v${{ github.run_number }}.zip" artifact/*
+        shell: bash
 
-      - name: Upload artifacts
+      - name: Upload artifact (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
-          name: Krysalis-${{ matrix.os }}
-          path: artifact/*
+          name: Krysalis-Windows
+          path: Krysalis-Windows-v${{ github.run_number }}.zip
+
+      - name: Upload artifact (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: Krysalis-Linux
+          path: Krysalis-Linux-v${{ github.run_number }}.zip
 
   release:
     name: Create Release
@@ -97,24 +106,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download artifacts (Windows)
+      - name: Download Windows artifact
         uses: actions/download-artifact@v3
         with:
-          name: Krysalis-windows-latest
+          name: Krysalis-Windows
           path: artifacts/windows
 
-      - name: Download artifacts (Linux)
+      - name: Download Linux artifact
         uses: actions/download-artifact@v3
         with:
-          name: Krysalis-ubuntu-latest
+          name: Krysalis-Linux
           path: artifacts/linux
-
-      - name: Tag the commit
-        run: |
-          git config --global user.email "you@example.com"
-          git config --global user.name "Your Name"
-          git tag v1.0.${{ github.run_number }}
-          git push origin v1.0.${{ github.run_number }}
 
       - name: Create GitHub Release
         id: create_release
@@ -125,18 +127,27 @@ jobs:
           tag_name: v1.0.${{ github.run_number }}
           release_name: Release v1.0.${{ github.run_number }}
           draft: false
-          prerelease: false
+          prerelease: true
           body: |
             This release includes the following builds:
             - Windows and Linux builds of KrysalisManaged and KrysalisNative.
 
-      - name: Upload release artifacts
+      - name: Upload Windows release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\\KrysalisAssets-${{ github.run_number }}.zip
-          asset_name: KrysalisAssets-${{ github.run_number }}.zip
+          asset_path: artifacts/windows/Krysalis-Windows-v${{ github.run_number }}.zip
+          asset_name: Krysalis-Windows-v${{ github.run_number }}.zip
           asset_content_type: application/zip
-  
+
+      - name: Upload Linux release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifacts/linux/Krysalis-Linux-v${{ github.run_number }}.zip
+          asset_name: Krysalis-Linux-v${{ github.run_number }}.zip
+          asset_content_type: application/zip
