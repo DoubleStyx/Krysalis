@@ -64,31 +64,41 @@ jobs:
         run: python3 -u Krysalis.py
         shell: bash
 
-      - name: Prepare artifact structure (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          mkdir -p artifact/Krysalis
-          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
-          cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
-          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Krysalis-${{ matrix.os }}
+          path: artifact/*
 
-      - name: Prepare artifact structure (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          mkdir -p artifact/Krysalis
-          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
-          cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
-          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download artifacts (Windows)
+        uses: actions/download-artifact@v3
+        with:
+          name: Krysalis-windows-latest
+          path: artifacts/windows
+
+      - name: Download artifacts (Linux)
+        uses: actions/download-artifact@v3
+        with:
+          name: Krysalis-ubuntu-latest
+          path: artifacts/linux
 
       - name: Tag the commit
-        if: github.ref == 'refs/heads/main'
         run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
           git tag v1.0.${{ github.run_number }}
           git push origin v1.0.${{ github.run_number }}
 
       - name: Create GitHub Release
         id: create_release
-        if: github.ref == 'refs/heads/main'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -105,7 +115,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifact/*
-          asset_name: KrysalisAssets
+          asset_path: artifacts/**/*
+          asset_name: KrysalisAssets-${{ github.run_number }}.zip
           asset_content_type: application/zip
-          

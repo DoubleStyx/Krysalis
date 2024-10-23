@@ -1,6 +1,6 @@
 # Krysalis
 
-Krysalis is a high-performance VR renderer with support for [Resonite](https://resonite.com/) (built as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
+Krysalis is a high-performance VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
 
 Krysalis is designed to be cross-platform-friendly by default. It uses Vulkan, DirectX, and Metal per platform. `netstandard2.0` is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Libraries like `winit` are used to abstract away platform-specific differences.
 
@@ -9,6 +9,8 @@ The Krysalis project is split into three components:
 - **`KrysalisNative.dll`**: Contains the renderer code written in Rust using graphics API bindings.
 - **`KrysalisManaged.dll`**: The C# API, providing a user-friendly wrapper around the Rust FFI (Foreign Function Interface).
 - **`Krysalis.dll`**: Integrates the renderer into Resonite, hooking into the game to leverage `KrysalisManaged` calls.
+
+If you want to see what's being worked on currently, check out the [Krysalis project board](https://github.com/users/DoubleStyx/projects/3).
 
 ## Installation for Resonite
 
