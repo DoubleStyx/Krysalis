@@ -16,6 +16,8 @@ public class KrysalisManaged
             "libKrysalisNative.dylib";
 #elif Linux
             "libKrysalisNative.so";
+#else
+            "KrysalisNative.dll";
 #endif
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
