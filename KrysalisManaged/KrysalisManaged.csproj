@@ -4,5 +4,9 @@
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>10.0</LangVersion>
+		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsWindows)'=='true'">
+    	<DefineConstants>Windows</DefineConstants>
 	</PropertyGroup>
 </Project>

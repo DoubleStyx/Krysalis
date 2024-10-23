@@ -10,14 +10,10 @@ namespace KrysalisManaged;
 public class KrysalisManaged
 {
         private const string LibraryName =
-#if WINDOWS
+#if Windows
             "KrysalisNative.dll";
-#elif LINUX
-            "libKrysalisNative.so";
-#elif OSX
-            "libKrysalisNative.dylib";
 #else
-            "KrysalisNative";
+            "libKrysalisNative.so";
 #endif
 
     [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
