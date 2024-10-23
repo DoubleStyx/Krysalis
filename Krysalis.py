@@ -21,37 +21,32 @@ def run_command(command, cwd=None):
         print(f"Standard Error: {e.stderr}")
         sys.exit(1)
 
-def build_dotnet_project(project_name):
-    dotnet_build_command = ["dotnet", "build", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
+def build_solution():
+    # Build the .NET solution (parallelized by the solution itself)
+    dotnet_build_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
     run_command(dotnet_build_command)
 
-def build_cargo_project(project_name):
-    cargo_build_command = ["cargo", "build", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
-    run_command(cargo_build_command)
+def build_workspace():
+    # Build the Cargo workspace (parallelized by the workspace itself)
+    cargo_workspace_command = ["cargo", "build", "--release"]
+    run_command(cargo_workspace_command)
 
-def run_dotnet_tests(project_name):
+def run_dotnet_tests_in_subprocess(project_name):
+    # Run .NET tests in a separate subprocess
     dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name, f"{project_name}.csproj"), "--configuration", "Release"]
     run_command(dotnet_test_command)
 
-def run_cargo_tests(project_name):
+def run_cargo_tests_in_subprocess(project_name):
+    # Run Rust tests in a separate subprocess
     cargo_test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
     run_command(cargo_test_command)
 
-def parallel_build(projects):
+def run_tests_in_subprocess(test_projects):
+    # Run tests for each project in separate subprocesses
     with ThreadPoolExecutor() as executor:
-        future_to_build = {executor.submit(build_dotnet_project if get_project_type(project) == "dotnet" else build_cargo_project, project): project for project in projects}
-        for future in as_completed(future_to_build):
-            project = future_to_build[future]
-            try:
-                future.result()
-            except Exception as exc:
-                print(f"Build for {project} generated an exception: {exc}")
-            else:
-                print(f"Build for {project} completed successfully.")
-
-def parallel_tests(test_projects):
-    with ThreadPoolExecutor() as executor:
-        future_to_test = {executor.submit(run_dotnet_tests if get_project_type(project) == "dotnet" else run_cargo_tests, project): project for project in test_projects}
+        future_to_test = {
+            executor.submit(run_dotnet_tests_in_subprocess if get_project_type(project) == "dotnet" else run_cargo_tests_in_subprocess, project): project for project in test_projects
+        }
         for future in as_completed(future_to_test):
             project = future_to_test[future]
             try:
@@ -110,9 +105,15 @@ def get_project_type(project_name):
         sys.exit(1)
 
 def main():
-    projects = ["KrysalisManaged", "KrysalisNative", "KrysalisManagedTests", "KrysalisNativeTests", "Krysalis"] 
-    parallel_build(projects)
+    print("Starting builds using workspace files...")
 
+    # Use workspace files to parallelize the builds
+    build_solution()  # .NET builds
+    build_workspace()  # Rust builds
+
+    print("Builds completed.")
+
+    print("Copying DLLs...")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
     copy_dll("KrysalisNative", "KrysalisNativeTests")
     copy_dll("KrysalisManaged", "KrysalisManagedTests")
@@ -120,9 +121,12 @@ def main():
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
- 
+
+    # Run tests for each project in separate subprocesses
     test_projects = ["KrysalisManagedTests", "KrysalisNativeTests"]
-    parallel_tests(test_projects)
+    run_tests_in_subprocess(test_projects)
+
+    print("Tests completed.")
 
 if __name__ == "__main__":
     main()

@@ -2,7 +2,7 @@
 
 Krysalis is a high-performance VR renderer for [Resonite](https://resonite.com/), built as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod. It replaces the default Unity renderer in Resonite, adding support for modern rendering techniques tailored for VR applications. Krysalis is also a key prerequisite for a butterfly.
 
-The renderer supports physically-based rendering (PBR), asynchronous timewarp, multithreading, shader graphs, and modern rendering paths such as Forward+ and Deferred pipelines. Currently, only **Windows** is officially supported, given it's the primary platform for Resonite, though the project can be adapted to other platforms (macOS and Linux) with minimal tweaks as both **Rust** and **C#** are cross-platform (with some considerations for windowing libraries). For macOS, MoltenVK or Metal support via an abstraction layer will be required.
+Krysalis is designed to be crossplatform-friendly by default. It uses Vulkan for Windows and Linux, as well as MoltenVK for macOS support. Netstandard2.0 is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Winit, among other libraries, are used to abstract away platform-specific differences.
 
 The Krysalis project is split into three components:
 - **`KrysalisNative.dll`**: Contains the renderer code written in Rust using Vulkan bindings.
