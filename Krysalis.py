@@ -77,14 +77,19 @@ def find_projects():
 
 def get_output_path(project_name):
     project_path = os.path.join(current_directory, project_name)
+    project_type = get_project_type(project_path)
 
-    if get_project_type(project_path) == "dotnet":
+    if project_type == "dotnet":
         csproj_path = os.path.join(project_path, f"{project_name}.csproj")
         tree = ET.parse(csproj_path)
         root = tree.getroot()
 
+        # Namespace handling for XML parsing
+        namespace = {'msbuild': 'http://schemas.microsoft.com/developer/msbuild/2003'}
+        ET.register_namespace('', 'http://schemas.microsoft.com/developer/msbuild/2003')
+
         target_framework = None
-        for element in root.findall(".//TargetFramework"):
+        for element in root.findall(".//msbuild:TargetFramework", namespace):
             target_framework = element.text
             break
 
@@ -93,22 +98,59 @@ def get_output_path(project_name):
         else:
             print(f"Error: Could not determine the target framework for {project_name}.")
             return os.path.join(project_path, "bin", "Release")
-    elif get_project_type(project_path) == "cargo":
-        return os.path.join(project_path, "target", "release")
+    elif project_type == "cargo":
+        # In a workspace, Cargo builds to the root 'target' directory
+        root_target_dir = os.path.join(current_directory, "target", "release")
+        if os.path.exists(root_target_dir):
+            return root_target_dir
+        else:
+            print(f"Error: Could not find build output for {project_name}.")
+            sys.exit(1)
     else:
         print(f"Error: Could not determine the output path for {project_name}.")
         sys.exit(1)
 
 def copy_dll(source, destination, absolute_destination_path=False):
-    dll_path = os.path.join(get_output_path(source), f"{source}.dll")
+    source_output_path = get_output_path(source)
+    project_type = get_project_type(os.path.join(current_directory, source))
 
-    destination_dir = destination if absolute_destination_path else get_output_path(destination)
+    if project_type == "cargo":
+        # Handle Rust DLL naming conventions
+        if os.name == 'nt':
+            # Windows
+            dll_filename = f"{source}.dll"
+            lib_filename = f"lib{source}.dll"
+        else:
+            # Unix-like systems
+            dll_filename = f"lib{source}.so"
+            lib_filename = dll_filename  # On Unix, it's typically 'lib<name>.so'
+
+        possible_filenames = [dll_filename, lib_filename]
+    else:
+        # .NET projects
+        dll_filename = f"{source}.dll"
+        possible_filenames = [dll_filename]
+
+    # Find the correct DLL file
+    for filename in possible_filenames:
+        dll_path = os.path.join(source_output_path, filename)
+        if os.path.exists(dll_path):
+            break
+    else:
+        print(f"Error: DLL for {source} not found in {source_output_path}")
+        sys.exit(1)
+
+    # Determine destination directory
+    if absolute_destination_path:
+        destination_dir = destination
+    else:
+        destination_dir = get_output_path(destination)
 
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
         print(f"Created directory: {destination_dir}")
 
-    target_path = os.path.join(destination_dir, f"{source}.dll")
+    target_path = os.path.join(destination_dir, os.path.basename(dll_path))
     print(f"Copying {dll_path} to {target_path}")
     try:
         shutil.copy2(dll_path, target_path)
@@ -128,15 +170,17 @@ def get_project_type(project_dir):
 def main():
     build_repo()
 
-    # copy_dll("KrysalisNative", "KrysalisManagedTests")
-    # copy_dll("KrysalisNative", "KrysalisNativeTests")
-    # copy_dll("KrysalisManaged", "KrysalisManagedTests")
-    # if should_copy_to_resonite:
-    #     copy_dll("KrysalisNative", mods_path, True)
-    #     copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
-    #     copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
+    # Uncomment the copy_dll calls as needed
+    copy_dll("KrysalisNative", "KrysalisManagedTests")
+    copy_dll("KrysalisNative", "KrysalisNativeTests")
+    copy_dll("KrysalisManaged", "KrysalisManagedTests")
+    if should_copy_to_resonite:
+        copy_dll("KrysalisNative", mods_path, True)
+        copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
+        copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
 
-    # test_repo()
+    # Uncomment if you want to run tests after building and copying
+    test_repo()
 
 if __name__ == "__main__":
     main()
