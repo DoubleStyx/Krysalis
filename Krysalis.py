@@ -5,6 +5,8 @@ import shutil
 import xml.etree.ElementTree as ET
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
+mods_path = os.getenv("C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/")
+should_copy_to_resonite = True
 
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
@@ -60,11 +62,16 @@ def get_output_path(project_name):
         print(f"Error: Could not determine the output path for {project_name}.")
         sys.exit(1)
 
-def copy_dll(source, destination):
+def copy_dll(source, destination, absolute_destination_path=False, condition=False):
     dll_path = os.path.join(get_output_path(source), f"{source}.dll")
     print(f"Source DLL path: {dll_path}")
 
-    destination_dir = get_output_path(destination)
+    destination_dir = None
+
+    if absolute_destination_path:
+        destination_dir = destination
+    else:
+        destination_dir = get_output_path(destination)
     print(f"Destination directory: {destination_dir}")
 
     if not os.path.exists(destination_dir):
@@ -81,7 +88,6 @@ def copy_dll(source, destination):
     except Exception as e:
         print(f"Error copying DLL: {e}")
         sys.exit(1)
-
 
 def run_tests(project_name):
     print(f"Running tests for {project_name}...")
@@ -122,6 +128,10 @@ def main():
 
     copy_dll("KrysalisNative", "KrysalisManaged")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
+    if should_copy_to_resonite:
+        copy_dll("KrysalisNative", mods_path, True, should_copy_to_resonite)
+        copy_dll("KrysalisManaged", True, os.path.join(mods_path, "Krysalis"), should_copy_to_resonite)
+        copy_dll("KrysalisNative", True, os.path.join(mods_path, "Krysalis"), should_copy_to_resonite)
 
     print("DLLs copied.")
 

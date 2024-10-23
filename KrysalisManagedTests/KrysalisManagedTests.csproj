@@ -9,5 +9,6 @@
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
 </Project>
