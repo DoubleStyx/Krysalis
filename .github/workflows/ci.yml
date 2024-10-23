@@ -21,21 +21,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Cache for Rust dependencies (Cargo registry and index, but not target build output)
-      - name: Cache Rust dependencies
+      - name: Cache Rust dependencies and intermediate files
         uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
+            target/release/deps
           key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             cargo-${{ runner.os }}-
 
-      - name: Cache .NET dependencies
+      - name: Cache .NET dependencies and intermediate files
         uses: actions/cache@v3
         with:
-          path: ~/.nuget/packages
+          path: |
+            ~/.nuget/packages
+            **/obj
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-
