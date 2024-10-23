@@ -71,6 +71,8 @@ jobs:
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
+          Compress-Archive -Path "artifact\\*" -DestinationPath "Krysalis-Windows-v${{ github.run_number }}.zip"
+
 
       - name: Prepare artifact structure (Linux)
         if: matrix.os == 'ubuntu-latest'
@@ -79,6 +81,7 @@ jobs:
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/libKrysalis.dll
+          Compress-Archive -Path "artifact\\*" -DestinationPath "Krysalis-Linux-v${{ github.run_number }}.zip"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -127,15 +130,13 @@ jobs:
             This release includes the following builds:
             - Windows and Linux builds of KrysalisManaged and KrysalisNative.
 
-      - name: Create release assets archive
-        run: |
-          zip -r KrysalisAssets-${{ github.run_number }}.zip artifacts/
-
       - name: Upload release artifacts
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: KrysalisAssets-${{ github.run_number }}.zip
+          asset_path: .\\KrysalisAssets-${{ github.run_number }}.zip
           asset_name: KrysalisAssets-${{ github.run_number }}.zip
           asset_content_type: application/zip
   
