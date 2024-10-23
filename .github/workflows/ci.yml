@@ -58,7 +58,7 @@ jobs:
         uses: NcStudios/VulkanCI@v1.0
         with:
           sdkVersion: 1.3.283.0
-          installPath: 'C:/VulkanSDK'
+          installPath: 'C:/'
 
       - name: Use the Vulkan SDK
         run: |
