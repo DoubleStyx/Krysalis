@@ -71,13 +71,6 @@ jobs:
       - name: Check for Vulkan Libraries
         run: dir "${{ github.workspace }}/VulkanSDK/1.3.283.0/Lib"
 
-      - name: Build Rust project
-        run: cargo build --release --jobs ${{ env.NUM_CORES }}
-        env:
-          VULKAN_SDK: ${{ github.workspace }}/VulkanSDK/1.3.283.0
-          LIB: ${{ github.workspace }}/VulkanSDK/1.3.283.0/Lib
-          INCLUDE: ${{ github.workspace }}/VulkanSDK/1.3.283.0/Include
-
       - name: Run Python build and test script
         run: python -u Krysalis.py
 
