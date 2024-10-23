@@ -71,8 +71,8 @@ jobs:
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
-          # Zip the contents of the artifact folder, not the folder itself
-          Compress-Archive -Path "artifact\\Krysalis.dll", "artifact\\Krysalis" -DestinationPath "Krysalis-Windows-v${{ github.run_number }}.zip"
+          cd artifact
+          Compress-Archive -Path "Krysalis.dll", "Krysalis\\KrysalisNative.dll", "Krysalis\\KrysalisManaged.dll" -DestinationPath "Krysalis-Windows-v${{ github.run_number }}.zip"
         shell: pwsh      
 
       - name: Prepare artifact structure (Linux)
@@ -82,8 +82,8 @@ jobs:
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
           cp target/release/libKrysalisNative.so artifact/Krysalis/libKrysalisNative.so
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
-          # Zip the contents of the artifact folder, not the folder itself
-          zip -r "Krysalis-Linux-v${{ github.run_number }}.zip" artifact/Krysalis.dll artifact/Krysalis/*
+          cd artifact
+          zip "Krysalis-Linux-v${{ github.run_number }}.zip" Krysalis.dll Krysalis/KrysalisManaged.dll Krysalis/libKrysalisNative.so
         shell: bash      
 
       - name: Upload artifact (Windows)
