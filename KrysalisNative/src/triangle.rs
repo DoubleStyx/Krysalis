@@ -1,7 +1,6 @@
 #![warn(unused_qualifications)]
 
 use std::default::Default;
-use std::error::Error;
 use std::ffi;
 use std::io::Cursor;
 use std::mem;

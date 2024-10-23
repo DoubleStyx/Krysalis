@@ -689,7 +689,7 @@ pub fn main() -> Result<(), Box<dyn Error>> {
 
         let graphic_pipeline = graphics_pipelines[0];
 
-        let mut frame_count = 0;
+        let frame_count = 0;
 
         let _ = base.render_loop(|| {
             let (present_index, _) = base
