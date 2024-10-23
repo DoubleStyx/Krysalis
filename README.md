@@ -1,15 +1,15 @@
 # Krysalis
 
-Krysalis is a high-performance VR renderer for [Resonite](https://resonite.com/), built as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod. It replaces the default Unity renderer in Resonite, adding support for modern rendering techniques tailored for VR applications. Krysalis is also a key prerequisite for a butterfly.
+Krysalis is a high-performance VR renderer with support for [Resonite](https://resonite.com/) (built as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
 
-Krysalis is designed to be crossplatform-friendly by default. It uses Vulkan for Windows and Linux, as well as MoltenVK for macOS support. Netstandard2.0 is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Winit, among other libraries, are used to abstract away platform-specific differences.
+Krysalis is designed to be crossplatform-friendly by default. It uses Vulkan, DirectX, and Metal per platform. Netstandard2.0 is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Winit, among other libraries, are used to abstract away platform-specific differences.
 
 The Krysalis project is split into three components:
-- **`KrysalisNative.dll`**: Contains the renderer code written in Rust using Vulkan bindings.
+- **`KrysalisNative.dll`**: Contains the renderer code written in Rust using graphics API bindings.
 - **`KrysalisManaged.dll`**: The C# API, providing a user-friendly wrapper around the Rust FFI (Foreign Function Interface).
 - **`Krysalis.dll`**: Integrates the renderer into Resonite, hooking into the game to leverage KrysalisManaged calls.
 
-## Installation
+## Installation for Resonite
 
 1. Install the [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader).
 2. Extract the provided zip file into the `rml_mods` directory of your Resonite installation. The zip should contain:
@@ -44,11 +44,8 @@ Before building the project, make sure the following tools are installed:
      python --version
      ```
 
-4. **Vulkan SDK**
-   - Download and install the [Vulkan SDK](https://vulkan.lunarg.com/sdk/home).
-   - After installation, ensure the necessary environment variables are set, such as:
-     - `VULKAN_SDK=<VulkanSDKPath>`
-     - Add `<VulkanSDKPath>\Bin` and `<VulkanSDKPath>\Lib` to your system's `PATH`.
+4. **Vulkan, DirectX, Metal**
+Todo.
 
 ### Building and Testing
 
@@ -60,22 +57,22 @@ Once all dependencies are installed and configured, follow these steps to build 
     cd Krysalis
     ```
 
-2. Run the Python build and test automation script:
+2. Run the Python build automation script:
     ```bash
     python Krysalis.py
     ```
 
 This script will:
 - Build both the Rust and C# components.
-- Handle necessary DLL copying between project directories.
+- Handle library copying to Resonite and the test project.
 
 A successful build will output confirmation that all steps were completed successfully.
 
-To run tests, 
+To run tests, run the KrysalisManagedTests executable in `KrysalisManagedTests/bin/Release/net8.0`.
 
 ## Planned Features and Architecture
 
-The Krysalis renderer will feature a wide array of advanced rendering techniques:
+The Krysalis renderer will feature a growing list of advanced rendering techniques as the project matures:
 
 - **Multithreaded Rendering**: Leveraging multiple CPU threads for parallelized rendering tasks.
 - **Asynchronous Rendering**: Offloading non-blocking GPU tasks such as resource loading.
