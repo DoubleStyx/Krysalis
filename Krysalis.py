@@ -61,15 +61,12 @@ def get_output_path(project_name):
         sys.exit(1)
 
 def copy_dll(source, destination):
-    # Determine the source DLL path
     dll_path = os.path.join(get_output_path(source), f"{source}.dll")
     print(f"Source DLL path: {dll_path}")
 
-    # Determine the destination path
     destination_dir = get_output_path(destination)
     print(f"Destination directory: {destination_dir}")
 
-    # Ensure the destination directory exists
     if not os.path.exists(destination_dir):
         os.makedirs(destination_dir)
         print(f"Created directory: {destination_dir}")
@@ -120,10 +117,14 @@ def main():
 
     print("Building completed.")
 
+
     print("Copying DLLs...")
+
     copy_dll("KrysalisNative", "KrysalisManaged")
     copy_dll("KrysalisNative", "KrysalisManagedTests")
+
     print("DLLs copied.")
+
 
     print("Running tests...")
     run_tests("KrysalisNativeTests")
