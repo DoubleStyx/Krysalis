@@ -21,25 +21,57 @@ def run_command(command, cwd=None):
         print(f"Standard Error: {e.stderr}")
         sys.exit(1)
 
-def build_project(project_name):
-    print(f"Building {project_name}...")
+def build_solution():
+    # Build the .NET solution
+    dotnet_sln_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
+    run_command(dotnet_sln_command)
 
-    if get_project_type(project_name) == "dotnet":
-        dotnet_build_command = [
-            "dotnet", 
-            "build", 
-            os.path.join(current_directory, project_name, f"{project_name}.csproj"),
-            "--configuration",
-            "Release"
-        ]
-        run_command(dotnet_build_command, cwd=project_name)
-    elif get_project_type(project_name) == "cargo":
-        cargo_build_command = ["cargo", "build", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
-        run_command(cargo_build_command)
-    else:
-        print(f"Error: Could not determine the build system for {project_name}.")
-        sys.exit(1)
-    print(f"Build completed for {project_name}.")
+def build_workspace():
+    # Build the Cargo workspace
+    cargo_workspace_command = ["cargo", "build", "--release"]
+    run_command(cargo_workspace_command)
+
+def run_dotnet_tests():
+    # Run .NET tests
+    dotnet_test_command = ["dotnet", "test", "Krysalis.sln", "--configuration", "Release"]
+    run_command(dotnet_test_command)
+
+def run_cargo_tests():
+    # Run Rust tests
+    cargo_test_command = ["cargo", "test", "--release"]
+    run_command(cargo_test_command)
+
+def parallel_build():
+    # Run Rust and .NET builds in parallel
+    with ThreadPoolExecutor() as executor:
+        future_to_build = {
+            executor.submit(build_solution): "dotnet",
+            executor.submit(build_workspace): "cargo"
+        }
+        for future in as_completed(future_to_build):
+            build_system = future_to_build[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"Build for {build_system} generated an exception: {exc}")
+            else:
+                print(f"{build_system.capitalize()} build completed successfully.")
+
+def parallel_tests():
+    # Run Rust and .NET tests in parallel
+    with ThreadPoolExecutor() as executor:
+        future_to_test = {
+            executor.submit(run_dotnet_tests): "dotnet",
+            executor.submit(run_cargo_tests): "cargo"
+        }
+        for future in as_completed(future_to_test):
+            test_system = future_to_test[future]
+            try:
+                future.result()
+            except Exception as exc:
+                print(f"Tests for {test_system} generated an exception: {exc}")
+            else:
+                print(f"{test_system.capitalize()} tests completed successfully.")
 
 def get_output_path(project_name):
     if get_project_type(project_name) == "dotnet":
@@ -90,20 +122,6 @@ def copy_dll(source, destination, absolute_destination_path=False, condition=Fal
         print(f"Error copying DLL: {e}")
         sys.exit(1)
 
-def run_tests(project_name):
-    print(f"Running tests for {project_name}...")
-
-    if get_project_type(project_name) == "dotnet":
-        dotnet_test_command = ["dotnet", "test", os.path.join(current_directory, project_name), "--configuration", "Release"]
-        run_command(dotnet_test_command, cwd=project_name)
-    elif get_project_type(project_name) == "cargo":
-        test_command = ["cargo", "test", "--release", "--manifest-path", os.path.join(current_directory, project_name, "Cargo.toml")]
-        run_command(test_command)
-    else:
-        print(f"Error: Could not determine how to run tests for {project_name}.")
-        sys.exit(1)
-    print(f"Tests completed for {project_name}.")
-
 def get_project_type(project_name):
     if os.path.exists(os.path.join(current_directory, project_name, f"{project_name}.csproj")):
         return "dotnet"
@@ -112,22 +130,6 @@ def get_project_type(project_name):
     else:
         print(f"Error: Could not determine the project type for {project_name}.")
         return "unknown"
-
-def parallel_build():
-    cargo_workspace_command = ["cargo", "build", "--release"]
-    dotnet_sln_command = ["dotnet", "build", "Krysalis.sln", "--configuration", "Release"]
-    commands = [cargo_workspace_command, dotnet_sln_command]
-
-    with ThreadPoolExecutor() as executor:
-        future_to_project = {executor.submit(build_project, project): project for project in project_names}
-        for future in as_completed(future_to_project):
-            project = future_to_project[future]
-            try:
-                future.result()
-            except Exception as exc:
-                print(f"Project {project} generated an exception: {exc}")
-            else:
-                print(f"Project {project} built successfully.")
 
 def main():
     print("Starting build...")
@@ -143,8 +145,16 @@ def main():
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True, should_copy_to_resonite)
     print("DLLs copied.")
 
-    # run tests in sequence
+    # Run tests in parallel
+    print("Running tests...")
+    #parallel_tests()
+    #run_cargo_tests()
+    #run_dotnet_tests()
+    dotnet_test_command = ["dotnet", "test", "KrysalisManagedTests/KrysalisManagedTests.csproj", "--configuration", "Release"]
+    run_command(dotnet_test_command)
 
+    cargo_test_command = ["cargo", "test", "KrysalisNativeTest/Cargo.toml", "--release"]
+    run_command(cargo_test_command)
     print("Tests completed.")
 
 if __name__ == "__main__":
