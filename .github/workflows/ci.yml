@@ -27,7 +27,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target/release/deps
+            target
           key: cargo-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
           restore-keys: |
             cargo-${{ runner.os }}-
@@ -38,6 +38,7 @@ jobs:
           path: |
             ~/.nuget/packages
             **/obj
+            **/bin
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
             nuget-${{ runner.os }}-
@@ -61,46 +62,15 @@ jobs:
       - name: Run Python build and test script
         run: python -u Krysalis.py
 
-      - name: Create artifact zip
+      - name: Prepare artifact structure
         run: |
-          $krysalisManagedPath = "KrysalisManaged\\bin\\Release\\netstandard2.0\\KrysalisManaged.dll"
-          $krysalisNativePath = "KrysalisNative\\target\\release\\KrysalisNative.dll"
-          $krysalisPath = "Krysalis\\bin\\Release\\netstandard2.0\\Krysalis.dll"
-          $artifactDir = "artifact"
-
-          New-Item -ItemType Directory -Path "$artifactDir" -Force
-          New-Item -ItemType Directory -Path "$artifactDir\\Krysalis" -Force
-
-          Copy-Item -Path $krysalisManagedPath -Destination "$artifactDir\\Krysalis\\KrysalisManaged.dll" -Force
-          Copy-Item -Path $krysalisNativePath -Destination "$artifactDir\\Krysalis\\KrysalisNative.dll" -Force
-          Copy-Item -Path $krysalisPath -Destination "$artifactDir\\Krysalis.dll" -Force
-
-          Compress-Archive -Path "artifact\\*" -DestinationPath "Krysalis-v${{ github.run_number }}.zip"
-        shell: pwsh
-
-      - name: Upload artifact to GitHub Actions
+          mkdir -p artifact/Krysalis
+          cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
+          cp KrysalisNative/target/release/KrysalisNative.dll artifact/Krysalis/KrysalisNative.dll
+          cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
+      
+      - name: Upload .NET and Rust artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: Krysalis-v${{ github.run_number }}
-          path: Krysalis-v${{ github.run_number }}.zip
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: Krysalis-v${{ github.run_number }}
-          release_name: Krysalis-v${{ github.run_number }}
-          draft: false
-          prerelease: true
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .\\Krysalis-v${{ github.run_number }}.zip
-          asset_name: Krysalis-v${{ github.run_number }}.zip
-          asset_content_type: application/zip
+          name: Krysalis
+          path: artifact/*      
