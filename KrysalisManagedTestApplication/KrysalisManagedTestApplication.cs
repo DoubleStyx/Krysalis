@@ -13,7 +13,7 @@ namespace KrysalisManagedTestApplication
             switch (args[0])
             {
                 case "test":
-                    result = TestRenderer();
+                    result = KrysalisManagedAPI.KrysalisManagedAPI.StartRenderer();
                     break;
                 default:
                     throw new Exception("Invalid argument");

@@ -3,45 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManaged", "KrysalisManaged\KrysalisManaged.csproj", "{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisManagedAPI", "KrysalisManagedAPI\KrysalisManagedAPI.csproj", "{CADD845A-0447-4C47-A196-3EF238E24872}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedTests", "KrysalisManagedTests\KrysalisManagedTests.csproj", "{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisManagedFFI", "KrysalisManagedFFI\KrysalisManagedFFI.csproj", "{2341D6AE-A5C6-4043-A709-7924014B7D97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krysalis", "Krysalis\Krysalis.csproj", "{ED6DDBE1-1495-41A0-BE95-17013D308570}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisManagedTestApplication", "KrysalisManagedTestApplication\KrysalisManagedTestApplication.csproj", "{4168434F-8602-4AF6-8187-9C0FBAED264A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedAPI", "KrysalisManagedAPI\KrysalisManagedAPI.csproj", "{CADD845A-0447-4C47-A196-3EF238E24872}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisManagedTestRunner", "KrysalisManagedTestRunner\KrysalisManagedTestRunner.csproj", "{CDC3BABC-9264-4DCC-9795-CD7377E75BAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedFFI", "KrysalisManagedFFI\KrysalisManagedFFI.csproj", "{2341D6AE-A5C6-4043-A709-7924014B7D97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisManagedWrapper", "KrysalisManagedWrapper\KrysalisManagedWrapper.csproj", "{218B997A-CBE1-4E2A-86EA-6537DE7ADC62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedTestApplication", "KrysalisManagedTestApplication\KrysalisManagedTestApplication.csproj", "{4168434F-8602-4AF6-8187-9C0FBAED264A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedTestRunner", "KrysalisManagedTestRunner\KrysalisManagedTestRunner.csproj", "{CDC3BABC-9264-4DCC-9795-CD7377E75BAD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisManagedWrapper", "KrysalisManagedWrapper\KrysalisManagedWrapper.csproj", "{218B997A-CBE1-4E2A-86EA-6537DE7ADC62}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrysalisMod", "KrysalisMod\KrysalisMod.csproj", "{C016EADF-89F7-449C-8548-E45435332472}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrysalisMod", "KrysalisMod\KrysalisMod.csproj", "{C016EADF-89F7-449C-8548-E45435332472}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F9FAB12-ABCF-416E-B6D4-493FFAA37616}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8C72CAE1-85A0-4C08-ABEF-91083CC10EBE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ED6DDBE1-1495-41A0-BE95-17013D308570}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CADD845A-0447-4C47-A196-3EF238E24872}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CADD845A-0447-4C47-A196-3EF238E24872}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CADD845A-0447-4C47-A196-3EF238E24872}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -66,5 +45,8 @@ Global
 		{C016EADF-89F7-449C-8548-E45435332472}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C016EADF-89F7-449C-8548-E45435332472}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C016EADF-89F7-449C-8548-E45435332472}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

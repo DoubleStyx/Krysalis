@@ -12,6 +12,6 @@ public class KrysalisManagedWrapper
 {
     public static bool MainFfi()
     {
-        KrysalisManagedFFI.KrysalisManagedFFI.main_ffi();
+        return KrysalisManagedFFI.KrysalisManagedFFI.main_ffi();
     }
 }
