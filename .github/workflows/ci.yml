@@ -55,6 +55,12 @@ jobs:
       #       vulkan-sdk-${{ runner.os }}-
       #       vulkan-sdk-
 
+      - name: Verify PowerShell Core Installation
+        shell: pwsh
+        run: |
+          Get-Command pwsh
+      
+
       - name: Set Up Artifact Names
         id: artifacts
         shell: pwsh
