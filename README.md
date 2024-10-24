@@ -7,23 +7,23 @@ Krysalis is designed to be cross-platform-friendly by default. It uses Vulkan, D
 The Krysalis project is split into several components:
 
 - **`KrysalisMod.dll`**: 
-  Contains the Harmony patches required to integrate the renderer into Resonite. Interacts with `KrysalisManagedAPI` and Resonite (external application).
+  - Contains the Harmony patches required to integrate the renderer into Resonite. Interacts with `KrysalisManagedAPI` and Resonite (external application).
 - **`KrysalisManagedAPI.dll`**: 
-  Contains the managed-facing API written in C# for the renderer. Interacts with `KrysalisMangedWrapper` and `KrysalisMod`.
+  - Contains the managed-facing API written in C# for the renderer. Interacts with `KrysalisMangedWrapper` and `KrysalisMod`.
 - **`KrysalisManagedWrapper.dll`**: 
-  Contains idiomatic C# wrappers for the FFI code in `KrysalisManagedFFI`. Interacts with `KrysalisManagedAPI` and `KrysalisManagedFFI`.
+  - Contains idiomatic C# wrappers for the FFI code in `KrysalisManagedFFI`. Interacts with `KrysalisManagedAPI` and `KrysalisManagedFFI`.
 - **`KrysalisManagedFFI.dll`**: 
-  Contains the FFI (Foreign Function Interface) declarations written in C#. Interacts with `KrysalisNativeFFI` (through the FFI boundry) and `KrysalisManagedWrapper`.
+  - Contains the FFI (Foreign Function Interface) declarations written in C#. Interacts with `KrysalisNativeFFI` (through the FFI boundry) and `KrysalisManagedWrapper`.
 - **`KrysalisNativeFFI.dll`**: 
-  Contains the FFI (Foreign Function Interface) declarations written in Rust. Interacts with `KrysalisMangedFFI` (through the FFI boundry) and `KrysalisNativeWrapper`.
+  - Contains the FFI (Foreign Function Interface) declarations written in Rust. Interacts with `KrysalisMangedFFI` (through the FFI boundry) and `KrysalisNativeWrapper`.
 - **`KrysalisNativeWrapper.dll`**: 
-  Contains idiomatic Rust wrappers for the FFI code in `KrysalisNativeFFI`. Interacts with `KrysalisNativeAPI` and `KrysalisNativeFFI`.
+  - Contains idiomatic Rust wrappers for the FFI code in `KrysalisNativeFFI`. Interacts with `KrysalisNativeAPI` and `KrysalisNativeFFI`.
 - **`KrysalisNativeAPI.dll`**: 
-  Contains the native-facing API written in Rust for the renderer. Interacts with `KrysalisNativeWrapper` and `KrysalisRenderer`.
+  - Contains the native-facing API written in Rust for the renderer. Interacts with `KrysalisNativeWrapper` and `KrysalisRenderer`.
 - **`KrysalisRenderer.dll`**: 
-  Contains the core rendering logic written in Rust. Interacts with `KrysalisHAL` and `KrysalisNativeAPI`.
+  - Contains the core rendering logic written in Rust. Interacts with `KrysalisHAL` and `KrysalisNativeAPI`.
 - **`KrysalisHAL.dll`**: 
-  Contains the hardware abstraction layer written in Rust that abstracts away platform-specific differences in graphics API usage while being designed to take advantage of each API's nuances. Interacts with the `ash`, `metal`, and `windows` crates and `KrysalisRenderer`.
+  - Contains the hardware abstraction layer written in Rust that abstracts away platform-specific differences in graphics API usage while being designed to take advantage of each API's nuances. Interacts with the `ash`, `metal`, and `windows` crates and `KrysalisRenderer`.
 
 If you want to see what's being worked on currently, check out the [Krysalis project board](https://github.com/users/DoubleStyx/projects/3).
 
