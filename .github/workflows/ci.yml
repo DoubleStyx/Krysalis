@@ -15,11 +15,13 @@ concurrency:
 jobs:
   build:
     name: Build, Test, and Release
-    strategy:
-      matrix:
-        os: [windows-2019-gpu-t4-4-core]
+    #strategy:
+    #  matrix:
+    #    os: [windows-2019-gpu-t4-4-core]
 
-    runs-on: ${{ matrix.os }}
+    #runs-on: ${{ matrix.os }}
+    runs-on:
+      group: Large
 
     steps:
       - name: Checkout repository
