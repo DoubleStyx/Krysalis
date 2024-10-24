@@ -7,5 +7,5 @@ edition = "2021"
 KrysalisNativeAPI = { path = "../KrysalisNativeAPI" }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
