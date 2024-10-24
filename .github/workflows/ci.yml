@@ -17,7 +17,7 @@ jobs:
     name: Build, Test, and Release
     strategy:
       matrix:
-        os: [windows-2022-large, ubuntu-20.04-large, macos-12-large]
+        os: [windows-gpu-t4-4-core]
 
     runs-on: ${{ matrix.os }}
 
