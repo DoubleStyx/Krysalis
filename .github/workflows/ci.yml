@@ -19,7 +19,8 @@ jobs:
       matrix:
         os: [windows-2022-gpu-t4-4-core]
 
-    runs-on: ${{ matrix.os }}
+    runs-on:
+      group: Large
 
     steps:
       - name: Checkout repository
