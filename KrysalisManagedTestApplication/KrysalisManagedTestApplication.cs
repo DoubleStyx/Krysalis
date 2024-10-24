@@ -8,6 +8,7 @@ namespace KrysalisManagedTestApplication
         [STAThread]
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello world");
             bool result = false;
 
             switch (args[0])
@@ -15,8 +16,13 @@ namespace KrysalisManagedTestApplication
                 case "TestRenderer":
                     result = KrysalisManagedAPI.KrysalisManagedAPI.StartRenderer();
                     break;
+                case "ForceFail":
+                    result = false;
+                    break;
                 default:
-                    throw new Exception("Invalid argument");
+                     Console.WriteLine("Invalid argument");
+                     result = false;
+                     break;
             }
 
             if (result)
@@ -25,7 +31,7 @@ namespace KrysalisManagedTestApplication
             }
             else
             {
-                throw new Exception("Test failed");
+                Console.WriteLine("Test failed");
             }
         }
     }

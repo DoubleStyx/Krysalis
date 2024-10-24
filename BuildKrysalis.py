@@ -47,6 +47,8 @@ def copy_repo():
         "KrysalisManagedTestRunner/bin/Release/net8.0/")
     shutil.copy2("./KrysalisManagedAPI/bin/Release/netstandard2.0/KrysalisManagedAPI.dll",
         "KrysalisManagedTestRunner/bin/Release/net8.0/")
+    shutil.copy2("./KrysalisManagedAPI/bin/Release/netstandard2.0/KrysalisManagedWrapper.dll",
+        "KrysalisManagedTestRunner/bin/Release/net8.0/")
     shutil.copy2("./target/release/KrysalisNativeFFI.dll",
         "KrysalisManagedTestRunner/bin/Release/net8.0/")
     if should_copy_to_resonite:
