@@ -35,8 +35,8 @@ If you want to see what's being worked on currently, check out the [Krysalis pro
 
 - Download the latest release of Krysalis.
 - Extract the provided ZIP file directly into the `rml_mods` directory of your Resonite installation. The ZIP should contain:
-- `KrysalisMod.dll` (place in the root of the `rml_mods` folder).
-- The `Krysalis` folder, containing other essential libraries.
+  - `KrysalisMod.dll` (place in the root of the `rml_mods` folder).
+  - The `Krysalis` folder, containing other essential libraries.
 
 3. **Launch Resonite**:
 
