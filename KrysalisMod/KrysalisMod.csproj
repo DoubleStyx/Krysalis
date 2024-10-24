@@ -23,6 +23,6 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+		<ProjectReference Include="..\KrysalisManagedAPI\KrysalisManagedAPI.csproj" />
   </ItemGroup>
 </Project>

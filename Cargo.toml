@@ -1,4 +1,7 @@
 [workspace]
 members = [
-    "KrysalisNative"
+    "KrysalisRenderer",
+    "KrysalisNativeFFI",
+    "KrysalisNativeAPI",
+    "KrysalisNativeWrapper"
 ]

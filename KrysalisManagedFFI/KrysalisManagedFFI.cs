@@ -5,10 +5,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KrysalisManaged;
+namespace KrysalisManagedFFI;
 
-public class KrysalisManaged
+public class KrysalisManagedFFI
 {
-    [DllImport("KrysalisNative.dll", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("KrysalisNativeFFI.dll", CallingConvention = CallingConvention.Cdecl)]
     public static extern bool main_ffi();
 }

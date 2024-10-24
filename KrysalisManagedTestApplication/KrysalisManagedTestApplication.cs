@@ -1,14 +1,14 @@
 ﻿using System;
-using KrysalisManaged;
+using KrysalisManagedAPI;
 
-namespace KrysalisManagedTests
+namespace KrysalisManagedTestApplication
 {
     class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
-            bool result = KrysalisManaged.KrysalisManaged.main_ffi();
+            bool result = KrysalisManagedAPI.KrysalisManagedAPI.StartRenderer();
             if (result)
             {
                 Console.WriteLine("Test passed");

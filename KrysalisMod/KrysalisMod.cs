@@ -1,21 +1,21 @@
 using FrooxEngine;
 using HarmonyLib;
 using ResoniteModLoader;
-using KrysalisManaged;
+using KrysalisManagedAPI;
 
-namespace Krysalis;
+namespace KrysalisMod;
 
-public class Krysalis : ResoniteMod
+public class KrysalisMod : ResoniteMod
 {
     internal const string VERSION_CONSTANT = "1.0.0";
-    public override string Name => "Krysalis";
+    public override string Name => "KrysalisMod";
     public override string Author => "DoubleStyx";
     public override string Version => VERSION_CONSTANT;
     public override string Link => "https://github.com/DoubleStyx/Krysalis/";
 
     public override void OnEngineInit()
     {
-        Harmony harmony = new Harmony("net.DoubleStyx.Krysalis");
+        Harmony harmony = new Harmony("net.DoubleStyx.KrysalisMod");
         Msg("Registered Harmony instance");
         harmony.PatchAll();
         Msg("Patched all methods");
