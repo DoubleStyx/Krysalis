@@ -43,91 +43,34 @@ def build_repo():
             except Exception as exc:
                 print(f"Build for {build_type} generated an exception: {exc}")
                 sys.exit(1)
-            else:
-                print(f"Build for {build_type} completed successfully.")
-
-def get_platform_specific_extension():
-    """Return the correct library extension for the current platform."""
-    current_platform = platform.system().lower()
-    if current_platform == "windows":
-        return "dll"
-    elif current_platform == "linux":
-        return "so"
-    elif current_platform == "darwin":
-        return "dylib"
-    else:
-        print(f"Unsupported platform: {current_platform}")
-        sys.exit(1)
 
 def get_output_path(project_name):
     project_path = os.path.join(current_directory, project_name)
     project_type = get_project_type(project_path)
 
     if project_type == "dotnet":
-        csproj_path = os.path.join(project_path, f"{project_name}.csproj")
-        tree = ET.parse(csproj_path)
-        root = tree.getroot()
-
-        target_framework = None
-        for element in root.findall(".//TargetFramework"):
-            target_framework = element.text
-            break
-
-        if target_framework:
-            return os.path.join(project_path, "bin", "Release", target_framework)
-        else:
-            print(f"Error: Could not determine the target framework for {project_name}.")
-            return os.path.join(project_path, "bin", "Release")
+        return os.path.join(project_path, "bin", "Release", "net472")
     elif project_type == "cargo":
-        root_target_dir = os.path.join(current_directory, "target", "release")
-        if os.path.exists(root_target_dir):
-            return root_target_dir
-        else:
-            print(f"Error: Could not find build output for {project_name}.")
-            sys.exit(1)
+        return os.path.join(current_directory, "target", "release")
     else:
         print(f"Error: Could not determine the output path for {project_name}.")
         sys.exit(1)
 
 def copy_dll(source, destination, absolute_destination_path=False):
     source_output_path = get_output_path(source)
-    project_type = get_project_type(os.path.join(current_directory, source))
-
-    current_platform = platform.system().lower()
-    extension = get_platform_specific_extension()
-
-    if project_type == "cargo":
-        if current_platform == "windows":
-            dll_filename = f"{source}.dll"
-        elif current_platform == "linux":
-            dll_filename = f"lib{source}.so"
-        elif current_platform == "darwin":
-            dll_filename = f"lib{source}.dylib"
-        else:
-            print(f"Unsupported platform for cargo project: {current_platform}")
-            sys.exit(1)
-    else:
-        dll_filename = f"{source}.dll"
+    dll_filename = f"{source}.dll"
 
     dll_path = os.path.join(source_output_path, dll_filename)
-    if not os.path.exists(dll_path):
-        print(f"Error: {dll_filename} for {source} not found in {source_output_path}")
-        sys.exit(1)
 
     if absolute_destination_path:
         destination_dir = destination
     else:
         destination_dir = get_output_path(destination)
 
-    if not os.path.exists(destination_dir):
-        os.makedirs(destination_dir)
-        print(f"Created directory: {destination_dir}")
-
     target_path = os.path.join(destination_dir, os.path.basename(dll_path))
     print(f"Copying {dll_path} to {target_path}")
     try:
         shutil.copy2(dll_path, target_path)
-        print(f"Copied {dll_path} to {target_path}")
     except Exception as e:
         print(f"Error copying DLL: {e}")
         sys.exit(1)

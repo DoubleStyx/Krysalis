@@ -1,8 +1,6 @@
 # Krysalis
 
-Krysalis is a high-performance VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
-
-Krysalis is designed to be cross-platform-friendly by default. It uses Vulkan, DirectX, and Metal per platform. `netstandard2.0` is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Libraries like `winit` are used to abstract away platform-specific differences.
+Krysalis is a high-performance DirectX12 VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
 
 The Krysalis project is split into three components:
 
@@ -60,84 +58,13 @@ Before building the project, make sure the following tools are installed:
      python --version
      ```
 
-4. **Graphics API SDKs**
+4. **DX12 SDK**
 
-   Depending on your development platform, install the appropriate graphics API SDKs.
-
-   - **Windows**:
-
-     - **Vulkan SDK**:
-
-       - Download and install the Vulkan SDK from [LunarG's website](https://vulkan.lunarg.com/sdk/home#windows).
-       - Follow the installer instructions. The default settings should suffice.
-       - After installation, set the `VULKAN_SDK` environment variable:
-
-         ```powershell
-         setx VULKAN_SDK "C:\VulkanSDK\1.3.xxx.x" /M
-         ```
-
-     - **DirectX 12 SDK**:
-
-       - DirectX 12 is included with the Windows SDK.
-       - Install the [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/).
-       - Ensure that the **Graphics Tools** feature is installed:
-         - Go to **Apps & Features** > **Optional Features** > **Add a Feature**.
-         - Select **Graphics Tools** and install.
-
-   - **Linux**:
-
-     - **Vulkan SDK**:
-
-       - Download the Vulkan SDK from [LunarG's website](https://vulkan.lunarg.com/sdk/home#linux).
-       - Extract the downloaded package.
-       - Set up the environment variables:
-
-         ```bash
-         tar -xzf vulkansdk-linux-x86_64-1.3.xxx.x.tar.gz
-         cd 1.3.xxx.x
-         source setup-env.sh
-         ```
-
-       - You may want to add the `source setup-env.sh` line to your `~/.bashrc` or `~/.profile` for persistence.
-
-     - **Dependencies**:
-
-       - Install required packages:
-
-         ```bash
-         sudo apt-get install libvulkan1 mesa-vulkan-drivers vulkan-utils
-         ```
-
-   - **macOS**:
-
-     - **Vulkan SDK with MoltenVK**:
-
-       - Download the Vulkan SDK from [LunarG's website](https://vulkan.lunarg.com/sdk/home#mac).
-       - Install the SDK by following the instructions.
-
-     - **Metal Development Tools**:
-
-       - Metal is included with Xcode.
-       - Install the latest version of [Xcode](https://developer.apple.com/xcode/).
-       - Ensure Command Line Tools are installed:
-
-         ```bash
-         xcode-select --install
-         ```
-
-     - **Set Up Environment Variables**:
-
-       - Add the following lines to your shell configuration file (`~/.zshrc` or `~/.bash_profile`):
-
-         ```bash
-         export VULKAN_SDK="/path/to/vulkansdk-macos-1.3.xxx.x/macOS"
-         export PATH="$VULKAN_SDK/bin:$PATH"
-         export DYLD_LIBRARY_PATH="$VULKAN_SDK/lib:$DYLD_LIBRARY_PATH"
-         export VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
-         export VK_LAYER_PATH="$VULKAN_SDK/share/vulkan/explicit_layer.d"
-         ```
-
-       - Replace `/path/to/vulkansdk-macos-1.3.xxx.x/macOS` with the actual path where you installed the SDK.
+- DirectX 12 is included with the Windows SDK.
+- Install the [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/).
+- Ensure that the **Graphics Tools** feature is installed:
+  - Go to **Apps & Features** > **Optional Features** > **Add a Feature**.
+  - Select **Graphics Tools** and install.
 
 ### Building and Testing
 
@@ -145,54 +72,37 @@ Once all dependencies are installed and configured, follow these steps to build 
 
 1. **Clone the Krysalis Repository**:
 
-   ```bash
-   git clone https://github.com/DoubleStyx/Krysalis.git
-   cd Krysalis
-   ```
+```bash
+git clone https://github.com/DoubleStyx/Krysalis.git
+cd Krysalis
+```
 
 2. **Run the Python Build Automation Script**:
 
-   ```bash
-   python Krysalis.py
-   ```
+```bash
+python Krysalis.py
+```
 
-   This script will:
+This script will:
 
-   - Build both the Rust and C# components.
-   - Handle library copying to Resonite and the test project.
-   - Ensure platform-specific dependencies are correctly configured.
+- Build both the Rust and C# components.
+- Handle library copying to Resonite and the test project.
 
 3. **Run the Tests**:
 
-   - Navigate to the test project's output directory:
+- Navigate to the test project's output directory:
 
-     - **Windows**:
+```bash
+cd KrysalisManagedTests\bin\Release\net8.0
+```
 
-       ```bash
-       cd KrysalisManagedTests\bin\Release\net8.0
-       ```
+- Run the `KrysalisManagedTests` executable:
 
-     - **Linux/macOS**:
+```bash
+KrysalisManagedTests.exe
+```
 
-       ```bash
-       cd KrysalisManagedTests/bin/Release/net8.0
-       ```
-
-   - Run the `KrysalisManagedTests` executable:
-
-     - **Windows**:
-
-       ```bash
-       KrysalisManagedTests.exe
-       ```
-
-     - **Linux/macOS**:
-
-       ```bash
-       ./KrysalisManagedTests
-       ```
-
-   A successful test run will output confirmation that all steps were completed successfully.
+A successful test run will output confirmation that all steps were completed successfully.
 
 ## Planned Features and Architecture
 

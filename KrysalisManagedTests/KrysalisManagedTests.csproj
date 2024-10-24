@@ -1,23 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
-		<IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows> 
-		<IsOsx Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOsx>
-		<IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net472</TargetFramework>
+		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
-	<PropertyGroup Condition="'$(IsWindows)'=='true'">
-    	<DefineConstants>Windows</DefineConstants> 
-	</PropertyGroup>
-		<PropertyGroup Condition="'$(IsOsx)'=='true'">
-    	<DefineConstants>Osx</DefineConstants> 
-	</PropertyGroup>
-		<PropertyGroup Condition="'$(IsLinux)'=='true'">
-    	<DefineConstants>Linux</DefineConstants> 
-	</PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\KrysalisManaged\KrysalisManaged.csproj" />
+	</ItemGroup>
 </Project>

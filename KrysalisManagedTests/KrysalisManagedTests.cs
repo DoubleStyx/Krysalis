@@ -5,9 +5,7 @@ namespace KrysalisManagedTests
 {
     class Program
     {
-        #if Windows
         [STAThread]
-        #endif
         static void Main(string[] args)
         {
             bool result = KrysalisManaged.KrysalisManaged.main_ffi();

@@ -429,6 +429,5 @@ Cargo.lock
 # Ignore build directories
 build/
 
-# Keep external dlls
-!external/
+# Keep assets
 !assets/
