@@ -57,7 +57,7 @@ jobs:
 
       - name: Set Up Artifact Names
         id: artifacts
-        shell: bash
+        shell: pwsh
         env:
           ACTION_TAG: ${{ github.action_ref }}
         run: |
