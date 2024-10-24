@@ -47,6 +47,7 @@ jobs:
 
       - name: Install Vulkan SDK (Windows)
         run: |
+          choco feature enable -n allowGlobalConfirmation
           choco install vulkan-sdk
 
       - name: Run Python build script
