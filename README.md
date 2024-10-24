@@ -1,6 +1,8 @@
 # Krysalis
 
-Krysalis is a high-performance DirectX12 VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
+Krysalis is a high-performance cross-platform VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
+
+Krysalis is designed to be cross-platform-friendly by default. It uses Vulkan, DirectX, and Metal per platform with a custom abstraction layer. `netstandard2.0` is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Libraries like `winit` are also used to abstract away platform-specific differences.
 
 The Krysalis project is split into three components:
 
@@ -16,15 +18,15 @@ If you want to see what's being worked on currently, check out the [Krysalis pro
 
 2. **Extract Krysalis Mod Files**:
 
-   - Download the latest release of Krysalis.
-   - Extract the provided ZIP file into the `rml_mods` directory of your Resonite installation. The ZIP should contain:
-     - `Krysalis.dll` (place in the root of the `rml_mods` folder).
-     - The `Krysalis` folder, containing subfolder assets, `KrysalisManaged.dll`, and `KrysalisNative.dll`.
+- Download the latest release of Krysalis.
+- Extract the provided ZIP file into the `rml_mods` directory of your Resonite installation. The ZIP should contain:
+- `Krysalis.dll` (place in the root of the `rml_mods` folder).
+- The `Krysalis` folder, containing subfolder assets, `KrysalisManaged.dll`, and `KrysalisNative.dll`.
 
 3. **Launch Resonite**:
 
-   - Start the game as usual.
-   - To verify that the mod is working, check the log files for entries from the `Krysalis` mod.
+- Start the game as usual.
+- To verify that the mod is working, check the log files for entries from the `Krysalis` mod.
 
 ## Setting Up the Development Environment
 
@@ -36,35 +38,31 @@ Before building the project, make sure the following tools are installed:
 
 1. **Visual Studio 2022** (with C# and .NET Workloads)
 
-   - Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/vs/).
-   - During installation, select the **.NET Desktop Development** workload, which includes C# project support.
+- Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/vs/).
+- During installation, select the **.NET Desktop Development** workload, which includes C# project support.
 
 2. **Rust and Cargo**
 
-   - Install **Rustup** by following the instructions on [Rust's official website](https://www.rust-lang.org/tools/install).
-   - After installation, run the following commands to ensure Rust is set up correctly:
+- Install **Rustup** by following the instructions on [Rust's official website](https://www.rust-lang.org/tools/install).
+- After installation, run the following commands to ensure Rust is set up correctly:
 
-     ```bash
-     rustup install stable
-     rustup update
-     ```
+  ```bash
+  rustup install stable
+  rustup update
+  ```
 
 3. **Python 3.x**
 
-   - Download and install [Python 3.x](https://www.python.org/downloads/).
-   - Ensure Python is added to your system's PATH by running:
+- Download and install [Python 3.x](https://www.python.org/downloads/).
+- Ensure Python is added to your system's PATH by running:
 
-     ```bash
-     python --version
-     ```
+  ```bash
+  python --version
+  ```
 
-4. **DX12 SDK**
+4. **Vulkan/DX12/Metal SDK**
 
-- DirectX 12 is included with the Windows SDK.
-- Install the [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/).
-- Ensure that the **Graphics Tools** feature is installed:
-  - Go to **Apps & Features** > **Optional Features** > **Add a Feature**.
-  - Select **Graphics Tools** and install.
+Install Vulkan/DX12/Metal according to the installation instructions for that API.
 
 ### Building and Testing
 
@@ -90,17 +88,15 @@ This script will:
 
 3. **Run the Tests**:
 
-- Navigate to the test project's output directory:
-
 ```bash
-cd KrysalisManagedTests\bin\Release\net8.0
+python KrysalisTests.py
 ```
 
-- Run the `KrysalisManagedTests` executable:
+This script will:
 
-```bash
-KrysalisManagedTests.exe
-```
+- Automatically build both the Rust and C# components if not built already.
+- Handle library copying to Resonite and the test project if not copied already.
+- Run the Rust and C# unit tests.
 
 A successful test run will output confirmation that all steps were completed successfully.
 
