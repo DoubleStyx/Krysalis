@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Xunit;
+using System;
 
 namespace KrysalisManagedTestRunner
 {
@@ -11,7 +12,7 @@ namespace KrysalisManagedTestRunner
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "../KrysalisManagedTestApplication/bin/Release/netstandard2.0/KrysalisManagedTestApplication.exe",
+                    FileName = "KrysalisManagedTestApplication.exe",
                     Arguments = "TestRenderer",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -21,8 +22,10 @@ namespace KrysalisManagedTestRunner
 
             process.Start();
             process.WaitForExit();
-
-            Assert.Equal(0, process.ExitCode);
+            string output = process.StandardOutput.ReadToEnd();
+            Console.WriteLine(output);
+            
+            Assert.True(output.Contains("Test passed"));
         }
 
         [Fact]

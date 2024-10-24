@@ -12,7 +12,7 @@ namespace KrysalisManagedTestApplication
 
             switch (args[0])
             {
-                case "test":
+                case "TestRenderer":
                     result = KrysalisManagedAPI.KrysalisManagedAPI.StartRenderer();
                     break;
                 default:
@@ -22,12 +22,10 @@ namespace KrysalisManagedTestApplication
             if (result)
             {
                 Console.WriteLine("Test passed");
-                Environment.Exit(0);
             }
             else
             {
                 throw new Exception("Test failed");
-                Environment.Exit(1);
             }
         }
     }

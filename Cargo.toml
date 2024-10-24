@@ -1,9 +1,9 @@
 [workspace]
 members = [
-    "KrysalisRenderer",
     "KrysalisNativeFFI",
-    "KrysalisNativeAPI",
     "KrysalisNativeWrapper",
+    "KrysalisNativeAPI",
+    "KrysalisRenderer",
     "KrysalisHAL",
     "KrysalisNativeTestApplication",
     "KrysalisNativeTestRunner"

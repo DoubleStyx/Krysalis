@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 winit = { version = "0.30" }
+KrysalisHAL = { path = "../KrysalisHAL" }
 
 [lib]
 crate-type = ["cdylib"]
