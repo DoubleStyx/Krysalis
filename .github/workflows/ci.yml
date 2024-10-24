@@ -57,7 +57,7 @@ jobs:
 
       - name: Set Up Artifact Names
         id: artifacts
-        shell: pwsh
+        shell: bash
         env:
           ACTION_TAG: ${{ github.action_ref }}
         run: |
@@ -74,7 +74,7 @@ jobs:
             echo "Unsupported OS: ${{ runner.os }}"
             exit 1
           fi
-  
+
           if [ -n "$ACTION_TAG" ]; then
             echo "vk-ci-action-tag=$ACTION_TAG" >> "$GITHUB_OUTPUT"
             echo "Using action ref: $ACTION_TAG"
@@ -85,26 +85,25 @@ jobs:
               echo "vk-ci-action-tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
               echo "Using latest tag: $LATEST_TAG"
           fi
-  
+
       - name: Download Artifacts
         uses: robinraju/release-downloader@v1.10
         with:
           repository: 'NcStudios/VulkanCI'
           tag: '${{ steps.artifacts.outputs.vk-ci-action-tag }}'
-          filename: '${{ steps.artifacts.outputs.vk-ci-artifact-name}}'
           out-file-path: 'VulkanSDK'
           extract: true
-  
+
       - name: Setup Environment
         id: setup-environment
-        shell: pwsh
+        shell: bash
         run: |
           INSTALL_PATH="${{ inputs.installPath }}/VulkanSDK/${{ inputs.sdkVersion }}"
           INSTALL_PATH="${INSTALL_PATH//\\//}"
-  
+
           echo "VULKAN_SDK=$INSTALL_PATH" >> "$GITHUB_ENV"
           echo "VULKAN_SDK_VERSION=${{ inputs.sdkVersion }}" >> "$GITHUB_ENV"
-  
+
           cat <<EOF > "$INSTALL_PATH/swiftshader/vk_swiftshader_icd.json"
           {
             "file_format_version": "1.0.0",
@@ -114,9 +113,9 @@ jobs:
             }
           }
           EOF
-  
+
           echo "VK_DRIVER_FILES=$INSTALL_PATH/swiftshader/vk_swiftshader_icd.json" >> "$GITHUB_ENV"
-  
+
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             echo "VK_LAYER_PATH=$INSTALL_PATH/bin" >> "$GITHUB_ENV"
             echo "$INSTALL_PATH/bin" >> "$GITHUB_PATH"
@@ -130,17 +129,17 @@ jobs:
             echo "Unsupported OS: ${{ runner.os }}"
             exit 1
           fi
-  
+
           echo "vk-ci-vulkan-install-path=$INSTALL_PATH" >> "$GITHUB_OUTPUT"
           echo "vk-ci-swiftshader-install-path=$INSTALL_PATH/swiftshader" >> "$GITHUB_OUTPUT"
-          
+
       - name: Run Python build script
         run: python3 -u Krysalis.py
-        shell: pwsh
+        shell: bash
 
       - name: Run tests
         run: dotnet run --project KrysalisManagedTests/KrysalisManagedTests.csproj
-        shell: pwsh
+        shell: bash
 
       - name: Prepare artifact structure (Windows)
         if: matrix.os == 'windows-2022-large'
@@ -151,7 +150,7 @@ jobs:
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
           Compress-Archive -Path @("Krysalis.dll", "Krysalis/") -DestinationPath "../Krysalis-Windows-v${{ github.run_number }}.zip"
-        shell: pwsh
+        shell: bash
 
       - name: Prepare artifact structure (Linux)
         if: matrix.os == 'ubuntu-20.04-large'
@@ -162,7 +161,7 @@ jobs:
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
           zip -r "../Krysalis-Linux-v${{ github.run_number }}.zip" ./*
-        shell: pwsh
+        shell: bash
 
       - name: Prepare artifact structure (macOS)
         if: matrix.os == 'macos-12-large'
@@ -173,7 +172,7 @@ jobs:
           cp Krysalis/bin/Release/netstandard2.0/Krysalis.dll artifact/Krysalis.dll
           cd artifact
           zip -r "../Krysalis-macOS-v${{ github.run_number }}.zip" ./*
-        shell: pwsh
+        shell: bash
 
       - name: Upload artifact (Windows)
         if: matrix.os == 'windows-2022-large'
