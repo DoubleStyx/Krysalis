@@ -47,7 +47,7 @@ def get_output_path(project_name):
     project_type = get_project_type(project_path)
 
     if project_type == "dotnet":
-        return os.path.join(project_path, "bin", "Release", "net472")
+        return os.path.join(project_path, "bin", "Release", "netstandard2.0")
     elif project_type == "cargo":
         return os.path.join(current_directory, "target", "release")
     else:
@@ -83,7 +83,6 @@ def get_project_type(project_dir):
 
 def copy_repo():
     copy_dll("KrysalisNative", "KrysalisManagedTests")
-    copy_dll("KrysalisManaged", "KrysalisManagedTests")
     if should_copy_to_resonite:
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
@@ -92,7 +91,7 @@ def copy_repo():
 def main():
     build_repo()
 
-    copy_repo()
+    #copy_repo()
 
 if __name__ == "__main__":
     main()

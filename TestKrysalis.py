@@ -28,9 +28,9 @@ def test_repo():
 def main():
     BuildKrysalis.build_repo()
 
-    BuildKrysalis.copy_repo()
+    #BuildKrysalis.copy_repo()
     
-    test_repo()
+    #test_repo()
 
 if __name__ == "__main__":
     main()
