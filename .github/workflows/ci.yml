@@ -17,7 +17,7 @@ jobs:
     name: Build, Test, and Release
     strategy:
       matrix:
-        os: [windows-gpu-t4-4-core]
+        os: [windows-2022-large]
 
     runs-on: ${{ matrix.os }}
 
@@ -59,7 +59,7 @@ jobs:
         uses: NcStudios/VulkanCI@v1.0
         with:
           sdkVersion: 1.3.283.0
-
+          
       - name: Run Python build script
         run: python3 -u Krysalis.py
         shell: bash
