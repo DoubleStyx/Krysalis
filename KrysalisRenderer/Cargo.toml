@@ -4,9 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-ash = "0.38"
-windows = "0.58"
-metal = "0.29"
 winit = { version = "0.30" }
 
 [lib]

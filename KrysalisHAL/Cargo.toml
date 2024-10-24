@@ -7,7 +7,6 @@ edition = "2021"
 ash = "0.38"
 windows = "0.58"
 metal = "0.29"
-winit = { version = "0.30" }
 
 [lib]
 crate-type = ["cdylib"]

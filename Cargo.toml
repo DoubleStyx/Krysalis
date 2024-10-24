@@ -3,5 +3,6 @@ members = [
     "KrysalisRenderer",
     "KrysalisNativeFFI",
     "KrysalisNativeAPI",
-    "KrysalisNativeWrapper"
+    "KrysalisNativeWrapper",
+    "KrysalisHAL"
 ]
