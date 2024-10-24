@@ -3,8 +3,6 @@ import subprocess
 import sys
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import xml.etree.ElementTree as ET
-import platform
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
@@ -83,15 +81,18 @@ def get_project_type(project_dir):
     else:
         return None
 
-def main():
-    build_repo()
-
+def copy_repo():
     copy_dll("KrysalisNative", "KrysalisManagedTests")
     copy_dll("KrysalisManaged", "KrysalisManagedTests")
     if should_copy_to_resonite:
         copy_dll("KrysalisNative", mods_path, True)
         copy_dll("KrysalisManaged", os.path.join(mods_path, "Krysalis"), True)
         copy_dll("KrysalisNative", os.path.join(mods_path, "Krysalis"), True)
+
+def main():
+    build_repo()
+
+    copy_repo()
 
 if __name__ == "__main__":
     main()

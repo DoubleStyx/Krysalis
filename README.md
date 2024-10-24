@@ -1,14 +1,20 @@
 # Krysalis
 
-Krysalis is a high-performance cross-platform VR renderer with optional support for [Resonite](https://resonite.com/) (via `Krysalis.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
+Krysalis is a high-performance cross-platform VR/desktop renderer with optional support for [Resonite](https://resonite.com/) (via `KrysalisMod.dll` which functions as a [ResoniteModLoader](https://github.com/DoubleStyx/ResoniteModLoader) mod). It can be used to replace the default Unity renderer in Resonite, adding support for modern VR rendering techniques. Krysalis is also a prerequisite for a butterfly.
 
 Krysalis is designed to be cross-platform-friendly by default. It uses Vulkan, DirectX, and Metal per platform with a custom abstraction layer. `netstandard2.0` is used to ensure the C# API is compatible when Resonite migrates to .NET 8.0. Libraries like `winit` are also used to abstract away platform-specific differences.
 
-The Krysalis project is split into three components:
+The Krysalis project is split into several components:
 
-- **`KrysalisNative.dll`**: Contains the renderer code written in Rust using graphics API bindings.
-- **`KrysalisManaged.dll`**: The C# API, providing a user-friendly wrapper around the Rust FFI (Foreign Function Interface).
-- **`Krysalis.dll`**: Integrates the renderer into Resonite, hooking into the game to leverage `KrysalisManaged` calls.
+- **`KrysalisMod.dll`**: Contains the Harmony patches required to integrate the renderer into Resonite. Interacts with `KrysalisManagedAPI` and Resonite (external application).
+- **`KrysalisManagedAPI.dll`**: Contains the managed-facing API written in C# for the renderer. Interacts with `KrysalisMangedWrapper` and `KrysalisMod`.
+- **`KrysalisManagedWrapper.dll`**: Contains idiomatic C# wrappers for the FFI code in `KrysalisManagedFFI`. Interacts with `KrysalisManagedAPI` and `KrysalisManagedFFI`.
+- **`KrysalisManagedFFI.dll`**: Contains the FFI (Foreign Function Interface) declarations written in C#. Interacts with `KrysalisNativeFFI` (through the FFI boundry) and `KrysalisManagedWrapper`.
+- **`KrysalisNativeFFI.dll`**: Contains the FFI (Foreign Function Interface) declarations written in Rust. Interacts with `KrysalisMangedFFI` (through the FFI boundry) and `KrysalisNativeWrapper`.
+- **`KrysalisNativeWrapper.dll`**: Contains idiomatic Rust wrappers for the FFI code in `KrysalisNativeFFI`. Interacts with `KrysalisNativeAPI` and `KrysalisNativeFFI`.
+- **`KrysalisNativeAPI.dll`**: Contains the native-facing API written in Rust for the renderer. Interacts with `KrysalisNativeWrapper` and `KrysalisRenderer`.
+- **`KrysalisRenderer.dll`**: Contains the core rendering logic written in Rust. Interacts with `KrysalisHAL` and `KrysalisNativeAPI`.
+- **`KrysalisHAL.dll`**: Contains the hardware abstraction layer written in Rust that abstracts away platform-specific differences in graphics API usage while being designed to take advantage of each API's nuances. Interacts with the `ash`, `metal`, and `windows` crates and `KrysalisRenderer`.
 
 If you want to see what's being worked on currently, check out the [Krysalis project board](https://github.com/users/DoubleStyx/projects/3).
 
@@ -19,14 +25,14 @@ If you want to see what's being worked on currently, check out the [Krysalis pro
 2. **Extract Krysalis Mod Files**:
 
 - Download the latest release of Krysalis.
-- Extract the provided ZIP file into the `rml_mods` directory of your Resonite installation. The ZIP should contain:
-- `Krysalis.dll` (place in the root of the `rml_mods` folder).
-- The `Krysalis` folder, containing subfolder assets, `KrysalisManaged.dll`, and `KrysalisNative.dll`.
+- Extract the provided ZIP file directly into the `rml_mods` directory of your Resonite installation. The ZIP should contain:
+- `KrysalisMod.dll` (place in the root of the `rml_mods` folder).
+- The `Krysalis` folder, containing other essential libraries.
 
 3. **Launch Resonite**:
 
 - Start the game as usual.
-- To verify that the mod is working, check the log files for entries from the `Krysalis` mod.
+- To verify that the mod is working, check the log files for entries from `KrysalisMod`.
 
 ## Setting Up the Development Environment
 
@@ -78,24 +84,24 @@ cd Krysalis
 2. **Run the Python Build Automation Script**:
 
 ```bash
-python Krysalis.py
+python BuildKrysalis.py
 ```
 
 This script will:
 
 - Build both the Rust and C# components.
-- Handle library copying to Resonite and the test project.
+- Perform library copying to Resonite and the test project (can be disabled in the script).
 
 3. **Run the Tests**:
 
 ```bash
-python KrysalisTests.py
+python TestKrysalis.py
 ```
 
 This script will:
 
-- Automatically build both the Rust and C# components if not built already.
-- Handle library copying to Resonite and the test project if not copied already.
+- Automatically build both the Rust and C# components.
+- Perform library copying to Resonite and the test project (can be disabled in the script).
 - Run the Rust and C# unit tests.
 
 A successful test run will output confirmation that all steps were completed successfully.
