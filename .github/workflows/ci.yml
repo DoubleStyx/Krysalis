@@ -14,10 +14,10 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Release
+    name: Build, Test, and Release
     strategy:
       matrix:
-        os: [windows-2022, ubuntu-20.04, macos-12]
+        os: [windows-2022-large, ubuntu-20.04-large, macos-12-large]
 
     runs-on: ${{ matrix.os }}
 
@@ -64,8 +64,12 @@ jobs:
         run: python3 -u Krysalis.py
         shell: bash
 
+      - name: Run tests
+        run: dotnet run --project KrysalisManagedTests/KrysalisManagedTests.csproj
+        shell: bash
+
       - name: Prepare artifact structure (Windows)
-        if: matrix.os == 'windows-2022'
+        if: matrix.os == 'windows-2022-large'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
@@ -76,7 +80,7 @@ jobs:
         shell: pwsh
 
       - name: Prepare artifact structure (Linux)
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-20.04-large'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
@@ -87,7 +91,7 @@ jobs:
         shell: bash
 
       - name: Prepare artifact structure (macOS)
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-12-large'
         run: |
           mkdir -p artifact/Krysalis
           cp KrysalisManaged/bin/Release/netstandard2.0/KrysalisManaged.dll artifact/Krysalis/KrysalisManaged.dll
@@ -98,21 +102,21 @@ jobs:
         shell: bash
 
       - name: Upload artifact (Windows)
-        if: matrix.os == 'windows-2022'
+        if: matrix.os == 'windows-2022-large'
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-Windows
           path: Krysalis-Windows-v${{ github.run_number }}.zip
 
       - name: Upload artifact (Linux)
-        if: matrix.os == 'ubuntu-20.04'
+        if: matrix.os == 'ubuntu-20.04-large'
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-Linux
           path: Krysalis-Linux-v${{ github.run_number }}.zip
 
       - name: Upload artifact (macOS)
-        if: matrix.os == 'macos-12'
+        if: matrix.os == 'macos-12-large'
         uses: actions/upload-artifact@v3
         with:
           name: Krysalis-macOS
