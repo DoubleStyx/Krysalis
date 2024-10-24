@@ -24,8 +24,6 @@ jobs:
         os: [windows-2019-gpu-t4-4-core]
 
     runs-on: ${{ matrix.os }}
-    container:
-      image: nvidia/vulkan:latest
 
     steps:
       - name: Checkout repository
@@ -51,11 +49,9 @@ jobs:
       #     restore-keys: |
       #       nuget-${{ runner.os }}-
 
-      - name: Set Vulkan SDK Environment
+      - name: Install Vulkan SDK (Windows)
         run: |
-          export VULKAN_SDK=/usr/local/vulkan-sdk
-          export PATH=$VULKAN_SDK/bin:$PATH
-          export LD_LIBRARY_PATH=$VULKAN_SDK/lib:$LD_LIBRARY_PATH
+          choco install vulkan-sdk
 
       - name: Run Python build script
         shell: pwsh
