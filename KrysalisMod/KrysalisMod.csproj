@@ -7,21 +7,19 @@
 	<PropertyGroup Condition="'$(ResonitePath)'==''">
 		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
 	</PropertyGroup>
-	<ItemGroup>
+	</PropertyGroup>
 		<Reference Include="ResoniteModLoader">
-		    <HintPath>$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
-		    <Private>False</Private>
-		</Reference>
+			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">..\external\bin\ResoniteModLoader.dll</HintPath>
+		</Reference>		
 		<Reference Include="HarmonyLib">
-		    <HintPath>$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
-		    <HintPath Condition="Exists('$(ResonitePath)0Harmony.dll')">$(ResonitePath)0Harmony.dll</HintPath>
-			<Private>False</Private>
-		</Reference>
+			<HintPath Condition="Exists('$(ResonitePath)rml_libs\0Harmony.dll')">$(ResonitePath)rml_libs\0Harmony.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)rml_libs\0Harmony.dll')">..\external\bin\0Harmony.dll</HintPath>
+		</Reference>		
 		<Reference Include="FrooxEngine">
-		    <HintPath>$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
-		    <Private>False</Private>
+			<HintPath Condition="Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
+			<HintPath Condition="!Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">..\external\bin\FrooxEngine.dll</HintPath>
 		</Reference>
-	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\KrysalisManagedAPI\KrysalisManagedAPI.csproj" />
   </ItemGroup>
