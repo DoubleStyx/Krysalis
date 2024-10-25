@@ -7,7 +7,7 @@
 	<PropertyGroup Condition="'$(ResonitePath)'==''">
 		<ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
 	</PropertyGroup>
-	</PropertyGroup>
+	<ItemGroup>
 		<Reference Include="ResoniteModLoader">
 			<HintPath Condition="Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">$(ResonitePath)Libraries\ResoniteModLoader.dll</HintPath>
 			<HintPath Condition="!Exists('$(ResonitePath)Libraries\ResoniteModLoader.dll')">..\external\bin\ResoniteModLoader.dll</HintPath>
@@ -20,7 +20,6 @@
 			<HintPath Condition="Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll</HintPath>
 			<HintPath Condition="!Exists('$(ResonitePath)Resonite_Data\Managed\FrooxEngine.dll')">..\external\bin\FrooxEngine.dll</HintPath>
 		</Reference>
-	<ItemGroup>
 		<ProjectReference Include="..\KrysalisManagedAPI\KrysalisManagedAPI.csproj" />
   </ItemGroup>
 </Project>
