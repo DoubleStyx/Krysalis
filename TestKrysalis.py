@@ -1,5 +1,4 @@
 import BuildKrysalis
-import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -25,11 +24,7 @@ def test_repo():
                 print(f"Build for {build_type} generated an exception: {exc}")
                 sys.exit(1)
 
-def main():
-    BuildKrysalis.build_repo()
-
-    BuildKrysalis.copy_repo()
-    
+def main():    
     test_repo()
 
 if __name__ == "__main__":
