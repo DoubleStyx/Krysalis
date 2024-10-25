@@ -43,12 +43,11 @@ def build_repo():
                 sys.exit(1)
 
 def copy_repo():
-    # copy all dlls in target to KrysalisManagedTestRunner
     for file in os.listdir("./target/release/"):
         if file.endswith(".dll"):
             shutil.copy2(f"./target/release/{file}", "KrysalisManagedTestRunner/bin/Release/net8.0/")
     if should_copy_to_resonite:
-        shutil.copy2("./KrysalisMod/bin/Release/netstandard2.0/KrysalisMod.dll",
+        shutil.copy2("./KrysalisMod/bin/Release/net472/KrysalisMod.dll",
         mods_path)
 
 def main():
