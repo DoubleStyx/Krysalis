@@ -3,10 +3,23 @@ import subprocess
 import sys
 import shutil
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import platform
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
-mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
 should_copy_to_resonite = False
+
+if platform.system() == "Windows":
+    mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
+    native_ext = ".dll"
+    executable_ext = ".exe"
+elif platform.system() == "Linux":
+    mods_path = "/home/username/.steam/steam/steamapps/common/Resonite/rml_mods/"
+    native_ext = ".so"
+    executable_ext = ""
+elif platform.system() == "Darwin":
+    mods_path = "/Users/username/Library/Application Support/Steam/steamapps/common/Resonite/rml_mods/"
+    native_ext = ".dylib"
+    executable_ext = ""
 
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
@@ -44,17 +57,16 @@ def build_repo():
 
 def copy_repo():
     for file in os.listdir("./target/release/"):
-        if file.endswith(".dll"):
-            shutil.copy2(f"./target/release/{file}", "KrysalisManagedTestRunner/bin/Release/net8.0/")
-            shutil.copy2("./KrysalisManagedTestApplication/bin/Release/net8.0/KrysalisManagedTestApplication.exe",
-                "./KrysalisManagedTestRunner/bin/Release/net8.0/")
+        if file.endswith(native_ext):
+            shutil.copy2(f"./target/release/{file}", f"KrysalisManagedTestRunner/bin/net8.0")
+            shutil.copy2(f"./KrysalisManagedTestApplication/bin/net8.0/KrysalisManagedTestApplication{executable_ext}",
+                        f"./KrysalisManagedTestRunner/bin/net8.0")
     if should_copy_to_resonite:
-        shutil.copy2("./KrysalisMod/bin/Release/net472/KrysalisMod.dll",
-        mods_path)
+        shutil.copy2(f"./KrysalisMod/bin/Release/net472/KrysalisMod{native_ext}",
+                     mods_path)
 
 def main():
     build_repo()
-
     copy_repo()
 
 if __name__ == "__main__":
