@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 mods_path = "C:/Program Files (x86)/Steam/steamapps/common/Resonite/rml_mods/"
-should_copy_to_resonite = True
+should_copy_to_resonite = False
 
 def run_command(command, cwd=None):
     print(f"Running command: {' '.join(command)}")
