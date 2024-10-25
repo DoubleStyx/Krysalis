@@ -46,6 +46,8 @@ def copy_repo():
     for file in os.listdir("./target/release/"):
         if file.endswith(".dll"):
             shutil.copy2(f"./target/release/{file}", "KrysalisManagedTestRunner/bin/Release/net8.0/")
+            shutil.copy2("./KrysalisManagedTestApplication/bin/Release/net8.0/KrysalisManagedTestApplication.exe",
+                "./KrysalisManagedTestRunner/bin/Release/net8.0/")
     if should_copy_to_resonite:
         shutil.copy2("./KrysalisMod/bin/Release/net472/KrysalisMod.dll",
         mods_path)
