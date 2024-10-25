@@ -12,6 +12,6 @@ public class KrysalisManagedAPI
 {
     public static bool StartRenderer()
     {
-        return KrysalisManagedWrapper.KrysalisManagedWrapper.MainFfi();
+        return KrysalisManagedWrapper.KrysalisManagedWrapper.MainWrapper();
     }
 }

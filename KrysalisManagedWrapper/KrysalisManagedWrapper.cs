@@ -10,7 +10,7 @@ namespace KrysalisManagedWrapper;
 
 public class KrysalisManagedWrapper
 {
-    public static bool MainFfi()
+    public static bool MainWrapper()
     {
         return KrysalisManagedFFI.KrysalisManagedFFI.main_ffi();
     }

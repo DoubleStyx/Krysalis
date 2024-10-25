@@ -19,6 +19,9 @@ namespace KrysalisManagedTestApplication
                 case "ForceFail":
                     result = false;
                     break;
+                case "ForcePass":
+                    result = true;
+                    break;
                 default:
                      Console.WriteLine("Invalid argument");
                      result = false;

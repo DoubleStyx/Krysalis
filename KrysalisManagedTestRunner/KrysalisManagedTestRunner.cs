@@ -6,14 +6,14 @@ namespace KrysalisManagedTestRunner
 {
     public class KrysalisManagedTestRunner
     {
-        public void RunTest(string testName) 
+        public string RunTest(string testName) 
         {
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "KrysalisManagedTestApplication.exe",
-                    Arguments = "TestRenderer",
+                    Arguments = testName,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true
@@ -23,15 +23,26 @@ namespace KrysalisManagedTestRunner
             process.Start();
             process.WaitForExit();
             string output = process.StandardOutput.ReadToEnd();
-            Console.WriteLine(output);
             
-            Assert.True(output.Contains("Test passed"));
+            return output;
         }
 
         [Fact]
         public void TestRenderer()
         {
-            RunTest("TestRenderer");
+            Assert.Contains("Test passed", RunTest("TestRenderer"));
+        }
+
+        [Fact]
+        public void ForceFail()
+        {
+            Assert.Contains("Test failed", RunTest("ForceFail"));
+        }
+
+        [Fact]
+        public void ForcePass()
+        {
+            Assert.Contains("Test passed", RunTest("ForcePass"));
         }
     }
 }
